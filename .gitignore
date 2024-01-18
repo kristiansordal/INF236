@@ -1,67 +1,23 @@
-# Prerequisites
-*.d
-
-# Object files
+# Compiled object files and libraries
 *.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
 *.so
-*.so.*
-*.dylib
+*.a
+*.lib
 
-# Executables
+# Executable files
 *.exe
 *.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+*.dll
 
 # Debug files
 *.dSYM/
-*.su
-*.idb
 *.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
+# Compiled Static libraries
+*.lai
+*.la
+*.a
 *.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
 
 # Compiled Dynamic libraries
 *.so
@@ -72,13 +28,59 @@ dkms.conf
 *.mod
 *.smod
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+# Compiled Java classes
+*.class
 
-# Executables
-*.exe
-*.out
-*.app
+# Python cache
+__pycache__/
+*.py[cod]
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+CTestTestfile.cmake
+DartConfiguration.tcl
+compile_commands.json
+
+# Build directories
+code/assignments/build/
+code/tasks/build/
+
+# Eclipse project files
+.project
+.cproject
+.settings/
+
+# Visual Studio Code project files
+.vscode/
+
+# JetBrains IDEs (e.g., IntelliJ, PyCharm)
+.idea/
+
+# macOS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db
+Desktop.ini
+
+# Backup files
+*~
+*.bak
+*.swp
+*.tmp
+
+# Other files to ignore
+tags
+*.log
+*.csv
+*.dat
+*.pid
+*.seed
+*.swo
+*.tar.gz
+*.zip
+
+# Add here any other file types specific to your project
