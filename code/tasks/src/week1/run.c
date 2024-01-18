@@ -68,6 +68,10 @@ int main(int argc, char **argv) {
     init_matrix(&B, 4);
 
     struct Matrix C = mat_mult(&A, &B);
+    print_triangular(&A);
+    printf("\n");
+    print_triangular(&B);
+    printf("\n");
     print_matrix(&C);
 
     free(A.arr);

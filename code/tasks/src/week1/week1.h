@@ -27,3 +27,4 @@ struct Matrix mat_mult(struct Matrix *A, struct Matrix *B);
 void print_arr(int *arr, int n);
 void print_date(struct Date *d);
 void print_matrix(struct Matrix *m);
+void print_triangular(struct Matrix *m);

@@ -152,10 +152,10 @@ void sort_date(struct Date *arr, int n) {
  */
 void init_matrix(struct Matrix *m, int n) {
     int rows = sqrt(n);
-    if (rows != (int)rows) {
-        printf("Not a square matrix\n");
-        return;
-    }
+    // if (rows != (int)rows) {
+    //     printf("Not a square matrix\n");
+    //     return;
+    // }
 
     m->rows = rows;
     int elems = (rows * (rows + 1)) / 2;
@@ -163,7 +163,7 @@ void init_matrix(struct Matrix *m, int n) {
     m->size = elems;
 
     for (size_t i = 0; i < elems; i++) {
-        m->arr[i] = i;
+        m->arr[i] = i + 1;
     }
 }
 
@@ -182,7 +182,6 @@ struct Matrix mat_mult(struct Matrix *A, struct Matrix *B) {
     }
 
     int n = A->rows;
-    printf("n: %d\n", n);
     C.size = n * n;
     C.rows = n;
     C.arr = (int *)malloc(C.size * sizeof(int));
@@ -196,8 +195,6 @@ struct Matrix mat_mult(struct Matrix *A, struct Matrix *B) {
      * To access index (i,j), of a matrix with row size n, we have
      * A(i,j) = A[i * n + j]
      *
-     * Since the matrix is lower triangular, it only contains n*(n+1)/2
-     * i >= j ->
      */
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < n; j++) {
@@ -227,6 +224,20 @@ void print_matrix(struct Matrix *m) {
     for (size_t i = 0; i < m->rows; i++) {
         for (int j = 0; j < m->rows; j++) {
             printf("%d ", m->arr[i * m->rows + j]);
+        }
+        printf("\n");
+    }
+}
+
+void print_triangular(struct Matrix *m) {
+    for (size_t i = 0; i < m->rows; i++) {
+        for (int j = 0; j < m->rows; j++) {
+            if (i >= j) {
+                printf("%d ", m->arr[i * (i + 1) / 2 + j]);
+            } else {
+                // printf("%d ", m->arr[j * (j + 1) / 2 + i]);
+                printf(" ");
+            }
         }
         printf("\n");
     }
