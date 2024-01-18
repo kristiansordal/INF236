@@ -1,0 +1,3 @@
+/Users/kristiansordal/dev/uib/spring24/inf236/code/tasks/build/Debug/_deps/unity-subbuild/CMakeFiles/unity-populate.dir
+/Users/kristiansordal/dev/uib/spring24/inf236/code/tasks/build/Debug/_deps/unity-subbuild/CMakeFiles/edit_cache.dir
+/Users/kristiansordal/dev/uib/spring24/inf236/code/tasks/build/Debug/_deps/unity-subbuild/CMakeFiles/rebuild_cache.dir

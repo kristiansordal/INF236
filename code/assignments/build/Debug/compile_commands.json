@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc  -I/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug/_deps/unity-src/src -isystem /opt/homebrew/include -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -Wall -Wextra -Xclang -fopenmp -o CMakeFiles/exercises.dir/src/main.c.o -c /Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/src/main.c",
+  "file": "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/src/main.c",
+  "output": "CMakeFiles/exercises.dir/src/main.c.o"
+},
+{
+  "directory": "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc  -I/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug/_deps/unity-src/src -I/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug/_deps/unity-build -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -o CMakeFiles/tests.dir/src/tests.c.o -c /Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/src/tests.c",
+  "file": "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/src/tests.c",
+  "output": "CMakeFiles/tests.dir/src/tests.c.o"
+},
+{
+  "directory": "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug/_deps/unity-build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc  -I/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug/_deps/unity-src/src -I/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug/_deps/unity-build -g -std=c11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -o CMakeFiles/unity.dir/src/unity.c.o -c /Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug/_deps/unity-src/src/unity.c",
+  "file": "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/build/Debug/_deps/unity-src/src/unity.c",
+  "output": "_deps/unity-build/CMakeFiles/unity.dir/src/unity.c.o"
+}
+]
