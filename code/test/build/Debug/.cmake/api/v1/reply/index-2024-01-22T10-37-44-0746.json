@@ -1,0 +1,70 @@
+{
+	"cmake" : 
+	{
+		"generator" : 
+		{
+			"multiConfig" : false,
+			"name" : "Unix Makefiles"
+		},
+		"paths" : 
+		{
+			"cmake" : "/opt/homebrew/Cellar/cmake/3.28.0/bin/cmake",
+			"cpack" : "/opt/homebrew/Cellar/cmake/3.28.0/bin/cpack",
+			"ctest" : "/opt/homebrew/Cellar/cmake/3.28.0/bin/ctest",
+			"root" : "/opt/homebrew/Cellar/cmake/3.28.0/share/cmake"
+		},
+		"version" : 
+		{
+			"isDirty" : false,
+			"major" : 3,
+			"minor" : 28,
+			"patch" : 0,
+			"string" : "3.28.0",
+			"suffix" : ""
+		}
+	},
+	"objects" : 
+	[
+		{
+			"jsonFile" : "codemodel-v2-84f90edfd00a32af3365.json",
+			"kind" : "codemodel",
+			"version" : 
+			{
+				"major" : 2,
+				"minor" : 6
+			}
+		},
+		{
+			"jsonFile" : "cmakeFiles-v1-48b18b38d1f6ecbd3046.json",
+			"kind" : "cmakeFiles",
+			"version" : 
+			{
+				"major" : 1,
+				"minor" : 0
+			}
+		}
+	],
+	"reply" : 
+	{
+		"cmakeFiles-v1" : 
+		{
+			"jsonFile" : "cmakeFiles-v1-48b18b38d1f6ecbd3046.json",
+			"kind" : "cmakeFiles",
+			"version" : 
+			{
+				"major" : 1,
+				"minor" : 0
+			}
+		},
+		"codemodel-v2" : 
+		{
+			"jsonFile" : "codemodel-v2-84f90edfd00a32af3365.json",
+			"kind" : "codemodel",
+			"version" : 
+			{
+				"major" : 2,
+				"minor" : 6
+			}
+		}
+	}
+}
