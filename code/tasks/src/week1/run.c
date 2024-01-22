@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     free(arr);
 
     int date_count = 5;
-    struct Date *dates = (struct Date *)malloc(n * sizeof(struct Date));
+    struct Date *dates = (struct Date *)malloc(date_count * sizeof(struct Date));
 
     for (int i = 0; i < date_count; i++) {
         struct Date date;
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     printf("\n");
     printf("\n");
 
-    double mat_elem_count = 10;
+    double mat_elem_count = 16;
     double sr = sqrt(mat_elem_count);
 
     if (sr * sr != mat_elem_count) {

@@ -64,9 +64,8 @@ void dynamic_allocator() {
  *     *y = *x - *y  -> *y = 1
  *     *x = *x - *y  -> *x = 2
  *
-*     @param x - Pointer to integer x
-*     @param y - Pointer to integer y
-
+ * @param x - Pointer to integer x
+ * @param y - Pointer to integer y
  */
 void swap(int *x, int *y) {
     if (x == y) {
@@ -147,8 +146,8 @@ void sort_date(struct Date *arr, int n) {
 /**
  * Initializes a matrix with index values
  *
- * @param m Pointer to matrix
- * @param n Number of elements in matrix
+ * @param m - Pointer to matrix
+ * @param n - Number of elements in matrix
  */
 void init_matrix(struct Matrix *m, int n) {
     int rows = sqrt(n);
@@ -188,18 +187,36 @@ struct Matrix mat_mult(struct Matrix *A, struct Matrix *B) {
      * As our matrix is symmetrical, we only need to store the lower triangular version.
      * We also store it contiguously in memory, i.e. as a 1D array.
      *
-     * To access index (i,j), of a matrix with row size n, we have
-     * A(i,j) = A[i * n + j]
+     * To access index (i,j), of a matrix (non-triangular) with row size n, which is stored sequentially in memory, we
+     * have A(i,j) = A[i * n + j]
      *
+     * Row i has i + 1 elements
+     * 1
+     * 2 3
+     * 4 5 6
+     * 7 8 9 10
+     *
+     * As we have the propery that A[i,j] = A[j,i], we access the elements in the
+     * matrices in the following manner:
+     *
+     * i = the index of the current row
+     * j = the index of the current column
+     * k = the index of the current element - i.e. the offset
+     *
+     * Then the element we are interested in is stored at the following index
+     * i >= k -> i * (i + 1) / 2 + k
+     * i < k  -> k * (k + 1) / 2 + i
      */
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < n; j++) {
             int sum = 0;
+
             for (size_t k = 0; k < n; k++) {
                 int a_val = (i >= k) ? A->arr[i * (i + 1) / 2 + k] : A->arr[k * (k + 1) / 2 + i];
-                int b_val = (k >= j) ? B->arr[k * (k + 1) / 2 + j] : B->arr[j * (j + 1) / 2 + k];
+                int b_val = (j >= k) ? B->arr[j * (j + 1) / 2 + k] : B->arr[k * (k + 1) / 2 + j];
                 sum += a_val * b_val;
             }
+
             C.arr[i * n + j] = sum;
         }
     }
@@ -231,7 +248,6 @@ void print_triangular(struct Matrix *m) {
             if (i >= j) {
                 printf("%d ", m->arr[i * (i + 1) / 2 + j]);
             } else {
-                // printf("%d ", m->arr[j * (j + 1) / 2 + i]);
                 printf(" ");
             }
         }
