@@ -12,7 +12,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")     # Consider adding -O3 -ffast-math as o
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # Same goes here
 
 find_package(OpenMP REQUIRED) # Add OpenMP
-include(CTest)                # For writing tests
 
 # Fetch Google Test
 include(FetchContent)

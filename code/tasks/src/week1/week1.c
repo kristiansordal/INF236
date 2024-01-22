@@ -152,10 +152,6 @@ void sort_date(struct Date *arr, int n) {
  */
 void init_matrix(struct Matrix *m, int n) {
     int rows = sqrt(n);
-    // if (rows != (int)rows) {
-    //     printf("Not a square matrix\n");
-    //     return;
-    // }
 
     m->rows = rows;
     int elems = (rows * (rows + 1)) / 2;
