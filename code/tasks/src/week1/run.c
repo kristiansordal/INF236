@@ -1,4 +1,5 @@
 #include "week1.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 // #define STATIC
@@ -50,7 +51,6 @@ int main(int argc, char **argv) {
     sort_date(dates, date_count);
 
     printf("\n");
-    printf("\n");
 
     for (int i = 0; i < date_count; i++) {
         print_date(&dates[i]);
@@ -59,13 +59,23 @@ int main(int argc, char **argv) {
 
     free(dates);
 
+    // Task 4
     struct Matrix A;
     struct Matrix B;
 
     printf("\n");
+    printf("\n");
 
-    init_matrix(&A, 4);
-    init_matrix(&B, 4);
+    double mat_elem_count = 10;
+    double sr = sqrt(mat_elem_count);
+
+    if (sr * sr != mat_elem_count) {
+        printf("ERROR: Matrix must be square\n");
+        return -1;
+    } else {
+        init_matrix(&A, (int)mat_elem_count);
+        init_matrix(&B, (int)mat_elem_count);
+    }
 
     struct Matrix C = mat_mult(&A, &B);
     print_triangular(&A);

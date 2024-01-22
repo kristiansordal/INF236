@@ -14,14 +14,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # Same goes here
 find_package(OpenMP REQUIRED) # Add OpenMP
 include(CTest)                # For writing tests
 
-# Fetch Unity
+# Fetch Google Test
 include(FetchContent)
 FetchContent_Declare(
-    unity
-    GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-    GIT_TAG v2.5.2  # specify the version you want
+  googletest
+  URL https://github.com/google/googletest/archive/release-1.11.0.zip
 )
-FetchContent_MakeAvailable(unity)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+# set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 # Include the Unity source directory
 include_directories(${unity_SOURCE_DIR}/src)
@@ -39,11 +40,10 @@ add_executable(tests
 
 target_compile_options(exercises PRIVATE -Wall -Wextra)   # Compile options with some useful flags. Consider adding -Werror and -Wpedantic
 target_link_libraries(exercises PRIVATE OpenMP::OpenMP_C) # Link OpenMP
-target_link_libraries(tests PRIVATE unity)                # Link with Unity
+target_link_libraries(tests PRIVATE gtest_main)           # Link with Google Test
 
-add_test(NAME unity_test COMMAND tests)
-add_test(NAME TestInstantiator          # Set the name of the test
-         COMMAND tests)
+enable_testing()
+add_test(NAME GoogleTest COMMAND tests)
 
 set(CMAKE_COLOR_DIAGNOSTIC ON)
 
