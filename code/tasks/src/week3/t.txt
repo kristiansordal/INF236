@@ -1,0 +1,3 @@
+files: /tmp/inf236
+
+mv /tmp/inf236/<files>/ .

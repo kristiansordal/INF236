@@ -213,7 +213,7 @@ struct Matrix mat_mult(struct Matrix *A, struct Matrix *B) {
 
             for (size_t k = 0; k < n; k++) {
                 int a_val = (i >= k) ? A->arr[i * (i + 1) / 2 + k] : A->arr[k * (k + 1) / 2 + i];
-                int b_val = (j >= k) ? B->arr[j * (j + 1) / 2 + k] : B->arr[k * (k + 1) / 2 + j];
+                int b_val = (j >= k) ? B->arr[j * (j + 1) / 2 + k] : B->arr[k * (k + 1) / 2 + j]; // is this correct?
                 sum += a_val * b_val;
             }
 
