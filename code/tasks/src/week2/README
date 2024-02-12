@@ -1,0 +1,10 @@
+
+sekvs.c		Sequential scalar product
+simd.c		Scalar product using SIMD instructions
+
+access.c	Different ways of accessing a linear array
+
+matmul.c   	Standard matrix multiplication
+transpose.c	Transpose, followed by matrix multiplication
+
+

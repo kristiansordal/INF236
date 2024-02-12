@@ -41,9 +41,14 @@ add_executable(tests
     src/week1/tests_week1.cpp
     src/week1/week1.c
 )
+# Executable for tests
+add_executable(simd
+    src/week2/simd.c
+)
 
 target_compile_options(exercises PRIVATE -Wall -Wextra)   # Compile options with some useful flags. Consider adding -Werror and -Wpedantic
 target_link_libraries(exercises PRIVATE OpenMP::OpenMP_C) # Link OpenMP
+target_link_libraries(simd PRIVATE OpenMP::OpenMP_C) # Link OpenMP
 target_link_libraries(tests PRIVATE gtest_main)           # Link with Google Test
 
 enable_testing()
