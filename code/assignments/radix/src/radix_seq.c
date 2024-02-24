@@ -6,12 +6,12 @@
 #include <stdlib.h>
 
 double radix_sort_seq(int n, int b) {
-    ull *array = (ull *)malloc(n * sizeof(ull));
+    ull *a = (ull *)malloc(n * sizeof(ull));
     ull *tmp = (ull *)malloc(n * sizeof(ull));
 
     // Generate random 64 bit integers
     for (int i = 0; i < n; i++)
-        array[i] = genrand64_int64();
+        a[i] = genrand64_int64();
 
     const double start = omp_get_wtime();
     const int NUM_BUCKETS = 1 << b;
@@ -25,7 +25,7 @@ double radix_sort_seq(int n, int b) {
 
         // For each element in the array, put it into the bucket corresponding to its nth bit
         for (int i = 0; i < n; i++) {
-            int bucket = (array[i] >> shift) & (NUM_BUCKETS - 1);
+            int bucket = (a[i] >> shift) & (NUM_BUCKETS - 1);
             bucket_size[bucket]++;
         }
 
@@ -34,24 +34,31 @@ double radix_sort_seq(int n, int b) {
             bucket_size[i] += bucket_size[i - 1];
 
         for (int i = n - 1; i >= 0; i--) {
-            int bucket = (array[i] >> shift) & (NUM_BUCKETS - 1);
-            tmp[--bucket_size[bucket]] = array[i];
+            int bucket = (a[i] >> shift) & (NUM_BUCKETS - 1);
+            tmp[--bucket_size[bucket]] = a[i];
         }
 
-        for (int i = 0; i < n; i++)
-            array[i] = tmp[i];
+        ull *swap = a;
+        a = tmp;
+        tmp = swap;
     }
 
     const double end = omp_get_wtime();
     free(tmp);
 
-    const int ans = is_sorted(array, n);
+    if (n <= 20) {
+        for (int i = 0; i < n; i++) {
+            printf("%llu\n", a[i]);
+        }
+    }
+
+    const int ans = is_sorted(a, n);
     if (ans == 1)
         printf("SEQUENTIAL: Success!\n");
     else
         printf("SEQUENTIAL: Failure!\n");
 
-    free(array);
+    free(a);
 
     return end - start;
 }

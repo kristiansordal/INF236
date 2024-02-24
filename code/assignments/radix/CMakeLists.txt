@@ -8,7 +8,7 @@ project(Radix_Sort           # Name of the project
 
 set(CMAKE_C_STANDARD 11)                  # Language standard for C
 set(CMAKE_CXX_STANDARD 20)                # Language standard for C++
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast")     # Sonsider adding -O3 -ffast-math as optimization flags
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")     # Sonsider adding -O3 -ffast-math as optimization flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # Same goes here
 
 find_package(OpenMP REQUIRED) # Add OpenMP

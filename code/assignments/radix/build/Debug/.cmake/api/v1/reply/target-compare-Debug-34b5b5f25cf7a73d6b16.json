@@ -75,7 +75,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -Ofast -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1"
+					"fragment" : " -O3 -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1"
 				},
 				{
 					"backtrace" : 5,
@@ -134,7 +134,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-Ofast -g",
+				"fragment" : "-O3 -g",
 				"role" : "flags"
 			},
 			{
