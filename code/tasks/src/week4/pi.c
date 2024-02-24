@@ -5,32 +5,34 @@
 #include <time.h>
 
 #define n_runs 1
-#define BUFF 256 // Adjusted buffer size for better random number generation
+#define BUFF 256
 
-static long num_points = 1000000000;
+static long long num_points = 1000000000;
 
 int main(int argc, char *argv[]) {
     double pi;
     double inside = 0;
     double t = omp_get_wtime();
+    unsigned int seed;
 
-#pragma omp parallel
+#pragma omp parallel private(seed)
     {
-        unsigned int seed = time(NULL) + omp_get_thread_num();
+        seed = time(NULL) + omp_get_thread_num(); // Each thread gets a different seed
 
-        for (int i = 0; i < num_points / omp_get_num_threads(); i++) {
+#pragma omp for reduction(+ : inside)
+        for (int i = 0; i < num_points; i++) {
             double x = (double)rand_r(&seed) / RAND_MAX;
             double y = (double)rand_r(&seed) / RAND_MAX;
 
             if (sqrt(x * x + y * y) <= 1) {
-#pragma omp atomic
                 inside++;
             }
         }
     }
 
-    pi = inside / (double)num_points * 4;
+    pi = 4 * (double)inside / (double)num_points;
     t = omp_get_wtime() - t;
+
     printf("Pi: %f\n", pi);
     printf("Time: %f\n", t);
 

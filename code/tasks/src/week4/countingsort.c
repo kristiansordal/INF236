@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
         for (int j = 0; j < size; j++) {
 
             // tie break on smaller index
-            if (arr[i] == arr[j] && i > j) {
+            if (arr[i] == arr[j] && i < j) {
                 smaller++;
             } else if (arr[j] < arr[i]) {
                 smaller++;
