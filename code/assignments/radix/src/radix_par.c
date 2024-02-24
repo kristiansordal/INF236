@@ -83,13 +83,36 @@ double radix_sort_par(int n, int b) {
             bucket_size[i] = 0;
         }
 
-        // Compute the size of each bucket
-#pragma omp parallel for reduction(+ : bucket_size[ : NUM_BUCKETS])
-        for (int i = 0; i < n; i++) {
-            // Right shift value in array[i] - Discards the least significant bits
-            // Bitwise and with number of buckets - 1. 16 buckets gives 15 which is 1111 in binary
-            int bucket = (a[i] >> shift) & (NUM_BUCKETS - 1);
-            bucket_size[bucket]++;
+// ------  DOESNT WORK ON BRAKE BECAUSE HE IS AN OLD MAN -------
+//         // Compute the size of each bucket
+// #pragma omp parallel for reduction(+ : bucket_size[ : NUM_BUCKETS])
+//         for (int i = 0; i < n; i++) {
+//             // Right shift value in array[i] - Discards the least significant bits
+//             // Bitwise and with number of buckets - 1. 16 buckets gives 15 which is 1111 in binary
+//             int bucket = (a[i] >> shift) & (NUM_BUCKETS - 1);
+//             bucket_size[bucket]++;
+//         }
+// -------------------------------------------------------------
+//
+#pragma omp parallel
+        {
+            ull local_bucket_size[NUM_BUCKETS];
+            for (int i = 0; i < NUM_BUCKETS; i++) {
+                local_bucket_size[i] = 0;
+            }
+
+#pragma omp for nowait
+            for (int i = 0; i < n; i++) {
+                int bucket = (a[i] >> shift) & (NUM_BUCKETS - 1);
+                local_bucket_size[bucket]++;
+            }
+
+#pragma omp critical
+            {
+                for (int i = 0; i < NUM_BUCKETS; i++) {
+                    bucket_size[i] += local_bucket_size[i];
+                }
+            }
         }
 
         // Prefix sum to compute the start of each bucket
