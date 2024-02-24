@@ -11,6 +11,7 @@
 		"commands" : 
 		[
 			"add_executable",
+			"target_link_options",
 			"set_property",
 			"find_package",
 			"target_compile_options",
@@ -30,41 +31,47 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 27,
+				"line" : 25,
 				"parent" : 0
-			},
-			{
-				"command" : 2,
-				"file" : 0,
-				"line" : 14,
-				"parent" : 0
-			},
-			{
-				"file" : 1,
-				"parent" : 2
 			},
 			{
 				"command" : 1,
-				"file" : 1,
-				"line" : 619,
-				"parent" : 3
+				"file" : 0,
+				"line" : 49,
+				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 53,
+				"line" : 12,
 				"parent" : 0
+			},
+			{
+				"file" : 1,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 619,
+				"parent" : 4
 			},
 			{
 				"command" : 4,
 				"file" : 0,
-				"line" : 54,
+				"line" : 48,
 				"parent" : 0
 			},
 			{
 				"command" : 5,
 				"file" : 0,
-				"line" : 55,
+				"line" : 50,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 56,
 				"parent" : 0
 			}
 		]
@@ -78,33 +85,33 @@
 					"fragment" : " -O3 -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 6,
 					"fragment" : "-Wall"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 6,
 					"fragment" : "-Wextra"
 				},
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"fragment" : "-Xclang"
 				},
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"fragment" : "-fopenmp"
 				}
 			],
 			"defines" : 
 			[
 				{
-					"backtrace" : 7,
+					"backtrace" : 8,
 					"define" : "PAR"
 				}
 			],
 			"includes" : 
 			[
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"isSystem" : true,
 					"path" : "/opt/homebrew/include"
 				}
@@ -141,7 +148,12 @@
 				"role" : "flags"
 			},
 			{
-				"backtrace" : 4,
+				"backtrace" : 2,
+				"fragment" : "-fsanitize=address",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 5,
 				"fragment" : "/opt/homebrew/lib/libomp.dylib",
 				"role" : "libraries"
 			}

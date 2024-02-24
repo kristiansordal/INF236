@@ -3,13 +3,11 @@ cmake_minimum_required(VERSION 3.20)
 project(Radix_Sort           # Name of the project
     VERSION 0.1.0                  # Version number
     DESCRIPTION "Paralellized Radix Sort" # Description
-    LANGUAGES C CXX                # Languages 
+    LANGUAGES C                # Languages 
 )
 
 set(CMAKE_C_STANDARD 11)                  # Language standard for C
-set(CMAKE_CXX_STANDARD 20)                # Language standard for C++
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")     # Sonsider adding -O3 -ffast-math as optimization flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # Same goes here
 
 find_package(OpenMP REQUIRED) # Add OpenMP
 
@@ -46,17 +44,20 @@ add_executable(compare
     src/main.c
 )
 
-target_compile_options(radix_seq PRIVATE -Wall -Wextra)   # Compile options with some useful flags. Consider adding -Werror and -Wpedantic
-target_link_libraries(radix_seq PRIVATE OpenMP::OpenMP_C) # Link OpenMP
-target_compile_definitions(radix_seq PRIVATE SEQ)
+foreach(target radix_seq radix_par compare)
+    target_compile_options(${target} PRIVATE -Wall -Wextra)
+    target_link_options(${target} PRIVATE -fsanitize=address) # Link with AddressSanitizer
+    target_link_libraries(${target} PRIVATE OpenMP::OpenMP_C)
 
-target_compile_options(radix_par PRIVATE -Wall -Wextra)   
-target_link_libraries(radix_par PRIVATE OpenMP::OpenMP_C)
-target_compile_definitions(radix_par PRIVATE PAR)
-
-target_compile_options(compare PRIVATE -Wall -Wextra)   
-target_link_libraries(compare PRIVATE OpenMP::OpenMP_C)
-target_compile_definitions(compare PRIVATE COMPARE) # Define TEST to enable testing
+    # Set the correct definition for each target
+    if(${target} STREQUAL "radix_seq")
+        target_compile_definitions(${target} PRIVATE SEQ)
+    elseif(${target} STREQUAL "radix_par")
+        target_compile_definitions(${target} PRIVATE PAR)
+    elseif(${target} STREQUAL "compare")
+        target_compile_definitions(${target} PRIVATE COMPARE)
+    endif()
+endforeach()
 
 set(CMAKE_COLOR_DIAGNOSTIC ON)
 

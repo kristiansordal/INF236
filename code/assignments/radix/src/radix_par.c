@@ -49,6 +49,7 @@ void parallel_inclusive_scan(ull *bucket_size, const int NUM_BUCKETS) {
                 bucket_size[i] += addend;
         }
     }
+    free(sums);
 }
 
 void inclusive_scan(ull *bucket_size, const int NUM_BUCKETS) {
@@ -104,7 +105,7 @@ double radix_sort_par(int n, int b) {
         tmp = swap;
     }
 
-    double end = omp_get_wtime();
+    const double end = omp_get_wtime();
     free(tmp);
 
     if (n <= 20) {
