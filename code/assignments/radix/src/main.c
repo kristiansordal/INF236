@@ -26,8 +26,8 @@ int main() {
     double speedup_ratio = seq_time / par_time;
     double speedup_percentage = (speedup_ratio - 1.0) * 100.0;
 
-    printf("Speedup ratio : %.3f\n", speedup_ratio);
-    printf("Speedup prcnt  : %.3f%%\n", speedup_percentage);
+    printf("Speedup ratio: %.3f\n", speedup_ratio);
+    printf("Speedup prcnt: %.3f%%\n", speedup_percentage);
 #endif
 
     return 0;
