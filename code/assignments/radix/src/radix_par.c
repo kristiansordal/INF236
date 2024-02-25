@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void parallel_inclusive_scan(ull *bucket_size, const int NUM_BUCKETS) {
+void parallel_inclusive_scan(int *bucket_size, const int NUM_BUCKETS) {
     int p;
 #pragma omp parallel
     {
@@ -15,6 +15,7 @@ void parallel_inclusive_scan(ull *bucket_size, const int NUM_BUCKETS) {
 
     // FALLBACK: If number of buckets is smaller than amount of threads, just use normal PFS
     if (p > NUM_BUCKETS) {
+        printf("Fallback on normal pfs\n");
         inclusive_scan(bucket_size, NUM_BUCKETS);
         return;
     }
@@ -52,16 +53,13 @@ void parallel_inclusive_scan(ull *bucket_size, const int NUM_BUCKETS) {
     free(sums);
 }
 
-void inclusive_scan(ull *bucket_size, const int NUM_BUCKETS) {
+void inclusive_scan(int *bucket_size, const int NUM_BUCKETS) {
     for (int i = 1; i < NUM_BUCKETS; i++) {
         bucket_size[i] += bucket_size[i - 1];
     }
 }
 
-/* Parallel radix sort
- * TODO Add comments
- *
- */
+// Parallel radix sort
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
     ull *tmp = (ull *)malloc(n * sizeof(ull));
@@ -73,7 +71,7 @@ double radix_sort_par(int n, int b) {
 
     const double start = omp_get_wtime();
     const int NUM_BUCKETS = 1 << b;
-    ull bucket_size[NUM_BUCKETS];
+    int bucket_size[NUM_BUCKETS];
 
     // For each bit in the number, LSD order
     for (int shift = 0; shift < BITS; shift += b) {
@@ -83,20 +81,9 @@ double radix_sort_par(int n, int b) {
             bucket_size[i] = 0;
         }
 
-// ------  DOESNT WORK ON BRAKE BECAUSE HE IS AN OLD MAN -------
-//         // Compute the size of each bucket
-// #pragma omp parallel for reduction(+ : bucket_size[ : NUM_BUCKETS])
-//         for (int i = 0; i < n; i++) {
-//             // Right shift value in array[i] - Discards the least significant bits
-//             // Bitwise and with number of buckets - 1. 16 buckets gives 15 which is 1111 in binary
-//             int bucket = (a[i] >> shift) & (NUM_BUCKETS - 1);
-//             bucket_size[bucket]++;
-//         }
-// -------------------------------------------------------------
-//
 #pragma omp parallel
         {
-            ull local_bucket_size[NUM_BUCKETS];
+            int local_bucket_size[NUM_BUCKETS];
             for (int i = 0; i < NUM_BUCKETS; i++) {
                 local_bucket_size[i] = 0;
             }
@@ -129,7 +116,6 @@ double radix_sort_par(int n, int b) {
     }
 
     const double end = omp_get_wtime();
-    free(tmp);
 
     if (n <= 20) {
         for (int i = 0; i < n; i++) {
