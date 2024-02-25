@@ -9,6 +9,9 @@ double radix_sort_seq(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
     ull *tmp = (ull *)malloc(n * sizeof(ull));
 
+    double t1;
+    double pfs_time = 0;
+
     // Generate random 64 bit integers
     for (int i = 0; i < n; i++)
         a[i] = genrand64_int64();
@@ -30,8 +33,11 @@ double radix_sort_seq(int n, int b) {
         }
 
         // Prefix sum on the bucket sizes
+        t1 = omp_get_wtime();
         for (int i = 1; i < NUM_BUCKETS; i++)
             bucket_size[i] += bucket_size[i - 1];
+        t1 = omp_get_wtime() - t1;
+        pfs_time += t1;
 
         for (int i = n - 1; i >= 0; i--) {
             int bucket = (a[i] >> shift) & (NUM_BUCKETS - 1);
@@ -45,6 +51,8 @@ double radix_sort_seq(int n, int b) {
 
     const double end = omp_get_wtime();
     free(tmp);
+
+    printf("PFS time: %f\n", pfs_time);
 
     if (n <= 20) {
         for (int i = 0; i < n; i++) {
