@@ -14,7 +14,6 @@
 			"target_link_options",
 			"set_property",
 			"find_package",
-			"target_compile_options",
 			"target_link_libraries",
 			"target_compile_definitions"
 		],
@@ -59,17 +58,11 @@
 			{
 				"command" : 4,
 				"file" : 0,
-				"line" : 48,
-				"parent" : 0
-			},
-			{
-				"command" : 5,
-				"file" : 0,
 				"line" : 50,
 				"parent" : 0
 			},
 			{
-				"command" : 6,
+				"command" : 5,
 				"file" : 0,
 				"line" : 54,
 				"parent" : 0
@@ -86,32 +79,24 @@
 				},
 				{
 					"backtrace" : 6,
-					"fragment" : "-Wall"
-				},
-				{
-					"backtrace" : 6,
-					"fragment" : "-Wextra"
-				},
-				{
-					"backtrace" : 7,
 					"fragment" : "-Xclang"
 				},
 				{
-					"backtrace" : 7,
+					"backtrace" : 6,
 					"fragment" : "-fopenmp"
 				}
 			],
 			"defines" : 
 			[
 				{
-					"backtrace" : 8,
+					"backtrace" : 7,
 					"define" : "SEQ"
 				}
 			],
 			"includes" : 
 			[
 				{
-					"backtrace" : 7,
+					"backtrace" : 6,
 					"isSystem" : true,
 					"path" : "/opt/homebrew/include"
 				}
