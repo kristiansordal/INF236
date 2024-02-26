@@ -45,7 +45,7 @@ add_executable(compare
 )
 
 foreach(target radix_seq radix_par compare)
-    target_compile_options(${target} PRIVATE -Wall -Wextra)
+    target_compile_options(${target} PRIVATE)
     target_link_options(${target} PRIVATE -fsanitize=address) # Link with AddressSanitizer
     target_link_libraries(${target} PRIVATE OpenMP::OpenMP_C)
 
