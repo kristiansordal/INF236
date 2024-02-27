@@ -46,11 +46,11 @@ void int_init_par(int *arr, int n) {
         arr[i] = 0;
 }
 
-void inclusive_scan_par(int *bs, int n) {
-    for (int j = 0; j < log2(n); j++) {
-#pragma omp parallel for
-        for (int i = n - 1; i >= 1 << j; i--) {
-            bs[i] = bs[i] + bs[i - (1 << j)];
-        }
-    }
-}
+// void inclusive_scan_par(int *bs, int n) {
+//     for (int j = 0; j < log2(n); j++) {
+// #pragma omp parallel for
+//         for (int i = n - 1; i >= 1 << j; i--) {
+//             bs[i] = bs[i] + bs[i - (1 << j)];
+//         }
+//     }
+// }

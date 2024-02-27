@@ -4,6 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void compute_ranges(int *begin, int *end, int n, int p) {
+    begin[0] = 0;
+    for (int i = 0; i < p - 1; i++) {
+        end[i] = (i + 1) * n / p;
+        begin[i + 1] = end[i];
+    }
+
+    end[p - 1] = n;
+}
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
@@ -22,6 +31,9 @@ double radix_sort_par(int n, int b) {
     int pfs[buckets];          // Prefix sum table
     ull out_buf[p][buckets];
 
+    int begins[p], ends[p];
+    compute_ranges(begins, ends, n, p);
+
     // Generate random 64 bit integers
     init_rand_par(a, n);
     const double start = omp_get_wtime();
@@ -34,8 +46,7 @@ double radix_sort_par(int n, int b) {
             int_init_par(bs, buckets);
             int_init_par(pfs, buckets);
 
-#pragma omp for nowait
-            for (int i = 0; i < n; i++)
+            for (int i = begins[tid]; i < ends[tid]; i++)
                 histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
         }
 
@@ -54,8 +65,7 @@ double radix_sort_par(int n, int b) {
             const int tid = omp_get_thread_num();
             int *histo_tid = histogram[tid];
 
-#pragma omp for
-            for (int i = 0; i < n; i++) {
+            for (int i = begins[tid]; i < ends[tid]; i++) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
                 // ++histo_tid[t];                         // index in permuted
