@@ -17,13 +17,18 @@ void compute_ranges(int *begin, int *end, int n, int p) {
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
-    ull *permuted = (ull *)malloc(n * sizeof(ull));
-
-    if (a == NULL || permuted == NULL) {
+    if (a == NULL) {
         fprintf(stderr, "Failed to allocate memory\n");
         exit(EXIT_FAILURE);
     } else {
-        printf("Allocated memory for %d elements\n", n);
+        printf("Allocated a\n");
+    }
+    ull *permuted = (ull *)malloc(n * sizeof(ull));
+    if (permuted == NULL) {
+        fprintf(stderr, "Failed to allocate memory\n");
+        exit(EXIT_FAILURE);
+    } else {
+        printf("Allocated permuted\n");
     }
 
     const int buckets = 1 << b;
