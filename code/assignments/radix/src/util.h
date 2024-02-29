@@ -5,8 +5,4 @@ int is_sorted(ull *arr, int n);
 void ull_init(ull *arr, int n);
 void int_init(int *arr, int n);
 void inclusive_scan(int *arr, const int n);
-void ull_init_par(ull *arr, int n);
-void int_init_par(int *arr, int n);
 void init_rand(ull *arr, int n);
-void init_rand_par(ull *arr, int n);
-void inclusive_scan_par(int *bs, int n);
