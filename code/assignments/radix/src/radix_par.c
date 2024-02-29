@@ -30,7 +30,6 @@ double radix_sort_par(int n, int b) {
 
     int histogram[p][buckets]; // Sub-bucket-size table
     int bs[buckets];           // Bucket size table
-    int pfs[buckets];          // Prefix sum table
     ull out_buf[p][buckets];
 
     int begins[p], ends[p];
@@ -41,21 +40,16 @@ double radix_sort_par(int n, int b) {
     const double start = omp_get_wtime();
 
     for (int shift = 0; shift < BITS; shift += b) {
-#pragma omp master
-        { t = omp_get_wtime(); }
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
             int_init(histogram[tid], buckets);
             int_init(bs, buckets);
-            int_init(pfs, buckets);
 
             for (int i = begins[tid]; i < ends[tid]; i++)
                 histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
 
 #pragma omp barrier
-#pragma omp master
-            { histo_t += omp_get_wtime() - t; }
 
 #pragma omp master
             {
@@ -75,8 +69,6 @@ double radix_sort_par(int n, int b) {
             }
 
 #pragma omp barrier
-#pragma omp master
-            { t = omp_get_wtime(); }
 
             int *histo_tid = histogram[tid];
             for (int i = begins[tid]; i < ends[tid]; i++) {
@@ -85,8 +77,6 @@ double radix_sort_par(int n, int b) {
                 permuted[histo_tid[t]++] = val;
             }
 
-#pragma omp master
-            { permute_t += omp_get_wtime() - t; }
         }
 
         ull *swap = a;
@@ -107,9 +97,9 @@ double radix_sort_par(int n, int b) {
     else
         printf("PARALLEL: Failed!\n");
 
-    printf("HISTOGRAM: %f\n", histo_t);
-    printf("SCAN: %f\n", scan_t);
-    printf("PERMUTE: %f\n", permute_t);
+    // printf("HISTOGRAM: %f\n", histo_t);
+    // printf("SCAN: %f\n", scan_t);
+    // printf("PERMUTE: %f\n", permute_t);
     free(a);
     return end - start;
 }
