@@ -18,6 +18,12 @@ void compute_ranges(int *begin, int *end, int n, int p) {
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
     ull *permuted = (ull *)malloc(n * sizeof(ull));
+
+    if (a == NULL || permuted == NULL) {
+        fprintf(stderr, "Failed to allocate memory\n");
+        exit(EXIT_FAILURE);
+    }
+
     const int buckets = 1 << b;
     int p;
     double t, histo_t = 0, permute_t = 0, scan_t = 0;
@@ -76,7 +82,6 @@ double radix_sort_par(int n, int b) {
                 int t = (val >> shift) & (buckets - 1); // get bucket
                 permuted[histo_tid[t]++] = val;
             }
-
         }
 
         ull *swap = a;
@@ -101,5 +106,6 @@ double radix_sort_par(int n, int b) {
     // printf("SCAN: %f\n", scan_t);
     // printf("PERMUTE: %f\n", permute_t);
     free(a);
+    free(permuted);
     return end - start;
 }
