@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void compute_ranges(ull *begin, ull *end, ull n, ull p) {
+void compute_ranges(int *begin, int *end, int n, int p) {
     begin[0] = 0;
-    for (ull i = 0; i < p - 1; i++) {
+    for (int i = 0; i < p - 1; i++) {
         end[i] = (i + 1) * n / p;
         begin[i + 1] = end[i];
     }
@@ -23,11 +23,11 @@ double radix_sort_par(int n, int b) {
         fprintf(stderr, "Failed to allocate memory\n");
         exit(EXIT_FAILURE);
     } else {
-        // printf("Allocated memory for %llu elements\n", n);
+        printf("Allocated memory for %d elements\n", n);
     }
 
-    const ull buckets = 1 << b;
-    ull p;
+    const int buckets = 1 << b;
+    int p;
 
 #pragma omp parallel
     {
@@ -35,35 +35,35 @@ double radix_sort_par(int n, int b) {
         { p = omp_get_num_threads(); }
     }
 
-    ull histogram[p][buckets]; // Sub-bucket-size table
-    ull bs[buckets];           // Bucket size table
+    int histogram[p][buckets]; // Sub-bucket-size table
+    int bs[buckets];           // Bucket size table
     ull out_buf[p][buckets];
 
-    ull begins[p], ends[p];
+    int begins[p], ends[p];
     compute_ranges(begins, ends, n, p);
 
-    // Generate random 64 bit ullegers
+    // Generate random 64 bit integers
     init_rand(a, n);
     const double start = omp_get_wtime();
 
-    for (ull shift = 0; shift < BITS; shift += b) {
+    for (int shift = 0; shift < BITS; shift += b) {
 #pragma omp parallel
         {
-            const ull tid = omp_get_thread_num();
-            ull_init(histogram[tid], buckets);
-            ull_init(bs, buckets);
+            const int tid = omp_get_thread_num();
+            int_init(histogram[tid], buckets);
+            int_init(bs, buckets);
 
-            for (ull i = begins[tid]; i < ends[tid]; i++)
+            for (int i = begins[tid]; i < ends[tid]; i++)
                 histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
 
 #pragma omp barrier
 
 #pragma omp master
             {
-                ull s = 0;
-                for (ull i = 0; i < buckets; i++) {
-                    for (ull j = 0; j < p; j++) {
-                        const ull t = s + histogram[j][i];
+                int s = 0;
+                for (int i = 0; i < buckets; i++) {
+                    for (int j = 0; j < p; j++) {
+                        const int t = s + histogram[j][i];
                         histogram[j][i] = s;
                         s = t;
                     }
@@ -73,10 +73,10 @@ double radix_sort_par(int n, int b) {
 
 #pragma omp barrier
 
-            ull *histo_tid = histogram[tid];
-            for (ull i = begins[tid]; i < ends[tid]; i++) {
+            int *histo_tid = histogram[tid];
+            for (int i = begins[tid]; i < ends[tid]; i++) {
                 ull val = a[i];                         // get value
-                ull t = (val >> shift) & (buckets - 1); // get bucket
+                int t = (val >> shift) & (buckets - 1); // get bucket
                 permuted[histo_tid[t]++] = val;
             }
         }
@@ -89,7 +89,7 @@ double radix_sort_par(int n, int b) {
     const double end = omp_get_wtime();
 
     if (n <= 20) {
-        for (ull i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             printf("%llu\n", a[i]);
         }
     }
