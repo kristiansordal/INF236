@@ -13,6 +13,7 @@ void compute_ranges(int *begin, int *end, int n, int p) {
 
     end[p - 1] = n;
 }
+
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
@@ -60,6 +61,7 @@ double radix_sort_par(int n, int b) {
             bs[i] = s;
         }
 
+        printf("\n");
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
@@ -68,12 +70,7 @@ double radix_sort_par(int n, int b) {
             for (int i = begins[tid]; i < ends[tid]; i++) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
-                // ++histo_tid[t];                         // index in permuted
                 permuted[histo_tid[t]++] = val;
-
-                // when buffer is full
-                // loop through histo tid
-                // dist[p++] = my_buf[t][j]
             }
         }
 
@@ -98,8 +95,3 @@ double radix_sort_par(int n, int b) {
     free(a);
     return end - start;
 }
-
-// for (int i = n - 1; i >= 0; i--) {
-//     int bucket = (a[i] >> shift) & (buckets - 1);
-//     permuted[--bs[bucket]] = a[i];
-// }

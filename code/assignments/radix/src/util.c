@@ -30,18 +30,18 @@ void init_rand(ull *arr, int n) {
         arr[i] = genrand64_int64();
 }
 void init_rand_par(ull *arr, int n) {
-#pragma omp parallel for
+#pragma omp for
     for (int i = 0; i < n; i++)
         arr[i] = genrand64_int64();
 }
 
 void ull_init_par(ull *arr, int n) {
-#pragma omp parallel for
+#pragma omp for
     for (int i = 0; i < n; i++)
         arr[i] = 0;
 }
 void int_init_par(int *arr, int n) {
-#pragma omp parallel for
+#pragma omp for
     for (int i = 0; i < n; i++)
         arr[i] = 0;
 }
