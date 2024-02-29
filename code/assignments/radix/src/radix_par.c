@@ -4,6 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void compute_ranges(int *begin, int *end, int n, int p) {
+    begin[0] = 0;
+    for (int i = 0; i < p - 1; i++) {
+        end[i] = (i + 1) * n / p;
+        begin[i + 1] = end[i];
+    }
+
+    end[p - 1] = n;
+}
+
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
@@ -22,20 +32,22 @@ double radix_sort_par(int n, int b) {
     int pfs[buckets];          // Prefix sum table
     ull out_buf[p][buckets];
 
+    int begins[p], ends[p];
+    compute_ranges(begins, ends, n, p);
+
     // Generate random 64 bit integers
-    init_rand_par(a, n);
+    init_rand(a, n);
     const double start = omp_get_wtime();
 
     for (int shift = 0; shift < BITS; shift += b) {
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-            int_init_par(histogram[tid], buckets);
-            int_init_par(bs, buckets);
-            int_init_par(pfs, buckets);
+            int_init(histogram[tid], buckets);
+            int_init(bs, buckets);
+            int_init(pfs, buckets);
 
-#pragma omp for nowait
-            for (int i = 0; i < n; i++)
+            for (int i = begins[tid]; i < ends[tid]; i++)
                 histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
         }
 
@@ -49,21 +61,16 @@ double radix_sort_par(int n, int b) {
             bs[i] = s;
         }
 
+        printf("\n");
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
             int *histo_tid = histogram[tid];
 
-#pragma omp for
-            for (int i = 0; i < n; i++) {
+            for (int i = begins[tid]; i < ends[tid]; i++) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
-                // ++histo_tid[t];                         // index in permuted
                 permuted[histo_tid[t]++] = val;
-
-                // when buffer is full
-                // loop through histo tid
-                // dist[p++] = my_buf[t][j]
             }
         }
 
@@ -88,8 +95,3 @@ double radix_sort_par(int n, int b) {
     free(a);
     return end - start;
 }
-
-// for (int i = n - 1; i >= 0; i--) {
-//     int bucket = (a[i] >> shift) & (buckets - 1);
-//     permuted[--bs[bucket]] = a[i];
-// }
