@@ -40,11 +40,11 @@ void ull_init_par(ull *arr, int n) {
     for (int i = 0; i < n; i++)
         arr[i] = 0;
 }
-void int_init_par(int *arr, int n) {
-#pragma omp for
-    for (int i = 0; i < n; i++)
-        arr[i] = 0;
-}
+// void int_init_par(int *arr, int n) {
+// #pragma omp for
+//     for (int i = 0; i < n; i++)
+//         arr[i] = 0;
+// }
 
 // void inclusive_scan_par(int *bs, int n) {
 //     for (int j = 0; j < log2(n); j++) {

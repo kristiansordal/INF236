@@ -36,16 +36,16 @@ double radix_sort_par(int n, int b) {
     compute_ranges(begins, ends, n, p);
 
     // Generate random 64 bit integers
-    init_rand_par(a, n);
+    init_rand(a, n);
     const double start = omp_get_wtime();
 
     for (int shift = 0; shift < BITS; shift += b) {
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-            int_init_par(histogram[tid], buckets);
-            int_init_par(bs, buckets);
-            int_init_par(pfs, buckets);
+            int_init(histogram[tid], buckets);
+            int_init(bs, buckets);
+            int_init(pfs, buckets);
 
             for (int i = begins[tid]; i < ends[tid]; i++)
                 histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
