@@ -42,7 +42,6 @@ double radix_sort_par(int n, int b) {
 
     int histogram[p][buckets]; // Sub-bucket-size table
     int bs[buckets];           // Bucket size table
-    ull out_buf[p][buckets];
 
     int begins[p], ends[p];
     compute_ranges(begins, ends, n, p);
