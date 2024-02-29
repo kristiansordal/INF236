@@ -61,7 +61,6 @@ double radix_sort_par(int n, int b) {
             bs[i] = s;
         }
 
-        printf("\n");
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
