@@ -49,23 +49,25 @@ double radix_sort_par(int n, int b) {
 
             for (int i = begins[tid]; i < ends[tid]; i++)
                 histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
-        }
 
-        int s = 0;
-        for (int i = 0; i < buckets; i++) {
-            for (int j = 0; j < p; j++) {
-                const int t = s + histogram[j][i];
-                histogram[j][i] = s;
-                s = t;
+#pragma omp barrier
+#pragma omp master
+            {
+
+                int s = 0;
+                for (int i = 0; i < buckets; i++) {
+                    for (int j = 0; j < p; j++) {
+                        const int t = s + histogram[j][i];
+                        histogram[j][i] = s;
+                        s = t;
+                    }
+                    bs[i] = s;
+                }
             }
-            bs[i] = s;
-        }
 
-#pragma omp parallel
-        {
-            const int tid = omp_get_thread_num();
+#pragma omp barrier
+
             int *histo_tid = histogram[tid];
-
             for (int i = begins[tid]; i < ends[tid]; i++) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
