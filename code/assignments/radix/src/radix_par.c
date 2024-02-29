@@ -40,8 +40,26 @@ double radix_sort_par(int n, int b) {
         { p = omp_get_num_threads(); }
     }
 
-    int histogram[p][buckets]; // Sub-bucket-size table
-    int bs[buckets];           // Bucket size table
+    // int histogram[p][buckets]; // Sub-bucket-size table
+    int **histogram = (int **)malloc(p * sizeof(int *));
+    if (histogram == NULL) {
+        fprintf(stderr, "Failed to allocate memory - HISTOGRAM\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < p; i++) {
+        histogram[i] = (int *)malloc(buckets * sizeof(int));
+        if (histogram[i] == NULL) {
+            fprintf(stderr, "Failed to allocate memory - HISTOGRAM[%d]\n", i);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    int *bs = (int *)malloc(buckets * sizeof(int)); // Bucket size table
+    if (bs == NULL) {
+        fprintf(stderr, "Failed to allocate memory - BS\n");
+        exit(EXIT_FAILURE);
+    }
 
     int begins[p], ends[p];
     compute_ranges(begins, ends, n, p);
@@ -106,6 +124,11 @@ double radix_sort_par(int n, int b) {
     // printf("HISTOGRAM: %f\n", histo_t);
     // printf("SCAN: %f\n", scan_t);
     // printf("PERMUTE: %f\n", permute_t);
+    for (int i = 0; i < p; i++) {
+        free(histogram[i]);
+    }
+    free(histogram);
+    free(bs);
     free(a);
     free(permuted);
     return end - start;
