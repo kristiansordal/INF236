@@ -47,7 +47,15 @@ double radix_sort_par(int n, int b) {
 
     // int begins[p], ends[p];
     int *begins = (int *)malloc(p * sizeof(int));
+    if (begins == NULL) {
+        printf("Failed to allocate memory - BEGINS\n");
+        exit(EXIT_FAILURE);
+    }
     int *ends = (int *)malloc(p * sizeof(int));
+    if (ends == NULL) {
+        printf("Failed to allocate memory - ENDS\n");
+        exit(EXIT_FAILURE);
+    }
     compute_ranges(begins, ends, n, p);
 
     // Generate random 64 bit integers
