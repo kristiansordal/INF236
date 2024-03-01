@@ -38,7 +38,7 @@ double radix_sort_par(int n, int b) {
 
 #pragma omp parallel
     {
-#pragma omp master
+#pragma omp critical
         { p = omp_get_num_threads(); }
     }
 
