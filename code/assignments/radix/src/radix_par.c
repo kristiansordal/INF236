@@ -5,15 +5,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-void compute_ranges(int *begin, int *end, int n, int p) {
-    begin[0] = 0;
+void compute_ranges(int *begins, int *ends, int n, int p) {
+    begins[0] = 0;
     for (int i = 0; i < p - 1; i++) {
-        end[i] = (i + 1) * n / p;
-        begin[i + 1] = end[i];
-        printf("begin[%d]: %d\n", i + 1, begin[i + 1]);
-        printf("end[%d]: %d\n", i, end[i]);
+        ends[i] = (i + 1) * n / p;
+        begins[i + 1] = ends[i];
+        printf("begin[%d]: %d\n", i + 1, begins[i + 1]);
+        printf("end[%d]: %d\n", i, ends[i]);
     }
-    end[p - 1] = n;
+    ends[p - 1] = n;
 }
 
 // Parallel radix sort
