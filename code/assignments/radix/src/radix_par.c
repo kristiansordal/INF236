@@ -8,8 +8,11 @@
 void compute_ranges(int *begins, int *ends, int n, int p) {
     begins[0] = 0;
     for (int i = 0; i < p - 1; i++) {
-        ends[i] = (i + 1) * n / p;
-        begins[i + 1] = ends[i];
+        printf("i+1: %d\n", i + 1);
+        printf("n/p: %d\n", n / p);
+        printf("(i+1) * (n/p): %d\n", (i + 1) * (n / p));
+        ends[i] = (i + 1) * (n / p);
+        begins[i + 1] = ends[i] + 1;
         printf("begin[%d]: %d\n", i + 1, begins[i + 1]);
         printf("end[%d]: %d\n", i, ends[i]);
     }
