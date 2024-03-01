@@ -34,7 +34,7 @@ double radix_sort_par(int n, int b) {
     }
 
     const int buckets = 1 << b;
-    int p;
+    int p = 0;
 
 #pragma omp parallel
     {
