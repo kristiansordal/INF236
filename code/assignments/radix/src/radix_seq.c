@@ -68,7 +68,7 @@ double radix_sort_seq(int n, int b) {
     }
 
     const int ans = is_sorted(a, n);
-#ifdef SEQ
+#if defined(SEQ) || defined(COMPARE)
     if (ans == 1)
         printf("SEQUENTIAL: Success!\n");
     else

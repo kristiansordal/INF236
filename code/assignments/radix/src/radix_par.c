@@ -38,10 +38,10 @@ double radix_sort_par(int n, int b) {
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-#pragma omp for
+#pragma omp for schedule(static, buckets)
             for (int i = 0; i < p * buckets; i++)
                 histogram[i] = 0;
-#pragma omp for
+#pragma omp for schedule(static, n / p)
             for (int i = 0; i < n; i++) {
                 histogram[tid * buckets + ((a[i] >> shift) & (buckets - 1))]++;
             }
@@ -61,7 +61,7 @@ double radix_sort_par(int n, int b) {
             }
 
 #pragma omp barrier
-#pragma omp for
+#pragma omp for schedule(static, n / p)
             for (int i = 0; i < n; i++) {
                 ull val = a[i];
                 int t = (val >> shift) & (buckets - 1);
