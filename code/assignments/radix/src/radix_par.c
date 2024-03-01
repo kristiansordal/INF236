@@ -42,8 +42,20 @@ double radix_sort_par(int n, int b) {
         { p = omp_get_num_threads(); }
     }
 
-    int histogram[p][buckets]; // Sub-bucket-size table
-    int bs[buckets];           // Bucket size table
+    int **histogram = (int **)malloc(p * sizeof(int *));
+    if (histogram == NULL) {
+        printf("Failed to allocate memory - HISTOGRAM\n");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < p; i++) {
+        histogram[i] = (int *)malloc(buckets * sizeof(int));
+        if (histogram[i] == NULL) {
+            printf("Failed to allocate memory - HISTOGRAM[%d]\n", i);
+            exit(EXIT_FAILURE);
+        }
+    }
+    // int bs[buckets]; // Bucket size table
+    int *bs = (int *)malloc(buckets * sizeof(int));
 
     // int begins[p], ends[p];
     int *begins = (int *)malloc(p * sizeof(int));
@@ -51,6 +63,7 @@ double radix_sort_par(int n, int b) {
         printf("Failed to allocate memory - BEGINS\n");
         exit(EXIT_FAILURE);
     }
+
     int *ends = (int *)malloc(p * sizeof(int));
     if (ends == NULL) {
         printf("Failed to allocate memory - ENDS\n");
