@@ -8,13 +8,8 @@
 void compute_ranges(int *begins, int *ends, int n, int p) {
     begins[0] = 0;
     for (int i = 0; i < p - 1; i++) {
-        // printf("i+1: %d\n", i + 1);
-        // printf("n/p: %d\n", n / p);
-        // printf("(i+1) * (n/p): %d\n", (i + 1) * (n / p));
         ends[i] = (i + 1) * (n / p);
         begins[i + 1] = ends[i];
-        // printf("begin[%d]: %d\n", i + 1, begins[i + 1]);
-        // printf("end[%d]: %d\n", i, ends[i]);
     }
     ends[p - 1] = n;
 }
@@ -22,18 +17,15 @@ void compute_ranges(int *begins, int *ends, int n, int p) {
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
-    if (a == NULL) {
-        fprintf(stderr, "Failed to allocate memory\n");
-        exit(EXIT_FAILURE);
-    } else {
-        printf("Allocated a\n");
-    }
     ull *permuted = (ull *)malloc(n * sizeof(ull));
-    if (permuted == NULL) {
-        fprintf(stderr, "Failed to allocate memory\n");
+
+    if (a == NULL) {
+        fprintf(stderr, "Failed to allocate memory for main array\n");
         exit(EXIT_FAILURE);
-    } else {
-        printf("Allocated permuted\n");
+    }
+    if (permuted == NULL) {
+        fprintf(stderr, "Failed to allocate memory for permutation array\n");
+        exit(EXIT_FAILURE);
     }
 
     const int buckets = 1 << b;
@@ -47,29 +39,32 @@ double radix_sort_par(int n, int b) {
 
     int **histogram = (int **)malloc(p * sizeof(int *));
     if (histogram == NULL) {
-        printf("Failed to allocate memory - HISTOGRAM\n");
+        printf("Failed to allocate memory for histogram\n");
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < p; i++) {
         histogram[i] = (int *)malloc(buckets * sizeof(int));
         if (histogram[i] == NULL) {
-            printf("Failed to allocate memory - HISTOGRAM[%d]\n", i);
+            printf("Failed to allocate memory for histogram[%d]\n", i);
             exit(EXIT_FAILURE);
         }
     }
     // int bs[buckets]; // Bucket size table
     int *bs = (int *)malloc(buckets * sizeof(int));
+    if (bs == NULL) {
+        printf("Failed to allocate memory for bucket size array\n");
+        exit(EXIT_FAILURE);
+    }
 
-    // int begins[p], ends[p];
     int *begins = (int *)malloc(p * sizeof(int));
     if (begins == NULL) {
-        printf("Failed to allocate memory - BEGINS\n");
+        printf("Failed to allocate memory for begins\n");
         exit(EXIT_FAILURE);
     }
 
     int *ends = (int *)malloc(p * sizeof(int));
     if (ends == NULL) {
-        printf("Failed to allocate memory - ENDS\n");
+        printf("Failed to allocate memory for ends\n");
         exit(EXIT_FAILURE);
     }
     compute_ranges(begins, ends, n, p);
