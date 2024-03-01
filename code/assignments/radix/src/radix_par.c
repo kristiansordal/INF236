@@ -7,15 +7,18 @@
 
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
-    ull *a = (ull *)malloc(n * sizeof(ull));
-    ull *permuted = (ull *)malloc(n * sizeof(ull));
+    // After modification
+    ull *a = NULL;
+    ull *permuted = NULL;
+    size_t alignment = 32; // Cache line size for alignment
 
-    if (a == NULL) {
-        fprintf(stderr, "Failed to allocate memory for main array\n");
+    if (posix_memalign((void **)&a, alignment, n * sizeof(ull)) != 0) {
+        fprintf(stderr, "Failed to allocate aligned memory for main array\n");
         exit(EXIT_FAILURE);
     }
-    if (permuted == NULL) {
-        fprintf(stderr, "Failed to allocate memory for permutation array\n");
+
+    if (posix_memalign((void **)&permuted, alignment, n * sizeof(ull)) != 0) {
+        fprintf(stderr, "Failed to allocate aligned memory for permutation array\n");
         exit(EXIT_FAILURE);
     }
 
@@ -41,10 +44,10 @@ double radix_sort_par(int n, int b) {
 #pragma omp for schedule(static, buckets)
             for (int i = 0; i < p * buckets; i++)
                 histogram[i] = 0;
-#pragma omp for schedule(static, n / p)
-            for (int i = 0; i < n; i++) {
+
+#pragma omp for nowait schedule(static, n / p)
+            for (int i = 0; i < n; i++)
                 histogram[tid * buckets + ((a[i] >> shift) & (buckets - 1))]++;
-            }
 
 #pragma omp barrier
 #pragma omp master
@@ -59,7 +62,6 @@ double radix_sort_par(int n, int b) {
                     }
                 }
             }
-
 #pragma omp barrier
 #pragma omp for schedule(static, n / p)
             for (int i = 0; i < n; i++) {
@@ -89,10 +91,6 @@ double radix_sort_par(int n, int b) {
 
     free(a);
     free(permuted);
-    // for (int i = 0; i < p; i++)
-    //     free(histogram[i]);
     free(histogram);
-    // free(begins);
-    // free(ends);
     return end - start;
 }
