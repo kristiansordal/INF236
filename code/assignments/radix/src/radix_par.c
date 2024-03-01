@@ -55,10 +55,10 @@ double radix_sort_par(int n, int b) {
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-            memset(histogram[tid], 0, buckets * sizeof(int));
-            memset(bs, 0, buckets * sizeof(int));
-            // int_init(histogram[tid], buckets);
-            // int_init(bs, buckets);
+            // memset(histogram[tid], 0, buckets * sizeof(int));
+            // memset(bs, 0, buckets * sizeof(int));
+            int_init(histogram[tid], buckets);
+            int_init(bs, buckets);
 
             for (int i = begins[tid]; i < ends[tid]; i++)
                 histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
