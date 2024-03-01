@@ -5,15 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void compute_ranges(int *begins, int *ends, int n, int p) {
-    begins[0] = 0;
-    for (int i = 0; i < p - 1; i++) {
-        ends[i] = (i + 1) * (n / p);
-        begins[i + 1] = ends[i];
-    }
-    ends[p - 1] = n;
-}
-
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
@@ -37,30 +28,7 @@ double radix_sort_par(int n, int b) {
         { p = omp_get_num_threads(); }
     }
 
-    int **histogram = (int **)malloc(p * sizeof(int *));
-    if (histogram == NULL) {
-        printf("Failed to allocate memory for histogram\n");
-        exit(EXIT_FAILURE);
-    }
-    for (int i = 0; i < p; i++) {
-        histogram[i] = (int *)malloc(buckets * sizeof(int));
-        if (histogram[i] == NULL) {
-            printf("Failed to allocate memory for histogram[%d]\n", i);
-            exit(EXIT_FAILURE);
-        }
-    }
-    int *begins = (int *)malloc(p * sizeof(int));
-    if (begins == NULL) {
-        printf("Failed to allocate memory for begins\n");
-        exit(EXIT_FAILURE);
-    }
-
-    int *ends = (int *)malloc(p * sizeof(int));
-    if (ends == NULL) {
-        printf("Failed to allocate memory for ends\n");
-        exit(EXIT_FAILURE);
-    }
-    compute_ranges(begins, ends, n, p);
+    int *histogram = (int *)malloc(p * buckets * sizeof(int));
 
     // Generate random 64 bit integers
     init_rand(a, n);
@@ -70,31 +38,34 @@ double radix_sort_par(int n, int b) {
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-            int_init(histogram[tid], buckets);
-
-            for (int i = begins[tid]; i < ends[tid]; i++)
-                histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
+#pragma omp for
+            for (int i = 0; i < p * buckets; i++)
+                histogram[i] = 0;
+#pragma omp for
+            for (int i = 0; i < n; i++) {
+                histogram[tid * buckets + ((a[i] >> shift) & (buckets - 1))]++;
+            }
 
 #pragma omp barrier
-
 #pragma omp master
             {
                 int s = 0;
                 for (int i = 0; i < buckets; i++) {
                     for (int j = 0; j < p; j++) {
-                        const int t = s + histogram[j][i];
-                        histogram[j][i] = s;
+                        const int idx = j * buckets + i; // Correct index in flattened array
+                        const int t = s + histogram[idx];
+                        histogram[idx] = s;
                         s = t;
                     }
                 }
             }
 
 #pragma omp barrier
-            int *histo_tid = histogram[tid];
-            for (int i = begins[tid]; i < ends[tid]; i++) {
-                ull val = a[i];                         // get value
-                int t = (val >> shift) & (buckets - 1); // get bucket
-                permuted[histo_tid[t]++] = val;
+#pragma omp for
+            for (int i = 0; i < n; i++) {
+                ull val = a[i];
+                int t = (val >> shift) & (buckets - 1);
+                permuted[histogram[tid * buckets + t]++] = val;
             }
         }
 
@@ -118,10 +89,10 @@ double radix_sort_par(int n, int b) {
 
     free(a);
     free(permuted);
-    for (int i = 0; i < p; i++)
-        free(histogram[i]);
+    // for (int i = 0; i < p; i++)
+    //     free(histogram[i]);
     free(histogram);
-    free(begins);
-    free(ends);
+    // free(begins);
+    // free(ends);
     return end - start;
 }
