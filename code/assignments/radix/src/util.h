@@ -4,5 +4,5 @@ typedef unsigned long long ull;
 int is_sorted(ull *arr, int n);
 void ull_init(ull *arr, int n);
 void int_init(int *arr, int n);
-void inclusive_scan(int *arr, const int n);
+void int_init_slice(int *arr, int start, int end);
 void init_rand(ull *arr, int n);

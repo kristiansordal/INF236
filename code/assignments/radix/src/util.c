@@ -18,10 +18,9 @@ void int_init(int *arr, int n) {
         arr[i] = 0;
 }
 
-void inclusive_scan(int *arr, const int n) {
-    for (int i = 1; i < n; i++) {
-        arr[i] += arr[i - 1];
-    }
+void int_init_slice(int *arr, int start, int end) {
+    for (int i = start; i < end; i++)
+        arr[i] = 0;
 }
 
 void init_rand(ull *arr, int n) {
