@@ -8,13 +8,13 @@
 void compute_ranges(int *begins, int *ends, int n, int p) {
     begins[0] = 0;
     for (int i = 0; i < p - 1; i++) {
-        printf("i+1: %d\n", i + 1);
-        printf("n/p: %d\n", n / p);
-        printf("(i+1) * (n/p): %d\n", (i + 1) * (n / p));
+        // printf("i+1: %d\n", i + 1);
+        // printf("n/p: %d\n", n / p);
+        // printf("(i+1) * (n/p): %d\n", (i + 1) * (n / p));
         ends[i] = (i + 1) * (n / p);
-        begins[i + 1] = ends[i] + 1;
-        printf("begin[%d]: %d\n", i + 1, begins[i + 1]);
-        printf("end[%d]: %d\n", i, ends[i]);
+        begins[i + 1] = ends[i];
+        // printf("begin[%d]: %d\n", i + 1, begins[i + 1]);
+        // printf("end[%d]: %d\n", i, ends[i]);
     }
     ends[p - 1] = n;
 }
@@ -82,8 +82,6 @@ double radix_sort_par(int n, int b) {
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-            // memset(histogram[tid], 0, buckets * sizeof(int));
-            // memset(bs, 0, buckets * sizeof(int));
             int_init(histogram[tid], buckets);
             int_init(bs, buckets);
 
@@ -133,10 +131,13 @@ double radix_sort_par(int n, int b) {
     else
         printf("PARALLEL: Failed!\n");
 
-    // printf("HISTOGRAM: %f\n", histo_t);
-    // printf("SCAN: %f\n", scan_t);
-    // printf("PERMUTE: %f\n", permute_t);
     free(a);
     free(permuted);
+    for (int i = 0; i < p; i++)
+        free(histogram[i]);
+    free(histogram);
+    free(bs);
+    free(begins);
+    free(ends);
     return end - start;
 }
