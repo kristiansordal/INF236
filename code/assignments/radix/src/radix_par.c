@@ -49,13 +49,6 @@ double radix_sort_par(int n, int b) {
             exit(EXIT_FAILURE);
         }
     }
-    // int bs[buckets]; // Bucket size table
-    int *bs = (int *)malloc(buckets * sizeof(int));
-    if (bs == NULL) {
-        printf("Failed to allocate memory for bucket size array\n");
-        exit(EXIT_FAILURE);
-    }
-
     int *begins = (int *)malloc(p * sizeof(int));
     if (begins == NULL) {
         printf("Failed to allocate memory for begins\n");
@@ -78,7 +71,6 @@ double radix_sort_par(int n, int b) {
         {
             const int tid = omp_get_thread_num();
             int_init(histogram[tid], buckets);
-            int_init(bs, buckets);
 
             for (int i = begins[tid]; i < ends[tid]; i++)
                 histogram[tid][(a[i] >> shift) & (buckets - 1)]++;
@@ -94,12 +86,10 @@ double radix_sort_par(int n, int b) {
                         histogram[j][i] = s;
                         s = t;
                     }
-                    bs[i] = s;
                 }
             }
 
 #pragma omp barrier
-
             int *histo_tid = histogram[tid];
             for (int i = begins[tid]; i < ends[tid]; i++) {
                 ull val = a[i];                         // get value
@@ -131,7 +121,6 @@ double radix_sort_par(int n, int b) {
     for (int i = 0; i < p; i++)
         free(histogram[i]);
     free(histogram);
-    free(bs);
     free(begins);
     free(ends);
     return end - start;
