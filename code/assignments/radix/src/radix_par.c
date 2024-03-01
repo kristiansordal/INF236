@@ -45,7 +45,9 @@ double radix_sort_par(int n, int b) {
     int histogram[p][buckets]; // Sub-bucket-size table
     int bs[buckets];           // Bucket size table
 
-    int begins[p], ends[p];
+    // int begins[p], ends[p];
+    int *begins = (int *)malloc(p * sizeof(int));
+    int *ends = (int *)malloc(p * sizeof(int));
     compute_ranges(begins, ends, n, p);
 
     // Generate random 64 bit integers
