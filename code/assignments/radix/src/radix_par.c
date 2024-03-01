@@ -82,8 +82,8 @@ double radix_sort_par(int n, int b) {
 
             int *histo_tid = histogram[tid];
             for (int i = begins[tid]; i < ends[tid]; i++) {
-                ull val = a[i];                               // get value
-                const int t = (val >> shift) & (buckets - 1); // get bucket
+                ull val = a[i];                         // get value
+                int t = (val >> shift) & (buckets - 1); // get bucket
                 permuted[histo_tid[t]++] = val;
             }
         }
