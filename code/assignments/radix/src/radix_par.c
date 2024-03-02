@@ -4,8 +4,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define CACHE_LINE_SIZE 128
+#define CACHE_LINE_SIZE 64
+#define BUFFER_SIZE 32
 
+/* Generic aligned memory allocation
+ * Aligns memory to the cache line size in order to optimize memory access patterns.
+ * Cache line size for Brake was found by running 'getconf LEVEL1_DCACHE_LINESIZE' in the terminal.
+ *
+ * @param size_t size: size of the memory block
+ * @param size_t num_elements: number of elements in the memory block
+ * @param size_t element_size: size of each element in the memory block
+ *
+ * @return void *: pointer to the memory block
+ */
 void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_size) {
     void *block = NULL;
     if (posix_memalign(&block, size, num_elements * element_size) != 0) {
@@ -14,8 +25,15 @@ void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_siz
     }
     return block;
 }
+
+/* Compute the ranges for each thread
+ *
+ * @param size_t *begins: array to store the beginning index of each thread
+ * @param size_t *ends: array to store the ending index of each thread
+ * @param int n: size of the array
+ * @param int p: number of threads
+ */
 void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
-    // int avg = n / p;
     begins[0] = 0;
     for (int i = 0; i < p - 1; i++) {
         ends[i] = (i + 1) * (n / p);
@@ -24,10 +42,17 @@ void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
     ends[p - 1] = n;
 }
 
-// Parallel radix sort
+/* Parallel radix sort
+ *
+ * @param int n: size of the array
+ * @param int b: number of bits
+ *
+ * @return double: execution time
+ */
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
     ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    double t = 0, t1 = 0, t2 = 0, t3 = 0;
 
     const int buckets = 1 << b;
     int p = 0;
@@ -35,6 +60,15 @@ double radix_sort_par(int n, int b) {
     {
 #pragma omp master
         { p = omp_get_num_threads(); }
+    }
+
+    ull ***buffers = (ull ***)malloc(p * sizeof(ull **));
+    size_t **buffer_sizes = (size_t **)malloc(p * sizeof(size_t *));
+    for (int i = 0; i < p; i++) {
+        buffers[i] = (ull **)malloc(buckets * sizeof(ull *));
+        buffer_sizes[i] = (size_t *)malloc(buckets * sizeof(size_t));
+        for (int j = 0; j < buckets; j++)
+            buffers[i][j] = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
     }
 
     size_t ends[p];
@@ -50,15 +84,20 @@ double radix_sort_par(int n, int b) {
 
     const double start = omp_get_wtime();
     for (int shift = 0; shift < BITS; shift += b) {
+        t = omp_get_wtime();
+
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-            memset(histogram[tid], 0, buckets * sizeof(size_t));
+            const int start = begins[tid], end = ends[tid];
+            size_t *local_histogram = histogram[tid];
+            memset(local_histogram, 0, buckets * sizeof(size_t));
 
-            for (int i = begins[tid]; i < ends[tid]; ++i)
-                ++histogram[tid][(a[i] >> shift) & (buckets - 1)];
+            for (int i = start; i < end; ++i)
+                ++local_histogram[(a[i] >> shift) & (buckets - 1)];
         }
-
+        t1 += omp_get_wtime() - t;
+        t = omp_get_wtime();
         int s = 0;
         for (int i = 0; i < buckets; ++i) {
             for (int j = 0; j < p; ++j) {
@@ -67,16 +106,23 @@ double radix_sort_par(int n, int b) {
                 s = t;
             }
         }
+        t2 += omp_get_wtime() - t;
 
+        t = omp_get_wtime();
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-            for (int i = begins[tid]; i < ends[tid]; ++i) {
+            const int start = begins[tid], end = ends[tid];
+            size_t *local_histogram = histogram[tid];
+
+            for (int i = start; i < end; ++i) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
                 permuted[histogram[tid][t]++] = val;
             }
         }
+        t3 += omp_get_wtime() - t;
+
         ull *swap = a;
         a = permuted;
         permuted = swap;
@@ -94,6 +140,9 @@ double radix_sort_par(int n, int b) {
     else
         printf("PARALLEL: Failed!\n");
 
+    printf("Histogram time: %.4f\n", t1);
+    printf("Prefix sum time: %.4f\n", t2);
+    printf("Permute time: %.4f\n", t3);
     // Cleanup
     free(a);
     free(permuted);
