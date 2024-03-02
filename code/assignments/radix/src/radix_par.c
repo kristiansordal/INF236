@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #define CACHE_LINE_SIZE 64
-#define BUFFER_SIZE 32
 
 /* Generic aligned memory allocation
  * Aligns memory to the cache line size in order to optimize memory access patterns.
