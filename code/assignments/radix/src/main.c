@@ -35,8 +35,8 @@ int main() {
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 4; j++) {
             printf("===================================\n");
-            printf("Array size     : %d\n", elems[j]);
-            printf("Key size       : %d\n", keys[i]);
+            printf("Array size      : %d\n", elems[j]);
+            printf("Key size        : %d\n", keys[i]);
             seq_time = radix_sort_seq(elems[j], keys[i]);
             par_time = radix_sort_par(elems[j], keys[i]);
             double speedup_ratio = seq_time / par_time;
