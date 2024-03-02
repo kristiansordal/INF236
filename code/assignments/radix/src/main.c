@@ -35,12 +35,14 @@ int main() {
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 4; j++) {
             printf("===================================\n");
-            printf("Key size: %d, Array size: %d\n", keys[i], elems[j]);
+            printf("Key size        : %d, Array size: %d\n", keys[i], elems[j]);
             seq_time = radix_sort_seq(elems[j], keys[i]);
             par_time = radix_sort_par(elems[j], keys[i]);
             double speedup_ratio = seq_time / par_time;
             double speedup_percentage = (speedup_ratio - 1.0) * 100.0;
-            printf("Speedup prcnt: %.3f%%\n", speedup_percentage);
+            printf("Sequential time : %.3f%\n", seq_time);
+            printf("Parallel time   : %.3f%\n", par_time);
+            printf("Speedup prcnt   : %.3f%%\n", speedup_percentage);
         }
     }
 #endif

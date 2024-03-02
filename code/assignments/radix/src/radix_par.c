@@ -5,49 +5,86 @@
 #include <stdlib.h>
 #include <string.h>
 
+void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
+    begins[0] = 0;
+    for (int i = 0; i < p - 1; i++) {
+        ends[i] = (i + 1) * (n / p);
+        begins[i + 1] = ends[i];
+    }
+    ends[p - 1] = n;
+}
+
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
-    // After modification
-    ull *a = NULL;
-    ull *permuted = NULL;
-    size_t alignment = 32; // Cache line size for alignment
+    ull *a = (ull *)malloc(n * sizeof(ull));
+    ull *permuted = (ull *)malloc(n * sizeof(ull));
 
-    if (posix_memalign((void **)&a, alignment, n * sizeof(ull)) != 0) {
-        fprintf(stderr, "Failed to allocate aligned memory for main array\n");
+    if (a == NULL) {
+        fprintf(stderr, "Failed to allocate memory for main array\n");
         exit(EXIT_FAILURE);
     }
-
-    if (posix_memalign((void **)&permuted, alignment, n * sizeof(ull)) != 0) {
-        fprintf(stderr, "Failed to allocate aligned memory for permutation array\n");
+    if (permuted == NULL) {
+        fprintf(stderr, "Failed to allocate memory for permutation array\n");
         exit(EXIT_FAILURE);
     }
 
     const int buckets = 1 << b;
     int p = 0;
-
 #pragma omp parallel
     {
 #pragma omp critical
         { p = omp_get_num_threads(); }
     }
 
-    int *histogram = (int *)malloc(p * buckets * sizeof(int));
+    size_t **histogram = (size_t **)malloc(p * sizeof(size_t *));
+    for (int i = 0; i < p; i++)
+        histogram[i] = (size_t *)malloc(buckets * sizeof(size_t));
 
+    size_t ends[p];
+    size_t begins[p];
+
+    // int **histogram = (int **)malloc(p * sizeof(int *));
+    // if (histogram == NULL) {
+    //     printf("Failed to allocate memory for histogram\n");
+    //     exit(EXIT_FAILURE);
+    // }
+
+    // for (int i = 0; i < p; i++) {
+    //     histogram[i] = (int *)malloc(buckets * sizeof(int));
+    //     if (histogram[i] == NULL) {
+    //         printf("Failed to allocate memory for histogram[%d]\n", i);
+    //         exit(EXIT_FAILURE);
+    //     }
+    // }
+
+    // int *begins = (int *)malloc(p * sizeof(int));
+    // if (begins == NULL) {
+    //     printf("Failed to allocate memory for begins\n");
+    //     exit(EXIT_FAILURE);
+    // }
+
+    // int *ends = (int *)malloc(p * sizeof(int));
+    // if (ends == NULL) {
+    //     printf("Failed to allocate memory for ends\n");
+    //     exit(EXIT_FAILURE);
+    // }
+    //
+    compute_ranges(begins, ends, n, p);
     // Generate random 64 bit integers
     init_rand(a, n);
-    const double start = omp_get_wtime();
 
+    const double start = omp_get_wtime();
     for (int shift = 0; shift < BITS; shift += b) {
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-#pragma omp for schedule(static, buckets)
-            for (int i = 0; i < p * buckets; i++)
-                histogram[i] = 0;
+            const int start = begins[tid];
+            const int end = ends[tid];
+            size_t *histo = histogram[tid];
+            memset(histo, 0, buckets * sizeof(size_t));
 
-#pragma omp for nowait schedule(static, n / p)
-            for (int i = 0; i < n; i++)
-                histogram[tid * buckets + ((a[i] >> shift) & (buckets - 1))]++;
+            for (int i = start; i < end; i++)
+                histo[(a[i] >> shift) & (buckets - 1)]++;
 
 #pragma omp barrier
 #pragma omp master
@@ -55,42 +92,37 @@ double radix_sort_par(int n, int b) {
                 int s = 0;
                 for (int i = 0; i < buckets; i++) {
                     for (int j = 0; j < p; j++) {
-                        const int idx = j * buckets + i; // Correct index in flattened array
-                        const int t = s + histogram[idx];
-                        histogram[idx] = s;
+                        const int t = s + histogram[j][i];
+                        histogram[j][i] = s;
                         s = t;
                     }
                 }
             }
 #pragma omp barrier
-#pragma omp for schedule(static, n / p)
-            for (int i = 0; i < n; i++) {
-                ull val = a[i];
-                int t = (val >> shift) & (buckets - 1);
-                permuted[histogram[tid * buckets + t]++] = val;
+
+            for (int i = start; i < end; i++) {
+                ull val = a[i];                         // get value
+                int t = (val >> shift) & (buckets - 1); // get bucket
+                permuted[histo[t]++] = val;
             }
         }
-
         ull *swap = a;
         a = permuted;
         permuted = swap;
     }
-
     const double end = omp_get_wtime();
-
     if (n <= 20) {
         for (int i = 0; i < n; i++) {
             printf("%llu\n", a[i]);
         }
     }
-
     if (is_sorted(a, n) == 1)
         printf("PARALLEL: Success!\n");
     else
         printf("PARALLEL: Failed!\n");
-
     free(a);
     free(permuted);
-    free(histogram);
+    for (int i = 0; i < p; i++)
+        free(histogram[i]);
     return end - start;
 }
