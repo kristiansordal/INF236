@@ -27,3 +27,9 @@ void init_rand(ull *arr, int n) {
     for (int i = 0; i < n; i++)
         arr[i] = genrand64_int64();
 }
+
+void swap(ull *a, ull *b) {
+    ull *s = a;
+    a = b;
+    b = s;
+}
