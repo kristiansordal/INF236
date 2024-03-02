@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #define CACHE_LINE_SIZE 64
-#define BUFFER_SIZE 32
 
 /* Generic aligned memory allocation
  * Aligns memory to the cache line size in order to optimize memory access patterns.
@@ -52,23 +51,13 @@ void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
 double radix_sort_par(int n, int b) {
     ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
     ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
-    double t = 0, t1 = 0, t2 = 0, t3 = 0;
-
     const int buckets = 1 << b;
     int p = 0;
+
 #pragma omp parallel
     {
 #pragma omp master
         { p = omp_get_num_threads(); }
-    }
-
-    ull ***buffers = (ull ***)malloc(p * sizeof(ull **));
-    size_t **buffer_sizes = (size_t **)malloc(p * sizeof(size_t *));
-    for (int i = 0; i < p; i++) {
-        buffers[i] = (ull **)malloc(buckets * sizeof(ull *));
-        buffer_sizes[i] = (size_t *)malloc(buckets * sizeof(size_t));
-        for (int j = 0; j < buckets; j++)
-            buffers[i][j] = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
     }
 
     size_t ends[p];
@@ -82,9 +71,8 @@ double radix_sort_par(int n, int b) {
     // Generate random 64 bit integers
     init_rand(a, n);
 
-    const double start = omp_get_wtime();
+    const double ts = omp_get_wtime();
     for (int shift = 0; shift < BITS; shift += b) {
-        t = omp_get_wtime();
 
 #pragma omp parallel
         {
@@ -96,8 +84,6 @@ double radix_sort_par(int n, int b) {
             for (int i = start; i < end; ++i)
                 ++local_histogram[(a[i] >> shift) & (buckets - 1)];
         }
-        t1 += omp_get_wtime() - t;
-        t = omp_get_wtime();
         int s = 0;
         for (int i = 0; i < buckets; ++i) {
             for (int j = 0; j < p; ++j) {
@@ -106,9 +92,6 @@ double radix_sort_par(int n, int b) {
                 s = t;
             }
         }
-        t2 += omp_get_wtime() - t;
-
-        t = omp_get_wtime();
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
@@ -121,14 +104,13 @@ double radix_sort_par(int n, int b) {
                 permuted[histogram[tid][t]++] = val;
             }
         }
-        t3 += omp_get_wtime() - t;
 
         ull *swap = a;
         a = permuted;
         permuted = swap;
     }
 
-    const double end = omp_get_wtime();
+    const double te = omp_get_wtime();
     if (n <= 20) {
         for (int i = 0; i < n; i++) {
             printf("%llu\n", a[i]);
@@ -140,10 +122,6 @@ double radix_sort_par(int n, int b) {
     else
         printf("PARALLEL: Failed!\n");
 
-    printf("Histogram time: %.4f\n", t1);
-    printf("Prefix sum time: %.4f\n", t2);
-    printf("Permute time: %.4f\n", t3);
-    // Cleanup
     free(a);
     free(permuted);
     for (int i = 0; i < p; ++i)
@@ -151,5 +129,5 @@ double radix_sort_par(int n, int b) {
     free(histogram);
 
     // Return exectuion time;
-    return end - start;
+    return te - ts;
 }
