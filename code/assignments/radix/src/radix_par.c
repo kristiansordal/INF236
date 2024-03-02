@@ -4,8 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define BUFFER_SIZE = 32
+#define CACHE_LINE_SIZE 64
 
+void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_size) {
+    void *block = NULL;
+    if (posix_memalign(&block, size, num_elements * element_size) != 0) {
+        fprintf(stderr, "Failed to allocate memory\n");
+        exit(EXIT_FAILURE);
+    }
+    return block;
+}
 void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
     // int avg = n / p;
     begins[0] = 0;
@@ -18,41 +26,25 @@ void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
 
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
-    // ull *a = (ull *)malloc(n * sizeof(ull));
-    // ull *permuted = (ull *)malloc(n * sizeof(ull));
-    ull *a, *permuted;
-
-    if (posix_memalign((void **)&a, 64, n * sizeof(ull)) != 0) {
-        fprintf(stderr, "Failed to allocate memory for main array\n");
-        exit(EXIT_FAILURE);
-    }
-    if (posix_memalign((void **)&permuted, 64, n * sizeof(ull)) != 0) {
-        fprintf(stderr, "Failed to allocate memory for permutation array\n");
-        exit(EXIT_FAILURE);
-    }
+    ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
 
     const int buckets = 1 << b;
     int p = 0;
 #pragma omp parallel
     {
-#pragma omp critical
+#pragma omp master
         { p = omp_get_num_threads(); }
     }
 
-    size_t **histogram = (size_t **)malloc(p * sizeof(size_t *));
-    for (int i = 0; i < p; i++) {
-        if (posix_memalign((void **)&histogram[i], 64, buckets * sizeof(size_t)) != 0) {
-            fprintf(stderr, "Failed to allocate memory for histogram\n");
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    // histogram[i] = (size_t *)malloc(buckets * sizeof(size_t));
-
     size_t ends[p];
     size_t begins[p];
-
     compute_ranges(begins, ends, n, p);
+
+    size_t **histogram = (size_t **)malloc(p * sizeof(size_t *));
+    for (int i = 0; i < p; i++)
+        histogram[i] = (size_t *)aligned_alloc_generic(CACHE_LINE_SIZE, buckets, sizeof(size_t));
+
     // Generate random 64 bit integers
     init_rand(a, n);
 
