@@ -1,0 +1,49 @@
+\documentclass{article}
+\input{preamble.tex}
+
+\title{INF236 - Assignment 1}
+
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+    \section{Problem 1}
+
+    The implementation of sequential radix sort has been implemented in the following manner.
+
+    \begin{algorithm}[H]
+        \caption{Sequential Radix Sort}
+        \SetAlgoVlined
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+        \Input{\( n \) - The length of the array, \( b \) - Key size (how many bits to interpret as one digit)}
+        \Output{\( t \) - the time taken to sort the array\newline}
+         \( a \) \( \leftarrow \) array of random unsigned 64-bit integers of size \( n \)
+
+        \( tmp \) \( \leftarrow \) partially sorted array of size \( n \), initialized with 0.
+
+        \( buckets \) \( \gets 2^{b} \)
+
+
+        \For{\( i \gets 0 \text{\textbf{ to }} 64 \text{\textbf{ by }} b\) }{
+            \( bucketSize \) \( \leftarrow \) array of size \textit{buckets}, initialized with 0.
+
+            \For{\( i \gets 0 \text{\textbf{ to }} n - 1\)}{
+                \( bucketSize \)[\( (a[i] \gg shift) \& (buckets-1) \)]++
+            }
+
+            transform \( bucketSize \) into prefix sum array
+        }
+        \For{\( i \gets 0 \text{\textbf{ to }} n\)}{
+            \( val \) \( \leftarrow \) a[i]
+
+            \( bucketIndex \) \( \leftarrow (val \gg shift) \& (buckets-1) \)
+
+            \( tmp \)[\(bucketSize[bucketIndex]\)] \( \leftarrow \) val
+        }
+        \( a  \leftarrow tmp\) 
+    \end{algorithm} 
+
+    So in order to compute an equation \( T\left( n,b \right) \) which yields the time the sequential program takes to run, we need to consider the amount of FLOPS the sequential program uses, and the clock speed of the CPU on Brake.
+\end{document}
