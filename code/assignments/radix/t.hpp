@@ -323,6 +323,11 @@ void ParallelRadixSortInternal<PlainType, UnsignedType, Encoder, ValueManager, B
                 }
                 value_manager_->Flush(my_id, t, kOutBufferSize, my_histo[t]);
 
+                // inline void Flush(int thread, size_t bucket, size_t num, size_t to_pos) {
+                //     for (size_t i = 0; i < num; ++i) {
+                //         dst_[to_pos++] = out_buf_[thread][bucket][i];
+                //     }
+                // }
                 my_histo[t] += kOutBufferSize;
                 my_buf_n[t] = 0;
             }

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define CACHE_LINE_SIZE 64
+#define CACHE_LINE_SIZE 128
 
 void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_size) {
     void *block = NULL;
@@ -53,13 +53,10 @@ double radix_sort_par(int n, int b) {
 #pragma omp parallel
         {
             const int tid = omp_get_thread_num();
-            const int start = begins[tid];
-            const int end = ends[tid];
-            size_t *histo = histogram[tid];
-            memset(histo, 0, buckets * sizeof(size_t));
+            memset(histogram[tid], 0, buckets * sizeof(size_t));
 
-            for (int i = start; i < end; ++i)
-                ++histo[(a[i] >> shift) & (buckets - 1)];
+            for (int i = begins[tid]; i < ends[tid]; ++i)
+                ++histogram[tid][(a[i] >> shift) & (buckets - 1)];
         }
 
         int s = 0;
@@ -73,16 +70,11 @@ double radix_sort_par(int n, int b) {
 
 #pragma omp parallel
         {
-
             const int tid = omp_get_thread_num();
-            const int start = begins[tid];
-            const int end = ends[tid];
-            size_t *histo = histogram[tid];
-
-            for (int i = start; i < end; ++i) {
+            for (int i = begins[tid]; i < ends[tid]; ++i) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
-                permuted[histo[t]++] = val;
+                permuted[histogram[tid][t]++] = val;
             }
         }
         ull *swap = a;
@@ -96,14 +88,19 @@ double radix_sort_par(int n, int b) {
             printf("%llu\n", a[i]);
         }
     }
+
     if (is_sorted(a, n) == 1)
         printf("PARALLEL: Success!\n");
     else
         printf("PARALLEL: Failed!\n");
+
+    // Cleanup
     free(a);
     free(permuted);
     for (int i = 0; i < p; ++i)
         free(histogram[i]);
     free(histogram);
+
+    // Return exectuion time;
     return end - start;
 }
