@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define BUFFER_SIZE = 32
 
 void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
+    // int avg = n / p;
     begins[0] = 0;
     for (int i = 0; i < p - 1; i++) {
         ends[i] = (i + 1) * (n / p);
@@ -16,14 +18,15 @@ void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
 
 // Parallel radix sort
 double radix_sort_par(int n, int b) {
-    ull *a = (ull *)malloc(n * sizeof(ull));
-    ull *permuted = (ull *)malloc(n * sizeof(ull));
+    // ull *a = (ull *)malloc(n * sizeof(ull));
+    // ull *permuted = (ull *)malloc(n * sizeof(ull));
+    ull *a, *permuted;
 
-    if (a == NULL) {
+    if (posix_memalign((void **)&a, 64, n * sizeof(ull)) != 0) {
         fprintf(stderr, "Failed to allocate memory for main array\n");
         exit(EXIT_FAILURE);
     }
-    if (permuted == NULL) {
+    if (posix_memalign((void **)&permuted, 64, n * sizeof(ull)) != 0) {
         fprintf(stderr, "Failed to allocate memory for permutation array\n");
         exit(EXIT_FAILURE);
     }
@@ -37,8 +40,14 @@ double radix_sort_par(int n, int b) {
     }
 
     size_t **histogram = (size_t **)malloc(p * sizeof(size_t *));
-    for (int i = 0; i < p; i++)
-        histogram[i] = (size_t *)malloc(buckets * sizeof(size_t));
+    for (int i = 0; i < p; i++) {
+        if (posix_memalign((void **)&histogram[i], 64, buckets * sizeof(size_t)) != 0) {
+            fprintf(stderr, "Failed to allocate memory for histogram\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // histogram[i] = (size_t *)malloc(buckets * sizeof(size_t));
 
     size_t ends[p];
     size_t begins[p];
@@ -69,6 +78,7 @@ double radix_sort_par(int n, int b) {
                 s = t;
             }
         }
+
 #pragma omp parallel
         {
 
@@ -76,6 +86,7 @@ double radix_sort_par(int n, int b) {
             const int start = begins[tid];
             const int end = ends[tid];
             size_t *histo = histogram[tid];
+
             for (int i = start; i < end; ++i) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
