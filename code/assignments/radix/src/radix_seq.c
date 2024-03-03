@@ -29,9 +29,12 @@ double radix_sort_seq(int n, int b) {
     // Generate random 64 bit integers
     init_rand(a, n);
 
-    long double t, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0;
+    double t, t1 = 0, t2 = 0, t3 = 0;
     const double start = omp_get_wtime();
+    double bucket_shift_bench[64 / b];
+    double permutation_bench[64 / b];
 
+    int iters = 0;
     for (int shift = 0; shift < BITS; shift += b) { // O(64/b)
         memset(bs, 0, buckets * sizeof(int));       // O(2^b)
 
@@ -40,7 +43,7 @@ double radix_sort_seq(int n, int b) {
         for (int i = 0; i < n; i++)                // O(n)
             bs[(a[i] >> shift) & (buckets - 1)]++; // O(1)
         t1 += omp_get_wtime() - t;
-        printf("Average time for 10000 bucket shifts: %Lf\n", (t1 / ((double)n / 10000)));
+        bucket_shift_bench[iters] = t1;
 
         // Prefix sum
         t = omp_get_wtime();
@@ -61,7 +64,7 @@ double radix_sort_seq(int n, int b) {
             permuted[bs[t]++] = val;                // O(1)
         }
         t3 += omp_get_wtime() - t;
-        printf("Average time for 10000 bucket permuted: %Lf\n", (t3 / ((double)n / 10000)));
+        permutation_bench[iters++] = t3;
 
         swap(&a, &permuted);
     }
@@ -81,16 +84,24 @@ double radix_sort_seq(int n, int b) {
     else
         printf("SEQUENTIAL: Failure!\n");
 #endif
+    double bucket_shift_avg, permutation_avg;
 
-    printf("Time taken for memset: %Lf\n", t4);
-    // printf("Time taken for bucket sizes: %Lf\n", t1);
-    printf("Average time for 10000 bucket shifts: %Lf\n", (t1 / ((double)n / 10000)));
-    // printf("Average time for  pfs : %Lf\n", (t2 / ((double)buckets / 100)));
-    // printf("Avergage time for bucket 100 shift: %Lf\n", t1 / n);
-    // printf("Average time for pfs 64 operation: %Lf\n", t2 / buckets);
-    // printf("Time taken for prefix sum: %Lf\n", t2);
-    // printf("Time taken for sorting: %Lf\n", t3);
-    // printf("Avergage time for sorting: %Lf\n", t3 / n);
+    for (int i = 0; i < iters; i++) {
+        bucket_shift_avg += bucket_shift_bench[i];
+        permutation_avg += permutation_bench[i];
+    }
+
+    bucket_shift_avg /= iters;
+    permutation_avg /= iters;
+
+    printf("Elements: %d\n", n);
+    printf("Bucket shift avg: %f\n", bucket_shift_avg);
+    printf("Permutation avg: %f\n", permutation_avg);
+    printf("\n");
+
+    printf("Time taken for bucket sizes: %f\n", t1);
+    printf("Time taken for prefix sum: %f\n", t2);
+    printf("Time taken for sorting: %f\n", t3);
     free(a);
     free(permuted);
     free(bs);
