@@ -82,11 +82,14 @@ double radix_sort_seq(int n, int b) {
 
     printf("Time taken for memset: %Lf\n", t4);
     // printf("Time taken for bucket sizes: %Lf\n", t1);
-    printf("Avergage time for bucket shift: %Lf\n", t1 / n);
-    printf("Average time for pfs operation: %Lf\n", t2 / buckets);
+    printf("Average time for 100 bucket shifts: %Lf\n", (t1 / ((double)n / 100)));
+    printf("Average time for 100 bucket permuted: %Lf\n", (t3 / ((double)n / 100)));
+    // printf("Average time for  pfs : %Lf\n", (t2 / ((double)buckets / 100)));
+    // printf("Avergage time for bucket 100 shift: %Lf\n", t1 / n);
+    // printf("Average time for pfs 64 operation: %Lf\n", t2 / buckets);
     // printf("Time taken for prefix sum: %Lf\n", t2);
     // printf("Time taken for sorting: %Lf\n", t3);
-    printf("Avergage time for sorting: %Lf\n", t3 / n);
+    // printf("Avergage time for sorting: %Lf\n", t3 / n);
     free(a);
     free(permuted);
     free(bs);
