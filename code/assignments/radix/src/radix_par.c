@@ -105,9 +105,7 @@ double radix_sort_par(int n, int b) {
             }
         }
 
-        ull *swap = a;
-        a = permuted;
-        permuted = swap;
+        swap(&a, &permuted);
     }
 
     const double te = omp_get_wtime();

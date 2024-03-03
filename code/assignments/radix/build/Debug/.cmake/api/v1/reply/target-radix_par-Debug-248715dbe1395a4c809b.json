@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "compare"
+			"path" : "radix_par"
 		}
 	],
 	"backtrace" : 1,
@@ -30,7 +30,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 35,
+				"line" : 25,
 				"parent" : 0
 			},
 			{
@@ -64,7 +64,7 @@
 			{
 				"command" : 5,
 				"file" : 0,
-				"line" : 58,
+				"line" : 56,
 				"parent" : 0
 			}
 		]
@@ -75,7 +75,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -Ofast -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1"
+					"fragment" : " -O3 -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1"
 				},
 				{
 					"backtrace" : 6,
@@ -90,7 +90,7 @@
 			[
 				{
 					"backtrace" : 7,
-					"define" : "COMPARE"
+					"define" : "PAR"
 				}
 			],
 			"includes" : 
@@ -112,21 +112,20 @@
 			},
 			"sourceIndexes" : 
 			[
+				3,
 				4,
 				5,
-				6,
-				7,
-				8
+				6
 			]
 		}
 	],
-	"id" : "compare::@6890427a1f51a3e7e1df",
+	"id" : "radix_par::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-Ofast -g",
+				"fragment" : "-O3 -g",
 				"role" : "flags"
 			},
 			{
@@ -146,8 +145,8 @@
 		],
 		"language" : "C"
 	},
-	"name" : "compare",
-	"nameOnDisk" : "compare",
+	"name" : "radix_par",
+	"nameOnDisk" : "radix_par",
 	"paths" : 
 	{
 		"build" : ".",
@@ -161,29 +160,22 @@
 			[
 				0,
 				1,
-				2,
-				3
+				2
 			]
 		},
 		{
 			"name" : "Source Files",
 			"sourceIndexes" : 
 			[
+				3,
 				4,
 				5,
-				6,
-				7,
-				8
+				6
 			]
 		}
 	],
 	"sources" : 
 	[
-		{
-			"backtrace" : 1,
-			"path" : "src/radix_seq.h",
-			"sourceGroupIndex" : 0
-		},
 		{
 			"backtrace" : 1,
 			"path" : "src/radix_par.h",
@@ -203,12 +195,6 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/mt19937-64.c",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "src/radix_seq.c",
 			"sourceGroupIndex" : 1
 		},
 		{

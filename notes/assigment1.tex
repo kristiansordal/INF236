@@ -12,38 +12,84 @@
 
     The implementation of sequential radix sort has been implemented in the following manner.
 
-    \begin{algorithm}[H]
-        \caption{Sequential Radix Sort}
-        \SetAlgoVlined
-        \SetKwInOut{Input}{Input}
-        \SetKwInOut{Output}{Output}
-        \Input{\( n \) - The length of the array, \( b \) - Key size (how many bits to interpret as one digit)}
-        \Output{\( t \) - the time taken to sort the array\newline}
-         \( a \) \( \leftarrow \) array of random unsigned 64-bit integers of size \( n \)
+\begin{algorithm}[H]
+    \caption{Sequential Radix Sort}
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+    \SetAlgoVlined
+    \SetKwFor{For}{for}{do}{}
+    \SetKw{KwTo}{to}
+    \SetKw{KwBy}{by}
+    
+    \Input{\(n\) - The length of the array, \(b\) - Key size (how many bits to interpret as one digit)}
+    \Output{\(t\) - the time taken to sort the array}
+    \(a \leftarrow\) array of random unsigned 64-bit integers of size \(n\)
 
-        \( tmp \) \( \leftarrow \) partially sorted array of size \( n \), initialized with 0.
+    \(tmp \leftarrow\) partially sorted array of size \(n\), initialized with 0
 
-        \( buckets \) \( \gets 2^{b} \)
+    \(buckets \gets 2^{b}\)
+    
+    \For{\(shift \gets 0\) \KwTo \(64\) \KwBy \(b\)}{
+        \(bucketSize \leftarrow\) array of size \(buckets\), initialized with 0
+        
+        \For{\(i \gets 0\) \KwTo \(n - 1\)}{
+            \(bucket \gets (a[i] \gg shift) \& (buckets - 1)\)
 
-
-        \For{\( i \gets 0 \text{\textbf{ to }} 64 \text{\textbf{ by }} b\) }{
-            \( bucketSize \) \( \leftarrow \) array of size \textit{buckets}, initialized with 0.
-
-            \For{\( i \gets 0 \text{\textbf{ to }} n - 1\)}{
-                \( bucketSize \)[\( (a[i] \gg shift) \& (buckets-1) \)]++
-            }
-
-            transform \( bucketSize \) into prefix sum array
+            \(bucketSize[bucket]\)++
         }
-        \For{\( i \gets 0 \text{\textbf{ to }} n\)}{
-            \( val \) \( \leftarrow \) a[i]
+        
+        % verify this is correct
+        \(sum \gets 0\)\;
 
-            \( bucketIndex \) \( \leftarrow (val \gg shift) \& (buckets-1) \)
+        \( bucketSize[0] \gets 0 \)
 
-            \( tmp \)[\(bucketSize[bucketIndex]\)] \( \leftarrow \) val
+        \For{\(i \gets 1\) \KwTo \(buckets - 1\)}{
+            % \(sum \gets sum + bucketSize[i]\)
+            \( t \gets sum  + bs[i] \)
+
+            \(bucketSize[i] \gets t\)
+
+            \( sum \gets t \)
         }
-        \( a  \leftarrow tmp\) 
-    \end{algorithm} 
+        
+        \For{\(i \gets 0\) \KwTo \(n-1\)}{
+            \(bucket \gets (a[i] \gg shift) \& (buckets - 1)\)
 
-    So in order to compute an equation \( T\left( n,b \right) \) which yields the time the sequential program takes to run, we need to consider the amount of FLOPS the sequential program uses, and the clock speed of the CPU on Brake.
+            \(tmp[bucketSize[bucket]\)\(] \gets a[i]\)
+
+            \( bucketSize[bucket] \)++
+        }
+        
+
+        % for (int i = 0; i < n; i++) {
+        %     ull val = a[i];                         // get value
+        %     int t = (val >> shift) & (buckets - 1); // get bucket
+        %     permuted[bs[t]++] = val;
+        % }
+        \(a \gets tmp\)\;
+    }
+\end{algorithm}
+
+Firstly, we allocate memory for \( a \) and \( tmp \). \( a \) represents the input array, and will also contain the final sorted array, whereas \( tmp \) will store the partially sorted array during execution. \( a \) will be swapped with \( tmp \) every time the outermost for loop is done executing one iteration.
+\medskip
+
+The outermost for loop iterates from 0 to 64, with a step size of \( b \), where \( b \) represents how many bits should be interpreted as one digit. It iterates up to 64 bits, as this is the size of an \texttt{unsigned long long} type in \texttt{c}.
+\medskip
+
+Each time this for loop iterates, it goes through 3 stages.
+
+\paragraph{Stage 1 - Counting how many elements for each bucket}
+In this stage, we iterate through the array containing our values. For each element \( x \) stored in \( a[i] \), we want to figure out in which bucket this element should be placed into. Given \( s \), representing the power we should raise \( x \) to, and \( k \), representing how many buckets there are, we can obtain \( b \), representing the bucket \( x \) belongs in. This can be done with the following formula
+
+\[ b = \left\lfloor\frac{x}{2^{s}}\right\rfloor \wedge k-1 \]
+
+Which can be implemented in \texttt{c} as \(bucket \leftarrow (a[i] \gg shift) \& (buckets - 1)\).
+
+\paragraph{Stage 2 - Prefix sum}
+In this stage, we need to perform a prefix sum operation on the \( bucketSize \) array. This is done in order to ensure we start placing the elements in the buckets at the correct index in the \( tmp \) array in the next stage.
+
+\paragraph{Stage 3 - Creating the partially sorted array}
+In this stage, we need to place our elements at the correct index in the \( tmp \) array. This is done by again, computing which bucket element \( a[i] \) belongs to. After we have found the bucket, we place this element in the \( tmp \) array, at index \( bucketSize[bucket] \). Because we performed the prefix sum over the \( bucketSize \) array in the previous stage, this variable contains the index at which the elements belonging to this bucket should be placed in the \( tmp \) array. After we have placed element \( a[i] \), we increment this index pointer, such that we avoid overwriting anything.
+
+    % So in order to compute an equation \( T\left( n,b \right) \) which yields the time the sequential program takes to run, we need to consider the amount of FLOPS the sequential program uses, and the clock speed of the CPU on Brake.
 \end{document}
