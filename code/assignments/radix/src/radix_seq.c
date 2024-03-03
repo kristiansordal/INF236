@@ -40,6 +40,7 @@ double radix_sort_seq(int n, int b) {
         for (int i = 0; i < n; i++)                // O(n)
             bs[(a[i] >> shift) & (buckets - 1)]++; // O(1)
         t1 += omp_get_wtime() - t;
+        printf("Average time for 10000 bucket shifts: %Lf\n", (t1 / ((double)n / 10000)));
 
         // Prefix sum
         t = omp_get_wtime();
@@ -60,6 +61,7 @@ double radix_sort_seq(int n, int b) {
             permuted[bs[t]++] = val;                // O(1)
         }
         t3 += omp_get_wtime() - t;
+        printf("Average time for 10000 bucket permuted: %Lf\n", (t3 / ((double)n / 10000)));
 
         swap(&a, &permuted);
     }
@@ -83,7 +85,6 @@ double radix_sort_seq(int n, int b) {
     printf("Time taken for memset: %Lf\n", t4);
     // printf("Time taken for bucket sizes: %Lf\n", t1);
     printf("Average time for 10000 bucket shifts: %Lf\n", (t1 / ((double)n / 10000)));
-    printf("Average time for 10000 bucket permuted: %Lf\n", (t3 / ((double)n / 10000)));
     // printf("Average time for  pfs : %Lf\n", (t2 / ((double)buckets / 100)));
     // printf("Avergage time for bucket 100 shift: %Lf\n", t1 / n);
     // printf("Average time for pfs 64 operation: %Lf\n", t2 / buckets);
