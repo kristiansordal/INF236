@@ -3,3 +3,7 @@
 \contentsline {paragraph}{Stage 2 - Prefix sum}{3}{}%
 \contentsline {paragraph}{Stage 3 - Creating the partially sorted array}{3}{}%
 \contentsline {section}{Problem 2}{4}{}%
+\contentsline {paragraph}{Computing an expression for execution time}{5}{}%
+\contentsline {section}{Problem 3}{6}{}%
+\contentsline {section}{Problem 4}{6}{}%
+\contentsline {subsection}{Strong Scaling}{6}{}%
