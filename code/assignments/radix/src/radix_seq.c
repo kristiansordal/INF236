@@ -3,6 +3,7 @@
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 double radix_sort_seq(int n, int b) {
     ull *a = (ull *)malloc(n * sizeof(ull));
@@ -31,7 +32,7 @@ double radix_sort_seq(int n, int b) {
     const double start = omp_get_wtime();
 
     for (int shift = 0; shift < BITS; shift += b) {
-        int_init(bs, buckets);
+        memset(bs, 0, buckets * sizeof(int));
 
         // Get bucket sizes
         for (int i = 0; i < n; i++)
@@ -53,10 +54,7 @@ double radix_sort_seq(int n, int b) {
             permuted[bs[t]++] = val;
         }
 
-        // Swap pointers
-        ull *swap = a;
-        a = permuted;
-        permuted = swap;
+        swap(&a, &permuted);
     }
 
     const double end = omp_get_wtime();
