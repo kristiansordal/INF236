@@ -1,7 +1,13 @@
 \documentclass{article}
 \input{preamble.tex}
 \usepackage{pgfplots}
+\usepackage{pgfplotstable}
 \pgfplotsset{compat=1.17}
+    % \pgfplotsset{
+    %     compat=1.9,
+    %     compat/bar nodes=1.8,
+    % }
+
 
 
 \title{INF236 - Assignment 1}
@@ -100,34 +106,94 @@ In this stage, we need to place our elements at the correct index in the \( tmp 
 \section*{Problem 2}
 \addcontentsline{toc}{section}{Problem 2}
 
-Through trial and error, the maximum elements that could be sorted in 10 seconds, was 52 million, with a value of \( b = 4 \). Varying \( b \) by powers of 2, we obtain the following execution times for sorting 52 million elements
+Through trial and error, the maximum elements that could be sorted in 10 seconds, was 60 million, with a value of \( b = 4 \). Varying \( b \) by powers of 2, we obtain the following execution times for sorting 60 million elements
 
 
+\pgfplotstableread{
+Label Count Prefix Sort
+1 12.115614 0.000003 20.418564
+2 6.105506 0.000002 10.341313
+4 3.032052 0.000001 6.576575
+8 1.765580 0.000003 12.249412
+16 1.951417 0.000356 16.018882
+}\testdata
 
 \begin{figure}[H]
     \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
-    ybar,
+    ybar stacked,
     ymin=0,
     ymax=35,
     ylabel={Time [s]},
-    xmode=log, % Set the x-axis to logarithmic mode
-    log basis x={2}, % Base for the logarithm (optional, default is 10)
-    xtick={1,2,4,8,16}, % Specify tick positions
-    log ticks with fixed point, % Display ticks as fixed point numbers
+    xtick=data,
+    xticklabels from table={\testdata}{Label},
+    xticklabel style={text width=2cm,align=center},
     xlabel={\( b \)-value},
+    legend pos=outer north east,
+    legend style={cells={anchor=west},fill=GBBackground,draw=GBForeground, legend pos=outer north east},
+    % reverse legend=true, % set to false to get correct display, but I'd like to have this true
     bar width=20pt,
-    xticklabel=\pgfmathparse{2^\tick}\pgfmathprintnumber{\pgfmathresult}, % Convert log ticks back to normal numbers
-    nodes near coords,
 ]
 % Add the data, ensuring the x values are in the log scale (if necessary)
-\addplot coordinates {(1,30.116869) (2,15.729472) (4,10.024868) (8,10.947608) (16,10.204863)};
+\addplot [fill=GBGreen] table [y=Count, meta=Label, x expr=\coordindex] {\testdata};
+\addlegendentry{Count}
+\addplot [fill=GBRed!60] table [y=Prefix, meta=Label, x expr=\coordindex] {\testdata};
+\addlegendentry{Prefix}
+\addplot [fill=GBBlue, point meta=y] table [y=Sort, meta=Label, x expr=\coordindex] {\testdata};
+\addlegendentry{Sort}
+
+\addplot [
+ybar, % this makes it show the total for some reason
+nodes near coords,
+nodes near coords style={%
+    anchor=south,%
+},
+] table [ y expr=0.00001, x expr=\coordindex] {\testdata};
 \end{axis}
 \end{tikzpicture}
     \end{center}
-    \caption{Sorting 52 million elements with varying \( b \) values}
+    \caption{Sorting 60 million elements with varying \( b \) values. \textbf{NOTE:} Prefix value is so low its not visible.}
 \end{figure}
 
-    % So in order to compute an equation \( T\left( n,b \right) \) which yields the time the sequential program takes to run, we need to consider the amount of FLOPS the sequential program uses, and the clock speed of the CPU on Brake.
+As we can see, using a value \( b \) value of \( 4 \), yields the best running time. When we use \( b = 4 \), we have the option to place elements into \( 2^{4} = 16  \) different buckets. We also only have to perform the 3 stages described earlier \( \frac{64}{4} = 16 \) times.
+\medskip
+
+
+Both the \textit{Counting} and \textit{Sorting} stage have a time complexity of \( \mathcal{O}\left(n\right) \), and the \textit{Prefix Sum} stage only has a time complexity of \( \mathcal{O}\left(k\right) \), with \( k \) being the number of buckets. Because \( k \ll n \) when \( n \) is sufficiently large, we don't see the impact of this stage in the plot, as it happens almost instantly.
+\medskip
+
+But what explains the difference in execution time for the \textit{Counting} and \textit{Sorting} stage? To figure out why, we need to take a look at their implementation.
+
+\begin{figure}[h]
+    \centering
+
+    \begin{minipage}{0.47\textwidth}
+        \begin{lstlisting}
+for (int i = 0; i < n; i++) {
+    ull val = a[i];
+    int t = (val >> shift) & (buckets - 1);
+    bucketSize[t]++;
+}
+        \end{lstlisting}
+        \caption{Counting stage}
+    \end{minipage}\hfill
+    \begin{minipage}{0.47\textwidth}
+        \begin{lstlisting}
+for (int i = 0; i < n; i++) {
+    ull val = a[i];                         
+    int t = (val >> shift) & (buckets - 1);
+    permuted[bs[t]++] = val;
+}
+        \end{lstlisting}
+        \caption{Sorting stage}
+    \end{minipage}
+    \end{figure}
+
+    As we can see, the implementation of the two stages are similar, but with some key differences. In the coutning stage, we fill the \textit{bucketSize} to count how many elements are in each bucket. This array is of size \( 2^{b} \), and is at most of size \( 2^{16} = 65536 \). If we run the command \texttt{lscpu}, we cann see that the \texttt{L1d cachce} size is 32K, which means that the L1 cache can store up to 32KB, which is equivalent to 8192 integers, given that an integer is 4 bytes. This means that for all values of \( b < 16\), the entire bucket array fits into this cache, allowing us to read and write to this array very fast. The size of the bucket array is also always a power of 2, which means that it will line up nicely within cache lines, which minimizes cache misses.
+\medskip
+
+In the sorting stage however, we are writing to the \textit{permuted} array, which is of size \( n \). This means that for large values of \( n \), this array does not fit nicely into L1 or even L2 cache (which can store up to 256KB), which results in slower memory access to this array. In addition, there is no ordering of which buckets are accessed when, which means that the array is written to in a random and sporadic pattern, which yields poor memory access patterns, further slowing us down.
+
+
 \end{document}

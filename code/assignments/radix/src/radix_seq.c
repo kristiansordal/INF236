@@ -29,35 +29,35 @@ double radix_sort_seq(int n, int b) {
     // Generate random 64 bit integers
     init_rand(a, n);
 
-    double t, t1 = 0, t2 = 0, t3 = 0;
+    double t, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0;
     const double start = omp_get_wtime();
 
-    for (int shift = 0; shift < BITS; shift += b) {
-        memset(bs, 0, buckets * sizeof(int));
+    for (int shift = 0; shift < BITS; shift += b) { // O(64/b)
+        memset(bs, 0, buckets * sizeof(int));       // O(2^b)
 
         t = omp_get_wtime();
         // Get bucket sizes
-        for (int i = 0; i < n; i++)
-            bs[(a[i] >> shift) & (buckets - 1)]++;
+        for (int i = 0; i < n; i++)                // O(n)
+            bs[(a[i] >> shift) & (buckets - 1)]++; // O(1)
         t1 += omp_get_wtime() - t;
 
         // Prefix sum
         t = omp_get_wtime();
         int s = bs[0];
         bs[0] = 0;
-        for (int i = 1; i < buckets; i++) {
-            const int t = s + bs[i];
-            bs[i] = s;
-            s = t;
+        for (int i = 1; i < buckets; i++) { // O(2^b)
+            const int t = s + bs[i];        // O(1)
+            bs[i] = s;                      // O(1)
+            s = t;                          // O(1)
         }
         t2 += omp_get_wtime() - t;
 
         t = omp_get_wtime();
         // Sort into tmp
-        for (int i = 0; i < n; i++) {
-            ull val = a[i];                         // get value
-            int t = (val >> shift) & (buckets - 1); // get bucket
-            permuted[bs[t]++] = val;
+        for (int i = 0; i < n; i++) {               // O(n)
+            ull val = a[i];                         // O(1)
+            int t = (val >> shift) & (buckets - 1); // O(1)
+            permuted[bs[t]++] = val;                // O(1)
         }
         t3 += omp_get_wtime() - t;
 
@@ -80,6 +80,7 @@ double radix_sort_seq(int n, int b) {
         printf("SEQUENTIAL: Failure!\n");
 #endif
 
+    printf("Time taken for memset: %f\n", t4);
     printf("Time taken for bucket sizes: %f\n", t1);
     printf("Time taken for prefix sum: %f\n", t2);
     printf("Time taken for sorting: %f\n", t3);
