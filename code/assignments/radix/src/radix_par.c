@@ -16,14 +16,14 @@
  *
  * @return void *: pointer to the memory block
  */
-void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_size) {
-    void *block = NULL;
-    if (posix_memalign(&block, size, num_elements * element_size) != 0) {
-        fprintf(stderr, "Failed to allocate memory\n");
-        exit(EXIT_FAILURE);
-    }
-    return block;
-}
+// void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_size) {
+//     void *block = NULL;
+//     if (posix_memalign(&block, size, num_elements * element_size) != 0) {
+//         fprintf(stderr, "Failed to allocate memory\n");
+//         exit(EXIT_FAILURE);
+//     }
+//     return block;
+// }
 
 /* Compute the ranges for each thread
  *
@@ -49,8 +49,10 @@ void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
  * @return double: execution time
  */
 double radix_sort_par(int n, int b) {
-    ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
-    ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    // ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    // ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    ull *a = (ull *)malloc(n * sizeof(ull));
+    ull *permuted = (ull *)malloc(n * sizeof(ull));
     const int buckets = 1 << b;
     int p = 0;
 
@@ -66,7 +68,9 @@ double radix_sort_par(int n, int b) {
 
     size_t **histogram = (size_t **)malloc(p * sizeof(size_t *));
     for (int i = 0; i < p; i++)
-        histogram[i] = (size_t *)aligned_alloc_generic(CACHE_LINE_SIZE, buckets, sizeof(size_t));
+        histogram[i] = (size_t *)malloc(buckets * sizeof(size_t));
+
+    // histogram[i] = (size_t *)aligned_alloc_generic(CACHE_LINE_SIZE, buckets, sizeof(size_t));
 
     // Generate random 64 bit integers
     init_rand(a, n);
@@ -83,31 +87,25 @@ double radix_sort_par(int n, int b) {
 
             for (int i = start; i < end; ++i)
                 ++local_histogram[(a[i] >> shift) & (buckets - 1)];
-// }
-#pragma omp barrier
-#pragma omp master
-            {
-
-                int s = 0;
-                for (int i = 0; i < buckets; ++i) {
-                    for (int j = 0; j < p; ++j) {
-                        const int t = s + histogram[j][i];
-                        histogram[j][i] = s;
-                        s = t;
-                    }
-                }
+        }
+        int s = 0;
+        for (int i = 0; i < buckets; ++i) {
+            for (int j = 0; j < p; ++j) {
+                const int t = s + histogram[j][i];
+                histogram[j][i] = s;
+                s = t;
             }
-#pragma omp barrier
-            // #pragma omp parallel
-            //         {
-            // const int tid = omp_get_thread_num();
-            // const int start = begins[tid], end = ends[tid];
-            // size_t *local_histogram = histogram[tid];
+        }
+#pragma omp parallel
+        {
+            const int tid = omp_get_thread_num();
+            const int start = begins[tid], end = ends[tid];
+            size_t *local_histogram = histogram[tid];
 
             for (int i = start; i < end; ++i) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
-                permuted[local_histogram[t]++] = val;
+                permuted[histogram[tid][t]++] = val;
             }
         }
 
