@@ -94,7 +94,7 @@ double radix_sort_seq(int n, int b) {
     bucket_shift_avg /= iters;
     permutation_avg /= iters;
 
-    printf("Elements: %d\n", n);
+    printf("n: %d, b: %d, n/b: %d, it: %d", n, b, n / b, iters);
     printf("Bucket shift avg: %f\n", bucket_shift_avg);
     printf("Permutation avg: %f\n", permutation_avg);
     printf("\n");
