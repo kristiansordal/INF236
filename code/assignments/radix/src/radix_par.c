@@ -16,14 +16,14 @@
  *
  * @return void *: pointer to the memory block
  */
-// void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_size) {
-//     void *block = NULL;
-//     if (posix_memalign(&block, size, num_elements * element_size) != 0) {
-//         fprintf(stderr, "Failed to allocate memory\n");
-//         exit(EXIT_FAILURE);
-//     }
-//     return block;
-// }
+void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_size) {
+    void *block = NULL;
+    if (posix_memalign(&block, size, num_elements * element_size) != 0) {
+        fprintf(stderr, "Failed to allocate memory\n");
+        exit(EXIT_FAILURE);
+    }
+    return block;
+}
 
 /* Compute the ranges for each thread
  *
@@ -49,10 +49,8 @@ void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
  * @return double: execution time
  */
 double radix_sort_par(int n, int b) {
-    // ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
-    // ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
-    ull *a = (ull *)malloc(n * sizeof(ull));
-    ull *permuted = (ull *)malloc(n * sizeof(ull));
+    ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
     const int buckets = 1 << b;
     int p = 0;
 
@@ -68,9 +66,7 @@ double radix_sort_par(int n, int b) {
 
     size_t **histogram = (size_t **)malloc(p * sizeof(size_t *));
     for (int i = 0; i < p; i++)
-        histogram[i] = (size_t *)malloc(buckets * sizeof(size_t));
-
-    // histogram[i] = (size_t *)aligned_alloc_generic(CACHE_LINE_SIZE, buckets, sizeof(size_t));
+        histogram[i] = (size_t *)aligned_alloc_generic(CACHE_LINE_SIZE, buckets, sizeof(size_t));
 
     // Generate random 64 bit integers
     init_rand(a, n);
