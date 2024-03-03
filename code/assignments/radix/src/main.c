@@ -16,14 +16,8 @@ int main(int argc, char **argv) {
     double par_time, seq_time;
 
 #ifdef SEQ
-    int keys[5] = {1, 2, 4, 8, 16};
-    int elems[10] = {1e5, 1e6, 1e7, 1e8};
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 4; j++) {
-            seq_time = radix_sort_seq(elems[j], keys[i]);
-            printf("SEQUENTIAL time: %f\n", seq_time);
-        }
-    }
+    seq_time = radix_sort_seq(size, bits);
+    printf("SEQUENTIAL time: %f\n", seq_time);
 #endif
 #ifdef PAR
     par_time = radix_sort_par(size, bits);
