@@ -17,18 +17,33 @@
 
 \graphicspath{{./figures}}
 
+
 %color settings
 \usepackage{xcolor}
-\definecolor{gruvbgdark}{HTML}{1d2021}
-\definecolor{gruvtextdark}{HTML}{ebdbb2}
-\definecolor{gruvbglight}{HTML}{f9f5d7}
-\definecolor{gruvtextlight}{HTML}{3c3836}
-\definecolor{NavyBlue}{HTML}{266bbd}
-\definecolor{RawSienna}{HTML}{94330e}
-\definecolor{ForestGreen}{HTML}{149b52}
+% \definecolor{gruvbgdark}{HTML}{1d2021}
+% \definecolor{gruvtextdark}{HTML}{ebdbb2}
+% \definecolor{gruvbglight}{HTML}{f9f5d7}
+% \definecolor{gruvtextlight}{HTML}{3c3836}
+% \definecolor{NavyBlue}{HTML}{266bbd}
+% \definecolor{RawSienna}{HTML}{94330e}
+% \definecolor{ForestGreen}{HTML}{149b52}
 % \pagecolor{gruvbgdark}
 % \color{gruvtextdark}
 
+\definecolor{GBBlue}{HTML}{458588}
+\definecolor{GBGreen}{HTML}{98971A}
+\definecolor{GBRed}{HTML}{CC241D}
+\definecolor{GBYellow}{HTML}{D79921}
+\definecolor{GBPurple}{HTML}{B16286}
+\definecolor{GBAqua}{HTML}{689D6A}
+\definecolor{GBOrange}{HTML}{D65D0E}
+\definecolor{GBGray}{HTML}{A89984}
+\definecolor{GBDarkGray}{HTML}{3C3836}
+\definecolor{GBLightGray}{HTML}{EBDBB2}
+\definecolor{GBBackground}{HTML}{282828}
+\definecolor{GBForeground}{HTML}{FBF1C7}
+\pagecolor{GBBackground}
+\color{GBForeground}
 % Hide page number when page is empty
 \usepackage{emptypage}
 \usepackage{subcaption}
@@ -243,21 +258,21 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
-\lstset{frame=none,
-  language=python,
+\lstset{frame=single,
+  language=c,
   aboveskip=3mm,
   belowskip=3mm,
   showstringspaces=false,
   columns=flexible,
   basicstyle={\small\ttfamily},
   numbers=none,
-  numberstyle=\tiny\color{gray},
-  keywordstyle=\color{blue},
-  commentstyle=\color{dkgreen},
-  stringstyle=\color{mauve},
+  numberstyle=\tiny\color{GBForeground},
+  keywordstyle=\color{GBRed},
+  commentstyle=\color{GBGreen},
+  stringstyle=\color{GBAqua},
   breaklines=true,
   breakatwhitespace=true,
-  tabsize=3
+  tabsize=2
 }
 
 
