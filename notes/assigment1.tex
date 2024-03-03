@@ -138,7 +138,7 @@ Label Count Prefix Sort
 % Add the data, ensuring the x values are in the log scale (if necessary)
 \addplot [fill=GBGreen] table [y=Count, meta=Label, x expr=\coordindex] {\testdata};
 \addlegendentry{Count}
-\addplot [fill=GBRed!60] table [y=Prefix, meta=Label, x expr=\coordindex] {\testdata};
+\addplot [fill=GBRed] table [y=Prefix, meta=Label, x expr=\coordindex] {\testdata};
 \addlegendentry{Prefix}
 \addplot [fill=GBBlue, point meta=y] table [y=Sort, meta=Label, x expr=\coordindex] {\testdata};
 \addlegendentry{Sort}
@@ -194,6 +194,88 @@ for (int i = 0; i < n; i++) {
 \medskip
 
 In the sorting stage however, we are writing to the \textit{permuted} array, which is of size \( n \). This means that for large values of \( n \), this array does not fit nicely into L1 or even L2 cache (which can store up to 256KB), which results in slower memory access to this array. In addition, there is no ordering of which buckets are accessed when, which means that the array is written to in a random and sporadic pattern, which yields poor memory access patterns, further slowing us down.
+\medskip
+
+\paragraph{Computing an expression for execution time}
+In order to compute an expression for the execution time, we can start by looking at the runtime. The runtime of radix sort, expressed in big O notation is \( \mathcal{O}\left(n \cdot  k\right) \), where \( n \) is the size of the array, and \( k \) is the key size, or how many bits to interpret as one digit. Taking a closer look at the runtime, and including constants, we can see that the three stages have the following runtimes:
+
+\begin{align*}
+    \text{Counting} & : 3n \\
+    \text{Prefix Sum} & : 2 \cdot 2^{k} \\
+    \text{Sorting} & : 3n
+\end{align*}
+
+So the running time of the algorithm, including constants is \( \mathcal{O}\left(k \cdot \left( 6n + 2 \cdot 2^{k} \right)\right) \). This does not tell us much about how long the algorithm will take to complete. To figure this out, we need to benchmark the different stages. We are specifically interested in how long one iteration of the \textit{Counting} stage, and the \textit{Sorting} stage will take. We will disregard the time for the prefix sum, as it runs close to instantaneously for all possible values for \( b \).
+\medskip
+
+In order to benchmark these loops, our best bet is to time each execution of the two loops individually, and put this time into two arrays of size \( \frac{64}{b} \), then accumulate this time and divide it by \( b \cdot n \). Mathematically, this can be expressed as
+
+\[ t_{avg} = \frac{t_{tot}}{n \cdot  b} \]
+
+Where \( t_{tot} \) is the total time for \( b \) executions of the loop. By runnning the sequential program with \( n = 1 \times 10^{7} \), and \( b = 8 \), we obtained the time of execution for one iteration of the \textit{Counting} loop and \textit{Sorting} loop.
+
+\[ t_{count} = 3.6355 \times 10^{-9}s,\quad t_{sort} = 2.3273 \times  10^{-8} s \]
+
+Then, because these loops will be executed \( \frac{64}{b}  \) times, we can express the execution time of the algorithm as
+
+\begin{align*}
+    T\left( n,b \right) &= \frac{64}{b} \cdot \left( n \cdot t_{count} + n \cdot t_{sort} \right) \\
+                        &= \frac{64n}{b} \cdot \left( t_{count} + t_{sort} \right)\\
+                        &= \frac{64n}{b} \cdot \left( 3.6355 \times 10^{-9} + 2.3273 \times  10^{-8} \right)\\
+                        &= \frac{64n}{b} \cdot 2.69085 \times 10^{-8}s\\
+\end{align*}
+
+Now that we have this expression, we can compare it to the actual execution time of the algorithm, and see how well it holds up. 
+
+
+\pgfplotstableread{
+Label Actual Expression
+1 32.53 103.32
+2 16.45 51.66
+4 9.61 25.83
+8 14.02 12.92
+16 17.97 6.46
+}\testdata
+\begin{figure}[H]
+    \begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    ymin=0,
+    ymax=105,
+    ylabel={Time [s]},
+    xtick=data,
+    xticklabels from table={\testdata}{Label},
+    xticklabel style={text width=2cm,align=center},
+    xlabel={\( b \)-value},
+    legend pos=outer north east,
+    legend style={cells={anchor=west},fill=GBBackground,draw=GBForeground, legend pos=outer north east},
+    % reverse legend=true, % set to false to get correct display, but I'd like to have this true
+    bar width=10pt,
+]
+% Add the data, ensuring the x values are in the log scale (if necessary)
+\addplot [fill=GBGreen] table [y=Actual, meta=Label, x expr=\coordindex] {\testdata};
+\addlegendentry{Actual Time}
+\addplot [fill=GBRed] table [y=Expression, meta=Label, x expr=\coordindex] {\testdata};
+\addlegendentry{Expression Time}
+\end{axis}
+\end{tikzpicture}
+    \end{center}
+    \caption{Comparison between execution time according to expression and actual execution time.}
+\end{figure}
+
+Unsurprisingly, the expression isn't accurate at all, as the values obtained for \( t_{count} \) and \( t_{sort} \) is different every time the algorithm is ran, and so it is impossible to determine an accurate value for these variables which is general enough to hold for all combinations of \( n \) and \( b \). It should also be noted that the value for these variables were obtained from a program compiled with \texttt{-O3}, which may introduce unforseen optimizations that make the expression dubious at best.
+
+
+\section*{Problem 3}
+\addcontentsline{toc}{section}{Problem 3}
+
+\section*{Problem 4}
+\addcontentsline{toc}{section}{Problem 4}
+
+\subsection*{Strong Scaling}
+\addcontentsline{toc}{subsection}{Strong Scaling}
+
 
 
 \end{document}
