@@ -42,8 +42,8 @@ double radix_sort_seq(int n, int b) {
         // Get bucket sizes
         for (int i = 0; i < n; i++)                // O(n)
             bs[(a[i] >> shift) & (buckets - 1)]++; // O(1)
+        bucket_shift_bench[iters] = omp_get_wtime() - t;
         t1 += omp_get_wtime() - t;
-        bucket_shift_bench[iters] = t1;
 
         // Prefix sum
         t = omp_get_wtime();
@@ -63,8 +63,8 @@ double radix_sort_seq(int n, int b) {
             int t = (val >> shift) & (buckets - 1); // O(1)
             permuted[bs[t]++] = val;                // O(1)
         }
+        permutation_bench[iters++] = omp_get_wtime() - t;
         t3 += omp_get_wtime() - t;
-        permutation_bench[iters++] = t3;
 
         swap(&a, &permuted);
     }
@@ -94,7 +94,7 @@ double radix_sort_seq(int n, int b) {
     bucket_shift_avg /= iters;
     permutation_avg /= iters;
 
-    printf("n: %d, b: %d, n/b: %d, it: %d", n, b, n / b, iters);
+    printf("n: %d, b: %d, n/b: %d, it: %d\n", n, b, n / b, iters);
     printf("Bucket shift avg: %f\n", bucket_shift_avg);
     printf("Permutation avg: %f\n", permutation_avg);
     printf("\n");
