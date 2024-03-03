@@ -53,6 +53,10 @@ double radix_sort_par(int n, int b) {
     // ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
     ull *a = (ull *)malloc(n * sizeof(ull));
     ull *permuted = (ull *)malloc(n * sizeof(ull));
+    if (a == NULL || permuted == NULL) {
+        printf("Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     const int buckets = 1 << b;
     int p = 0;
 
