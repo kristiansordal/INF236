@@ -5,25 +5,21 @@
 #include "radix_seq.h"
 #endif
 #include <stdio.h>
+#include <stdlib.h>
 
-void input(int *size, int *bits) {
-    printf("Enter the size of the array: ");
-    scanf("%d", size);
-    printf("Enter the key size: ");
-    scanf("%d", bits);
-}
-
-int main() {
-    int size, bits;
+int main(int argc, char **argv) {
+    if (argc != 3) {
+        printf("Usage: %s <size> <bits>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+    int size = atoi(argv[1]), bits = atoi(argv[2]);
     double par_time, seq_time;
 
 #ifdef SEQ
-    input(&size, &bits);
     seq_time = radix_sort_seq(size, bits);
     printf("SEQUENTIAL time: %f\n", seq_time);
 #endif
 #ifdef PAR
-    input(&size, &bits);
     par_time = radix_sort_par(size, bits);
     printf("PARALLEL time: %f\n", par_time);
 #endif
