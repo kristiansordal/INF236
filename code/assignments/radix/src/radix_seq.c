@@ -29,7 +29,7 @@ double radix_sort_seq(int n, int b) {
     // Generate random 64 bit integers
     init_rand(a, n);
 
-    double t, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0;
+    long double t, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0;
     const double start = omp_get_wtime();
 
     for (int shift = 0; shift < BITS; shift += b) { // O(64/b)
@@ -80,10 +80,13 @@ double radix_sort_seq(int n, int b) {
         printf("SEQUENTIAL: Failure!\n");
 #endif
 
-    printf("Time taken for memset: %f\n", t4);
-    printf("Time taken for bucket sizes: %f\n", t1);
-    printf("Time taken for prefix sum: %f\n", t2);
-    printf("Time taken for sorting: %f\n", t3);
+    printf("Time taken for memset: %Lf\n", t4);
+    // printf("Time taken for bucket sizes: %Lf\n", t1);
+    printf("Avergage time for bucket shift: %Lf", t1 / n);
+    printf("Average time for pfs operation: %Lf", t2 / buckets);
+    // printf("Time taken for prefix sum: %Lf\n", t2);
+    // printf("Time taken for sorting: %Lf\n", t3);
+    printf("Avergage time for sorting: %Lf", t3 / n);
     free(a);
     free(permuted);
     free(bs);
