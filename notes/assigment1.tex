@@ -1,5 +1,8 @@
 \documentclass{article}
 \input{preamble.tex}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
 
 \title{INF236 - Assignment 1}
 
@@ -8,7 +11,9 @@
 \newpage
 \tableofcontents
 \newpage
-    \section{Problem 1}
+    
+    \section*{Problem 1}
+    \addcontentsline{toc}{section}{Problem 1}
 
     The implementation of sequential radix sort has been implemented in the following manner.
 
@@ -90,6 +95,39 @@ In this stage, we need to perform a prefix sum operation on the \( bucketSize \)
 
 \paragraph{Stage 3 - Creating the partially sorted array}
 In this stage, we need to place our elements at the correct index in the \( tmp \) array. This is done by again, computing which bucket element \( a[i] \) belongs to. After we have found the bucket, we place this element in the \( tmp \) array, at index \( bucketSize[bucket] \). Because we performed the prefix sum over the \( bucketSize \) array in the previous stage, this variable contains the index at which the elements belonging to this bucket should be placed in the \( tmp \) array. After we have placed element \( a[i] \), we increment this index pointer, such that we avoid overwriting anything.
+
+
+\section*{Problem 2}
+\addcontentsline{toc}{section}{Problem 2}
+
+Through trial and error, the maximum elements that could be sorted in 10 seconds, was 52 million, with a value of \( b = 4 \). Varying \( b \) by powers of 2, we obtain the following execution times for sorting 52 million elements
+
+
+
+\begin{figure}[H]
+    \begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    ymin=0,
+    ymax=35,
+    ylabel={Time [s]},
+    xmode=log, % Set the x-axis to logarithmic mode
+    log basis x={2}, % Base for the logarithm (optional, default is 10)
+    xtick={1,2,4,8,16}, % Specify tick positions
+    log ticks with fixed point, % Display ticks as fixed point numbers
+    xlabel={\( b \)-value},
+    bar width=20pt,
+    xticklabel=\pgfmathparse{2^\tick}\pgfmathprintnumber{\pgfmathresult}, % Convert log ticks back to normal numbers
+    nodes near coords,
+]
+% Add the data, ensuring the x values are in the log scale (if necessary)
+\addplot coordinates {(1,30.116869) (2,15.729472) (4,10.024868) (8,10.947608) (16,10.204863)};
+\end{axis}
+\end{tikzpicture}
+    \end{center}
+    \caption{Sorting 52 million elements with varying \( b \) values}
+\end{figure}
 
     % So in order to compute an equation \( T\left( n,b \right) \) which yields the time the sequential program takes to run, we need to consider the amount of FLOPS the sequential program uses, and the clock speed of the CPU on Brake.
 \end{document}
