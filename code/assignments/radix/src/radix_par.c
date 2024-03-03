@@ -49,8 +49,10 @@ void compute_ranges(size_t *begins, size_t *ends, int n, int p) {
  * @return double: execution time
  */
 double radix_sort_par(int n, int b) {
-    ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
-    ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    // ull *a = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    // ull *permuted = (ull *)aligned_alloc_generic(CACHE_LINE_SIZE, n, sizeof(ull));
+    ull *a = (ull *)malloc(n * sizeof(ull));
+    ull *permuted = (ull *)malloc(n * sizeof(ull));
     const int buckets = 1 << b;
     int p = 0;
 
@@ -66,7 +68,8 @@ double radix_sort_par(int n, int b) {
 
     size_t **histogram = (size_t **)malloc(p * sizeof(size_t *));
     for (int i = 0; i < p; i++)
-        histogram[i] = (size_t *)aligned_alloc_generic(CACHE_LINE_SIZE, buckets, sizeof(size_t));
+        histogram[i] = (size_t *)malloc(buckets * sizeof(size_t));
+    // histogram[i] = (size_t *)aligned_alloc_generic(CACHE_LINE_SIZE, buckets, sizeof(size_t));
 
     // Generate random 64 bit integers
     init_rand(a, n);
@@ -101,7 +104,7 @@ double radix_sort_par(int n, int b) {
             for (int i = start; i < end; ++i) {
                 ull val = a[i];                         // get value
                 int t = (val >> shift) & (buckets - 1); // get bucket
-                permuted[histogram[tid][t]++] = val;
+                permuted[local_histogram[t]++] = val;
             }
         }
 

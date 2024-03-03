@@ -4,6 +4,6 @@
 \contentsline {paragraph}{Stage 3 - Creating the partially sorted array}{3}{}%
 \contentsline {section}{Problem 2}{4}{}%
 \contentsline {paragraph}{Computing an expression for execution time}{5}{}%
-\contentsline {section}{Problem 3}{6}{}%
-\contentsline {section}{Problem 4}{6}{}%
-\contentsline {subsection}{Strong Scaling}{6}{}%
+\contentsline {section}{Problem 3}{7}{}%
+\contentsline {section}{Problem 4}{7}{}%
+\contentsline {subsection}{Weak Scaling}{7}{}%
