@@ -26,6 +26,10 @@
 #include <stdbool.h>
 void pis(int n, int *ver, int *edges, int *is, int *t1, int *t2) {
 #pragma omp for
+    for (int i = 0; i < n; i++)
+        is[i] = false;
+
+#pragma omp for
     for (int v = 0; v <= n; v++) {
         bool in_set = true;
         for (int j = ver[v]; j < ver[v + 1]; j++) {
@@ -35,5 +39,17 @@ void pis(int n, int *ver, int *edges, int *is, int *t1, int *t2) {
             }
         }
         is[v] = in_set;
+    }
+
+#pragma omp for
+    for (int v = 0; v <= n; v++) {
+        if (is[v]) {
+            for (int j = ver[v]; j < ver[v + 1]; j++) {
+                if (is[edges[j]] && edges[j] > v) {
+                    is[v] = false;
+                    break;
+                }
+            }
+        }
     }
 }
