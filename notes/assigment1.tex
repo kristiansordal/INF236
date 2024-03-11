@@ -17,6 +17,34 @@
 \newpage
 \tableofcontents
 \newpage
+    \section{File Overview}
+    \begin{table}[H]
+        \begin{center}
+            \begin{tabular}[c]{|l|l|}
+                \hline
+                main.c & Main Executable \\
+                radix\_seq.c & Sequential Radix Sort  \\
+                radix\_par.c & Parallel Radix Sort  \\
+                util.c & Various utilization functions and definitions  \\
+                mt19937-64.c & Random Number Generator\\
+                \hline
+            \end{tabular}
+        \end{center}
+    \end{table}
+
+        Please note that most files have header files that contain function declarations.
+
+        \medskip
+
+        \begin{center}
+            \fbox{
+                \parbox{0.95\textwidth}{
+                    \textbf{IMPORTANT: }Instead of having to compile two different files for the sequential and parallel version, when you compile the file \texttt{main.c}, just add the compile flag \texttt{-DPAR} if you want to compile the parallel version, or the compile flag \texttt{-DSEQ} if you want to compile the sequential version. 
+                    % Compile the program with \texttt{-DPAR} to run the parallel version, and \texttt{-DSEQ} to run the sequential version.
+                }
+            }
+        \end{center}
+        \medskip
     
     \section*{Problem 1}
     \addcontentsline{toc}{section}{Problem 1}
@@ -103,6 +131,7 @@ In this stage, we need to perform a prefix sum operation on the \( bucketSize \)
 In this stage, we need to place our elements at the correct index in the \( tmp \) array. This is done by again, computing which bucket element \( a[i] \) belongs to. After we have found the bucket, we place this element in the \( tmp \) array, at index \( bucketSize[bucket] \). Because we performed the prefix sum over the \( bucketSize \) array in the previous stage, this variable contains the index at which the elements belonging to this bucket should be placed in the \( tmp \) array. After we have placed element \( a[i] \), we increment this index pointer, such that we avoid overwriting anything.
 
 
+\newpage
 \section*{Problem 2}
 \addcontentsline{toc}{section}{Problem 2}
 
@@ -119,6 +148,26 @@ Label Count Prefix Sort
 }\testdata
 
 \begin{figure}[H]
+    \begin{table}[H]
+        \begin{center}
+            \begin{tabular}[h]{|l|l|l|l|} \hline
+                \( b \)-value&Count [s]&Sort [s] &Total [s] \\
+                \hline
+                1& 12.115&  20.418 & 32.533\\
+                \hline
+2& 6.105&  10.341 & 16.446\\
+                \hline
+4& 3.032&  6.576 & 9.608\\
+                \hline
+8& 1.765&  12.249 & 14.015\\
+                \hline
+16& 1.951&  16.018 & 17.969\\
+                \hline
+            \end{tabular}
+        \end{center}
+    \end{table}
+\end{figure}
+\begin{figure}[H]
     \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
@@ -131,7 +180,7 @@ Label Count Prefix Sort
     xticklabel style={text width=2cm,align=center},
     xlabel={\( b \)-value},
     legend pos=outer north east,
-    legend style={cells={anchor=west},fill=GBBackground,draw=GBForeground, legend pos=outer north east},
+    legend style={cells={anchor=west}, legend pos=north east},
     % reverse legend=true, % set to false to get correct display, but I'd like to have this true
     bar width=20pt,
 ]
@@ -155,6 +204,7 @@ nodes near coords style={%
     \end{center}
     \caption{Sorting 60 million elements with varying \( b \) values. \textbf{NOTE:} Prefix value is so low its not visible.}
 \end{figure}
+\medskip
 
 As we can see, using a value \( b \) value of \( 4 \), yields the best running time. When we use \( b = 4 \), we have the option to place elements into \( 2^{4} = 16  \) different buckets. We also only have to perform the 3 stages described earlier \( \frac{64}{4} = 16 \) times.
 \medskip
@@ -249,7 +299,7 @@ Label Actual Expression
     xticklabel style={text width=2cm,align=center},
     xlabel={\( b \)-value},
     legend pos=outer north east,
-    legend style={cells={anchor=west},fill=GBBackground,draw=GBForeground, legend pos=outer north east},
+    legend style={cells={anchor=west}, legend pos=north east},
     % reverse legend=true, % set to false to get correct display, but I'd like to have this true
     bar width=10pt,
 ]
@@ -261,7 +311,7 @@ Label Actual Expression
 \end{axis}
 \end{tikzpicture}
     \end{center}
-    \caption{Comparison between execution time according to expression and actual execution time.}
+    \caption{Comparison between execution time of sequential algorithm according to expression and actual execution time.}
 \end{figure}
 
 Unsurprisingly, the expression isn't accurate at all, as the values obtained for \( t_{count} \) and \( t_{sort} \) is different every time the algorithm is ran, and so it is impossible to determine an accurate value for these variables which is general enough to hold for all combinations of \( n \) and \( b \). It should also be noted that the value for these variables were obtained from a program compiled with \texttt{-O3}, which may introduce unforseen optimizations that make the expression dubious at best.
@@ -270,6 +320,141 @@ Unsurprisingly, the expression isn't accurate at all, as the values obtained for
 \section*{Problem 3}
 \addcontentsline{toc}{section}{Problem 3}
 
+The implementation of the parallel algorithm is similar to the sequential version. This section will highlight the differences, and what makes it faster. Primarily, the \textit{Counting} and \textit{Sorting} stage benefit the most from parallelization, whereas the \textit{Prefix Sum} stage has been slightly modified.
+\medskip
+
+Before we start sorting the array, we first compute the parts of the list which each thread shall perform work on. This is done using the following algorithm:
+
+
+\begin{algorithm}[H]
+    \caption{Computing Ranges for each thread}
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+    \SetAlgoVlined
+    \SetKwFor{For}{for}{do}{}
+    \SetKw{KwTo}{to}
+    \SetKw{KwBy}{by}
+    
+    \Input{\textit{begins} - array to store starting indices, \textit{ends} - array to store ending indices, \textit{n} - the size of the array, \textit{p} - the number of threads}
+    \Output{\textit{begins} and \textit{ends} filled with starting and ending indices, respectively}
+    
+    \( begins[0] \gets 0 \)
+        
+        \For{\(i \gets 0\) \KwTo \(p - 1\)}{
+            \( ends[i] \gets (i + 1) \cdot \frac{n}{p} \)
+
+            \( begins[i+1]\gets ends[i] \)
+        }
+
+        \( ends[p-1] =n \)
+\end{algorithm}
+
+Next, we initialize a histogram of size \( p \cdot  2^{b} \), which will count the number of elements in each bucket.
+
+After this is done, we start iterating through the main loop, going in increments of \( b \), as in the sequential version. We then enter a parallel region, in which each thread works on its designated portion of the array, such that each thread only has to to \( \frac{n}{p}  \) iterations over the loop, as opposed to \( n \) iterations in the sequential version. During this iteration, each thread will fill the histogram. Specifically it will will the row in the histogram according to its thread ID.
+\medskip
+
+Moving on, we perform a column-wise prefix sum on the histogram array. This is done sequentially, as the histogram is relatively small when compared to \( n \), and so there is nothing to be gained from doing it in parallel. The reason we have to to the prefix sum column-wise and not row-wise, is that the values in the histogram needs to be a pointed representing where thread \( x \) should start placing elements belonging to bucket \( y \), and because each thread has elements in bucket \( y \), we need to iterate column-wise.
+\medskip
+
+After the prefix sum, we move on to another parallel section, where we will fill up the permuted array with values from the original array. This is done with the same logic as in the sequential version, except that each thread only has to to \( \frac{n}{p}  \) iterations, and that each thread again use the pointers from the row in the histogram corresponding to their thread ID. When this stage is done, we swap the pointers of the original array and the permuted array, and continue sorting.
+\medskip
+
+There has been made one other minor optimization to this algorithm when compared to the sequential version, and that is the utilization of aligned memory allocation. When the command \texttt{getconf LEVEL1\_DCACHE\_LINESIZE} is ran on Brake, we obtain the length in bytes of each cache line in the L1 cache. This happens to be 64, which is why we have the \texttt{CACHE\_LINE\_SIZE 64} define in the \texttt{radix\_par.c} file. We can then use the following function to align memory so that it fits better in these cache lines, using the following function from \texttt{radix\_par.c}:
+
+\begin{lstlisting}
+void *aligned_alloc_generic(size_t size, size_t num_elements, size_t element_size) {
+    void *block = NULL;
+    if (posix_memalign(&block, size, num_elements * element_size) != 0) {
+        fprintf(stderr, "Failed to allocate memory\n");
+        exit(EXIT_FAILURE);
+    }
+    return block;
+}
+\end{lstlisting}
+
+\paragraph{Computing an expression for execution time}
+In order to compute an expression for the execution time for the parallel algorithm, we have to introduce another argument, that being \( p \) - the number of threads. We can use the same expression as we did for the sequential expression, but we have to exchange \( n \) with \( \frac{n}{p}  \). This yields the following expression
+
+\[ T\left( n,b,p \right) = \frac{64 \frac{n}{p} }{b}\cdot 2.69085 \times 10^{-8}s \]
+
+Comparing this expression to the actual runtime, we get the following table and graph
+
+\pgfplotstableread{
+Label Actual Expression
+1 9.461611  25.83
+10 1.813418 2.583
+20 1.983802 1.2916
+30 1.952954 0.8610
+40 1.857981 0.6458
+50 2.301503 0.5166
+60 1.663963 0.4305
+70 2.477585 0.36903
+80 2.611293 0.3229
+}\testdata
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}[c]{|l|l|l|}
+            \hline
+            \# Processors & Actutal time [s] & Expression time [s]\\
+            \hline
+1& 9.461611& 25.83\\
+            \hline
+10& 1.813418& 2.583\\
+            \hline
+20& 1.983802& 1.2916\\
+            \hline
+30& 1.952954& 0.8610\\
+            \hline
+40& 1.857981& 0.6458\\
+            \hline
+50& 2.301503& 0.5166\\
+            \hline
+60& 1.663963& 0.4305\\
+            \hline
+70& 2.477585& 0.36903\\
+            \hline
+80& 2.611293& 0.3229\\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\begin{figure}[H]
+    \begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    ymin=0,
+    ymax=26,
+    ylabel={Time [s]},
+    xtick=data,
+    xticklabels from table={\testdata}{Label},
+    xticklabel style={text width=2cm,align=center},
+    xlabel={Number of Processsors},
+    legend pos=outer north east,
+    legend style={cells={anchor=west}, legend pos=north east},
+    % reverse legend=true, % set to false to get correct display, but I'd like to have this true
+    bar width=5pt,
+]
+% Add the data, ensuring the x values are in the log scale (if necessary)
+\addplot [fill=GBGreen] table [y=Actual, meta=Label, x expr=\coordindex] {\testdata};
+\addlegendentry{Actual Time}
+\addplot [fill=GBRed] table [y=Expression, meta=Label, x expr=\coordindex] {\testdata};
+\addlegendentry{Expression Time}
+\end{axis}
+\end{tikzpicture}
+    \end{center}
+    \caption{Comparison between execution time of parallel algorithm according to expression and actual execution time.}
+\end{figure}
+
+As we can see, the expression does not fit very well with the actual running time at all. The expression we obtained is very close to optimal speedup, and clearly our parallel algorithm does not achieve that. This is due to a myriad of reasons, such as poor memory access patterns, overhead of sequential work, overhead of intializing parallel environments, cache misses, and even not getting enough resources on the machine the code was ran on.
+\medskip
+
+As a final note before strong and weak scaling, it should be noted that I attempted to implement some kind of buffer system for the parallel algorith, as the initialization of the permutation array was the major bottleneck. I wanted to try to give each thread a buffer to fill elements in sorted order, and when it reached a certain size, flush this buffer into the sequential array. I was however unsuccessful in implementing this.
+
+
 \section*{Problem 4}
 \addcontentsline{toc}{section}{Problem 4}
 
@@ -277,7 +462,7 @@ Unsurprisingly, the expression isn't accurate at all, as the values obtained for
     \centering
     % Strong Scaling Plot
     \begin{minipage}{0.45\textwidth}
-        \begin{tikzpicture}
+        \begin{tikzpicture}]
         \begin{axis}[
             title={Strong Scaling Speedup \( \left( n = 60M, b = 4 \right) \)},
             xlabel={Number of Processors},
@@ -290,7 +475,7 @@ Unsurprisingly, the expression isn't accurate at all, as the values obtained for
             ymajorgrids=true,
             xmajorgrids=true,
             grid style=dashed,
-            legend style={cells={anchor=west},fill=GBBackground,draw=GBForeground, legend pos=north west},
+            legend style={cells={anchor=west}, legend pos=north east},
         ]
 
         \addplot[color=GBGreen,mark=*, mark options={fill=GBGreen}]
@@ -307,18 +492,18 @@ Unsurprisingly, the expression isn't accurate at all, as the values obtained for
     \begin{minipage}{0.45\textwidth}
         \begin{tikzpicture}
         \begin{axis}[
-            title={Weak Scaling Time \( \left( n = p \cdot 1 \times 10^{6}, b = 8 \right) \)},
+            title={Weak Scaling Time \( \left( n = p \cdot 26843545, b = 8 \right) \)},
             xlabel={Number of Processors},
             ylabel={Time[s]},
             xmin=0, xmax=80,
-            ymin=0, ymax=1,
+            ymin=0, ymax=50,
             xtick={1,10,20,30,40,50,60,70,80},
-            ytick={0,0.2,0.4,0.6,0.8,1},
+            ytick={1,10,20,30,40,50},
             legend pos=north west,
             ymajorgrids=true,
             xmajorgrids=true,
             grid style=dashed,
-            legend style={cells={anchor=west},fill=GBBackground,draw=GBForeground, legend pos=north west},
+    legend style={cells={anchor=west}, legend pos=north east},
         ]
 
         \addplot[color=GBRed,mark=*, mark options={fill=GBRed}]
@@ -327,9 +512,9 @@ Unsurprisingly, the expression isn't accurate at all, as the values obtained for
                 % (30, 0.497407) (40, 0.624086) (50, 0.598546) (60, 0.696600)
                 % (70, 0.807231) (80, 0.987676)
 
-                (1, 6.420776) (5, 9.615164) (10, 0.334089) (20, 0.407155)
-                (30, 0.497407) (40, 0.624086) (50, 0.598546) (60, 0.696600)
-                (70, 0.807231) (80, 0.987676)
+                (1, 5.831556) (5, 9.615164) (10, 11.606074) (20, 14.330121)
+                (30, 15.348250) (40, 18.858461) (50, 26.592758) (60, 26.492931)
+                (70, 42.800447) (80, 47.295636)
             };
         \legend{Weak Scaling}
         \end{axis}
@@ -337,8 +522,7 @@ Unsurprisingly, the expression isn't accurate at all, as the values obtained for
     \end{minipage}
 \end{figure}
 
-\subsection*{Weak Scaling}
-\addcontentsline{toc}{subsection}{Weak Scaling}
+The number 26843545 as chosen for the weak scaling, as this was the maximum workload per thread when using 80 threads. This resulted in approximately \( n = 2147483600 \) when using 80 threads. Please note that resources on Brake were sparse during some of these tests, so data may not be 100\% accurate.
 
 
 

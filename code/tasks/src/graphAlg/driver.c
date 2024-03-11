@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     int IS = true; /* Sequential Independent Set */
     int GC = true; /* Sequential Graph coloring  */
 
-    int PIS = false; /* Parallel Independent Set */
+    int PIS = true;  /* Parallel Independent Set */
     int PGC = false; /* Parallel Graph Coloring */
 
     // Read input and check that it is in order

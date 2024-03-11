@@ -1633,6 +1633,7 @@ INPUT ./assigment1.toc
 INPUT assigment1.toc
 INPUT assigment1.toc
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
+OUTPUT assigment1.toc
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
@@ -1652,9 +1653,8 @@ INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/cm/cmbsy10.tfm
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy7.tfm
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm
-OUTPUT assigment1.toc
-INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm
+INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/cm/cmr9.tfm
 INPUT /opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/cm/cmtt9.tfm
 INPUT assigment1.aux
