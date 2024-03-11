@@ -23,8 +23,16 @@
 // Note that the vertices are numbered from 1 to n (inclusive). Thus there is
 // no vertex 0.
 
+#include <omp.h>
 #include <stdbool.h>
+#include <stdio.h>
 void pis(int n, int *ver, int *edges, int *is, int *t1, int *t2) {
+    int p = omp_get_num_threads();
+    int conflicts[p];
+    for (int i = 0; i < p; i++) {
+        conflicts[i] = 0;
+    }
+
 #pragma omp for
     for (int i = 0; i < n; i++)
         is[i] = false;
@@ -47,9 +55,19 @@ void pis(int n, int *ver, int *edges, int *is, int *t1, int *t2) {
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 if (is[edges[j]] && edges[j] > v) {
                     is[v] = false;
+                    conflicts[omp_get_thread_num()]++;
                     break;
                 }
             }
         }
     }
+
+    int total_conflicts = 0;
+#pragma omp master
+    {
+        for (int i = 0; i < p; i++) {
+            total_conflicts += conflicts[i];
+        }
+    }
+    printf("Number of conflicts: %d\n", total_conflicts);
 }
