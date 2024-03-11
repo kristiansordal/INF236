@@ -68,6 +68,6 @@ void pis(int n, int *ver, int *edges, int *is, int *t1, int *t2) {
         for (int i = 0; i < p; i++) {
             total_conflicts += conflicts[i];
         }
+        printf("Number of conflicts: %d\n", total_conflicts);
     }
-    printf("Number of conflicts: %d\n", total_conflicts);
 }
