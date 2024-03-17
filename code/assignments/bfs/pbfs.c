@@ -62,7 +62,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         {
             for (i = 0; i < local_w; i++)
                 T[num_w++] = T_local[i];
-            printf("num_w: %d\n", num_w);
+            local_w = 0;
         }
 
 #pragma omp master
