@@ -24,36 +24,32 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int i, j;
-    int v, u;
-    int num_r, num_u;
-    int *temp;
+    int i, j, v, u, num_r = 1, num_u = 0, *temp, local_u = 0;
     int *T_local = malloc(n * sizeof(int));
-    int local_u = 0;
 
-    for (i = 1; i <= n; i++) { // Set that every node is unvisited
-        p[i] = -1;             // Using -1 to mark that a vertex is unvisited
-        dist[i] = -1;
+#pragma omp single
+    {
+        memset(p, -1, n * sizeof(int));
+        memset(dist, -1, n * sizeof(int));
+        p[1] = 1;
+        dist[1] = 0;
+        S[0] = 1;
+        T[0] = 0;
     }
 
-    p[1] = 1;
-    dist[1] = 0;
-    S[0] = 1;
-
-    num_r = 1;
-    num_u = 0;
+#pragma omp barrier
 
     while (num_r != 0) {
-#pragma omp barrier
-#pragma omp for
+#pragma omp for nowait
         for (i = 0; i < num_r; i++) {
             v = S[i];
             for (j = ver[v]; j < ver[v + 1]; j++) {
                 u = edges[j];
-                if (__sync_bool_compare_and_swap(&p[u], -1, v)) {
-                    p[u] = v;
-                    dist[u] = dist[v] + 1;
-                    T_local[local_u++] = u;
+                if (p[u] == -1) {
+                    if (__sync_bool_compare_and_swap(&p[u], -1, v)) {
+                        dist[u] = dist[v] + 1;
+                        T_local[local_u++] = u;
+                    }
                 }
             }
         }
