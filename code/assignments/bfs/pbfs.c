@@ -41,7 +41,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     while (num_r != 0) {
         for (i = 0; i < num_r; i++) {
             v = S[i];
-#pragma omp for private(j, w) schedule(static)
+#pragma omp for
             for (j = ver[v]; j < ver[v + 1]; j++) { // Go through the neighbors of v
                 w = edges[j];                       // Get next neighbor w of v
                 if (p[w] == -1) {                   // Check if w is undiscovered
