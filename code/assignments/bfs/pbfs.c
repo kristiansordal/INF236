@@ -43,7 +43,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     num_w = 0;
 
     while (num_r != 0) {
-#pragma omp for
+#pragma omp parallel for
         for (i = 0; i < num_r; i++) {
             v = S[i];
             for (j = ver[v]; j < ver[v + 1]; j++) {
@@ -58,7 +58,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
 #pragma omp critical
         {
-            // printf("Rank: %d -> %d", omp_get_thread_num(), local_w);
             for (i = 0; i < local_w; i++)
                 T[num_w++] = T_local[i];
         }
