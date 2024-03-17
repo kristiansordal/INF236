@@ -17,6 +17,7 @@
 // Note that the vertices are numbered from 1 to n (inclusive). Thus there is
 // no vertex 0.
 
+#include <stdio.h>
 void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     int i, j;         // Loop indices
@@ -51,6 +52,7 @@ void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         temp = S; // Swap S and T
         S = T;
         T = temp;
+        printf("num_w: %d\n", num_w);
         num_r = num_w; // Set number of elements in S
         num_w = 0;     // Set T as empty
     }                  //  End loop over entire graph
