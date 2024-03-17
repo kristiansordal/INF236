@@ -31,6 +31,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int *temp;
     int *T_local = malloc(n * sizeof(int));
     int local_w = 0;
+    printf("Before memset\n");
 
     memset(p, -1, n * sizeof(int));
     memset(dist, -1, n * sizeof(int));
@@ -42,7 +43,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     num_r = 1;
     num_w = 0;
 
+    printf("Starting search\n");
     while (num_r != 0) {
+        printf("num_r: %d\n", num_r);
 #pragma omp parallel for
         for (i = 0; i < num_r; i++) {
             v = S[i];
