@@ -44,7 +44,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     num_u = 0;
 
     while (num_r != 0) {
-#pragma omp for
         for (i = 0; i < num_r; i++) {
             v = S[i];
             for (j = ver[v]; j < ver[v + 1]; j++) {
