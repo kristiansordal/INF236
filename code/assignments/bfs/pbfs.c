@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int i, j, v, u, num_r = 1, num_u = 0, *temp, local_u = 0;
+    int v, u, num_r = 1, num_u = 0, *temp, local_u = 0;
     int *T_local = malloc(n * sizeof(int));
 
 #pragma omp single
@@ -40,10 +40,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
 
     while (num_r != 0) {
-#pragma omp for nowait private(v, j, u)
-        for (i = 0; i < num_r; i++) {
+#pragma omp for nowait private(v, u)
+        for (int i = 0; i < num_r; i++) {
             v = S[i];
-            for (j = ver[v]; j < ver[v + 1]; j++) {
+            for (int j = ver[v]; j < ver[v + 1]; j++) {
                 u = edges[j];
                 if (p[u] == -1) {
                     p[u] = v;
@@ -55,7 +55,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
 #pragma omp critical
         {
-            for (i = 0; i < local_u; i++) {
+            for (int i = 0; i < local_u; i++) {
                 T[num_u++] = T_local[i];
                 T_local[i] = 0;
             }
