@@ -40,16 +40,15 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
 
     while (num_r != 0) {
-#pragma omp for nowait
+#pragma omp for nowait private(v, j, u)
         for (i = 0; i < num_r; i++) {
             v = S[i];
             for (j = ver[v]; j < ver[v + 1]; j++) {
                 u = edges[j];
                 if (p[u] == -1) {
-                    if (__sync_bool_compare_and_swap(&p[u], -1, v)) {
-                        dist[u] = dist[v] + 1;
-                        T_local[local_u++] = u;
-                    }
+                    p[u] = v;
+                    dist[u] = dist[v] + 1;
+                    T_local[local_u++] = u;
                 }
             }
         }
@@ -60,6 +59,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 T[num_u++] = T_local[i];
                 T_local[i] = 0;
             }
+            local_u = 0;
         }
 
 #pragma omp master
@@ -71,8 +71,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             num_r = num_u;
             num_u = 0;
         }
-
-        local_u = 0;
     }
 
     free(T_local);
