@@ -26,9 +26,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int i, j;
     int v, w;
     int num_r, num_w;
-    // int *temp;
+    int *temp;
     int *T_local = malloc(n * sizeof(int));
-    int local_w;
+    int local_w = 0;
 
     memset(p, -1, n * sizeof(int));
     memset(dist, -1, n * sizeof(int));
@@ -41,10 +41,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     num_w = 0;
 
     while (num_r != 0) {
-#pragma omp barrier
-        local_w = 0;
-
-#pragma omp for private(T_local, local_w)
+#pragma omp for nowait
         for (i = 0; i < num_r; i++) {
             v = S[i];
             for (j = ver[v]; j < ver[v + 1]; j++) {
@@ -55,12 +52,12 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     T_local[local_w++] = w;
                 }
             }
+        }
 
 #pragma omp critical
-            {
-                for (i = 0; i < local_w; i++)
-                    T[num_w++] = T_local[i];
-            }
+        {
+            for (i = 0; i < local_w; i++)
+                T[num_w++] = T_local[i];
         }
 
 #pragma omp master
