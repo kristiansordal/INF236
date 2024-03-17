@@ -30,18 +30,15 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int *T_local = malloc(n * sizeof(int));
     int local_w;
 
-#pragma omp single
-    {
-        memset(p, -1, n * sizeof(int));
-        memset(dist, -1, n * sizeof(int));
+    memset(p, -1, n * sizeof(int));
+    memset(dist, -1, n * sizeof(int));
 
-        p[1] = 1;
-        dist[1] = 0;
-        S[0] = 1;
+    p[1] = 1;
+    dist[1] = 0;
+    S[0] = 1;
 
-        num_r = 1;
-        num_w = 0;
-    }
+    num_r = 1;
+    num_w = 0;
 
     while (num_r != 0) {
 #pragma omp barrier
