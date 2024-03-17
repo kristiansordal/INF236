@@ -21,45 +21,46 @@
 // no vertex 0.
 
 #include <omp.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int i, j;
-    int v, w;
-    int num_r, num_w;
+    int v, u;
+    int num_r, num_u;
     int *temp;
     int *T_local = malloc(n * sizeof(int));
-    int local_w = 0;
+    int local_u = 0;
 
-    memset(p, -1, n * sizeof(int));
-    memset(dist, -1, n * sizeof(int));
+    for (i = 1; i <= n; i++) { // Set that every node is unvisited
+        p[i] = -1;             // Using -1 to mark that a vertex is unvisited
+        dist[i] = -1;
+    }
 
     p[1] = 1;
     dist[1] = 0;
     S[0] = 1;
 
     num_r = 1;
-    num_w = 0;
+    num_u = 0;
 
     while (num_r != 0) {
 #pragma omp for
         for (i = 0; i < num_r; i++) {
             v = S[i];
             for (j = ver[v]; j < ver[v + 1]; j++) {
-                w = edges[j];
-                if (p[w] == -1) {
-                    p[w] = v;
-                    dist[w] = dist[v] + 1;
-                    T_local[local_w++] = w;
+                u = edges[j];
+                if (p[u] == -1) {
+                    p[u] = v;
+                    dist[u] = dist[v] + 1;
+                    T_local[local_u++] = u;
                 }
             }
         }
 
 #pragma omp critical
         {
-            for (i = 0; i < local_w; i++) {
-                T[num_w++] = T_local[i];
+            for (i = 0; i < local_u; i++) {
+                T[num_u++] = T_local[i];
                 T_local[i] = 0;
             }
         }
@@ -70,9 +71,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             S = T;
             T = temp;
 
-            num_r = num_w;
-            local_w = 0;
-            num_w = 0;
+            num_r = num_u;
+            local_u = 0;
+            num_u = 0;
         }
     }
 
