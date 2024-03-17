@@ -45,12 +45,12 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     while (num_r != 0) {
 #pragma omp barrier
+#pragma omp for
         for (i = 0; i < num_r; i++) {
             v = S[i];
-#pragma omp for
             for (j = ver[v]; j < ver[v + 1]; j++) {
                 u = edges[j];
-                if (p[u] == -1) {
+                if (__sync_bool_compare_and_swap(&p[u], -1, v)) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     T_local[local_u++] = u;
@@ -58,7 +58,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
 
-#pragma omp barrier
 #pragma omp critical
         {
             for (i = 0; i < local_u; i++) {
