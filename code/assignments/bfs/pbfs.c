@@ -45,9 +45,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     while (num_r != 0) {
 #pragma omp barrier
-#pragma omp for nowait
         for (i = 0; i < num_r; i++) {
             v = S[i];
+#pragma omp for
             for (j = ver[v]; j < ver[v + 1]; j++) {
                 u = edges[j];
                 if (p[u] == -1) {
