@@ -43,8 +43,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         num_w = 0;
     }
 
-#pragma omp barrier
     while (num_r != 0) {
+#pragma omp barrier
         local_w = 0;
         for (i = 0; i < num_r; i++) {
             v = S[i];
