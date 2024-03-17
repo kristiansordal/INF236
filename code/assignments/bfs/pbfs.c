@@ -21,6 +21,7 @@
 // no vertex 0.
 
 #include <stdlib.h>
+#include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int i, j;
     int v, w;
@@ -29,23 +30,25 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int *T_local = malloc(n * sizeof(int));
     int local_w;
 
-    for (i = 1; i <= n; i++) {
-        p[i] = -1;
-        dist[i] = -1;
+#pragma omp single
+    {
+        memset(p, -1, n * sizeof(int));
+        memset(dist, -1, n * sizeof(int));
+
+        p[1] = 1;
+        dist[1] = 0;
+        S[0] = 1;
+
+        num_r = 1;
+        num_w = 0;
     }
 
-    p[1] = 1;
-    dist[1] = 0;
-    S[0] = 1;
-
-    num_r = 1;
-    num_w = 0;
-
+#pragma omp barrier
     while (num_r != 0) {
         local_w = 0;
         for (i = 0; i < num_r; i++) {
             v = S[i];
-#pragma omp for
+#pragma omp for private(T_local, local_w)
             for (j = ver[v]; j < ver[v + 1]; j++) {
                 w = edges[j];
                 if (p[w] == -1) {
@@ -64,9 +67,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
 #pragma omp master
         {
-            temp = S;
-            S = T;
-            T = temp;
+            for (int i = 0; i < num_w; i++)
+                S[i] = T[i];
 
             num_r = num_w;
             num_w = 0;
