@@ -21,9 +21,14 @@
 // no vertex 0.
 
 #include <omp.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
+    for (int i = 0; i < n; i++) {
+        printf("%d ", S[i]);
+    }
+    printf("\n");
     int num_r = 1, num_u = 0, *temp, local_u = 0;
     int *T_local = malloc(n * sizeof(int));
 
@@ -34,7 +39,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         p[1] = 1;
         dist[1] = 0;
         S[0] = 1;
-        T[0] = 0;
     }
 
 #pragma omp barrier
