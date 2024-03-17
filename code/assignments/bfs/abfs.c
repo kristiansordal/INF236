@@ -7,7 +7,7 @@
 //
 // The algorithm should first perform some rounds of sequential BFS before starting a parallel
 // execution. In the parallel part each thread should be allocated a part of the vertices from the
-// last round of the sequential algorithm. Any discovered vertices in the parallel part should 
+// last round of the sequential algorithm. Any discovered vertices in the parallel part should
 // remain with the thread that discovered them. This continues until the entire graph has been
 // explored.
 //
@@ -18,15 +18,14 @@
 // edges : lists of neighbors of each vertex, each edge is listed in both direction
 // p     : array of length n used for parent pointers
 // dist  : array of length n used for distance from starting vertex
-// S     : array of length n used for maintaining queue of vertices to be processed, only used in the 
-//         sequential part. 
-// T     : array of length n where n >> number of threads. 
+// S     : array of length n used for maintaining queue of vertices to be processed, only used in the
+//         sequential part.
+// T     : array of length n where n >> number of threads.
 //
 // Note that the vertices are numbered from 1 to n (inclusive). Thus there is
 // no vertex 0.
 
-void abfs(int n,int *ver,int *edges,int *p,int *dist,int *S,int *T) {
+void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
-// Write code here
-
+    // Write code here
 }
