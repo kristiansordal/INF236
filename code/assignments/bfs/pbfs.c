@@ -32,10 +32,13 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp single
     {
         discovered = malloc(threads * sizeof(int *));
+        for (int i = 0; i < threads; i++) {
+            discovered[i] = malloc(n * sizeof(int));
+            memset(discovered[i], 0, n * sizeof(int));
+        }
+
         num_discovered = malloc(threads + 1 * sizeof(int));
         displs = malloc(threads * sizeof(int));
-        for (int i = 0; i < threads; i++)
-            discovered[i] = malloc(n * sizeof(int));
 
         memset(p, -1, (n + 1) * sizeof(int));
         memset(dist, -1, (n + 1) * sizeof(int));
