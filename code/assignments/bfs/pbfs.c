@@ -63,13 +63,12 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         {
             int s = pfs[0];
             pfs[0] = 0;
-            for (int i = 1; i < omp_get_num_threads() + 1; i++) {
+            for (int i = 1; i < omp_get_num_threads(); i++) {
                 const int t = s + pfs[i];
                 pfs[i] = s;
                 s = t;
             }
-            num_r = pfs[omp_get_num_threads()];
-            // printf("num_r: %d\n", num_r);
+            num_r = pfs[omp_get_num_threads() - 1];
         }
 
         for (int i = pfs[tid]; i < pfs[tid + 1]; i++) {
