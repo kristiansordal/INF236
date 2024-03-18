@@ -80,6 +80,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         {
             displs[0] = 0;
             layer_size = 0;
+            for (int i = 0; i < threads; i++)
+                printf("displs[%d],%d\n", i, displs[i]);
+
             for (int i = 1; i <= threads; i++) {
                 layer_size += num_discovered[i - 1];
                 displs[i] = displs[i - 1] + num_discovered[i - 1];
