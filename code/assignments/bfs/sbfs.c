@@ -52,7 +52,7 @@ void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         temp = S; // Swap S and T
         S = T;
         T = temp;
-        // printf("num_r: %d\n", num_r);
+        printf("num_r: %d\n", num_r);
         num_r = num_w; // Set number of elements in S
         num_w = 0;     // Set T as empty
     }                  //  End loop over entire graph
