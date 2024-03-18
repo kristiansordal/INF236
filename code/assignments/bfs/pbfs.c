@@ -43,8 +43,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S[0] = 1;
     }
 
+    printf("Starting Search\n");
+
     while (layer_size != 0) {
-#pragma omp for // perform each layer in parallel
+#pragma omp for
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
 
@@ -55,6 +57,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     discovered[tid][local_u++] = u;
+                    printf("discovered[%d][%d]: %d\n", tid, local_u - 1, discovered[tid][local_u - 1]);
                 }
             }
         }
