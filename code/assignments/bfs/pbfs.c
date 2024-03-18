@@ -25,19 +25,21 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size = 1, *num_discovered, *temp, **discovered;
+    int layer_size = 1, threads = omp_get_num_threads(), *num_discovered, *temp, *displs, **discovered;
+
     int tid = omp_get_thread_num();
 
 #pragma omp single
     {
-        discovered = malloc(omp_get_num_threads() * sizeof(int *));
-        num_discovered = malloc(omp_get_num_threads() + 1 * sizeof(int));
-        for (int i = 0; i < omp_get_num_threads(); i++)
+        discovered = malloc(threads * sizeof(int *));
+        num_discovered = malloc(threads + 1 * sizeof(int));
+        displs = malloc(threads * sizeof(int));
+        for (int i = 0; i < threads; i++)
             discovered[i] = malloc(n * sizeof(int));
 
         memset(p, -1, (n + 1) * sizeof(int));
         memset(dist, -1, (n + 1) * sizeof(int));
-        memset(num_discovered, 0, omp_get_num_threads() + 1);
+        memset(num_discovered, 0, threads + 1);
 
         p[1] = 1;
         dist[1] = 0;
@@ -61,27 +63,28 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
 
-#pragma omp master
+#pragma omp single
         {
-            int s = num_discovered[0];
-            num_discovered[0] = 0;
-            for (int i = 1; i < omp_get_num_threads() + 1; i++) {
-                const int t = s + num_discovered[i];
-                num_discovered[i] = s;
-                s = t;
+            displs[0] = 0;
+            for (int i = 1; i < threads; i++) {
+                displs[i] = displs[i - 1] + num_discovered[i - 1];
             }
-            layer_size = num_discovered[omp_get_num_threads()];
+            layer_size = displs[threads - 1] + num_discovered[threads - 1]; // Total new vertices discovered
         }
 
-        for (int i = num_discovered[tid]; i < num_discovered[tid + 1]; i++) {
-            T[i] = discovered[tid][i - num_discovered[tid]];
+#pragma omp for
+        for (int i = 0; i < threads; i++) {
+            if (num_discovered[i] > 0) {
+                memcpy(T + displs[i], discovered[i], num_discovered[i] * sizeof(int));
+            }
         }
-
-        temp = S; // Swap S and T
-        S = T;
-        T = temp;
-
-        num_discovered[tid] = 0;
+#pragma omp single
+        {
+            temp = S; // Swap S and T
+            S = T;
+            T = temp;
+            memset(num_discovered, 0, threads * sizeof(int));
+        }
     }
 
     free(discovered);
