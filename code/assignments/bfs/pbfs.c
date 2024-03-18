@@ -27,8 +27,9 @@
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, local_u = 0, *num_discovered, **discovered;
     int tid = omp_get_thread_num();
+    printf("Performing setup\n");
 
-#pragma omp master
+#pragma omp single
     {
         discovered = malloc(omp_get_num_threads() * sizeof(int *));
         for (int i = 0; i < omp_get_num_threads(); i++)
@@ -82,9 +83,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             layer_size = num_discovered[omp_get_num_threads() - 1];
         }
 
-        for (int i = num_discovered[tid]; i < num_discovered[tid + 1]; i++) {
-            S[i] = discovered[i - num_discovered[tid]];
-        }
+        // for (int i = num_discovered[tid]; i < num_discovered[tid + 1]; i++) {
+        //     S[i] = discovered[i - num_discovered[tid]];
+        // }
 
         num_discovered[tid] = 0;
     }
