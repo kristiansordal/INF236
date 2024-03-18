@@ -27,9 +27,9 @@
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp single
     {
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < n; i++) {
             for (int j = ver[i]; j < ver[i + 1]; j++) {
-                printf("%d -> %d\n", ver[i], edges[j]);
+                printf("%d -> %d\n", i, edges[j]);
             }
         }
     }
