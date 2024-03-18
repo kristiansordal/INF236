@@ -72,6 +72,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 printf("Thread %d: Done processing edge %d\n", tid, u);
             }
         }
+        printf("Thread %d waiting\n", tid);
 #pragma omp barrier
 #pragma omp single
         {
