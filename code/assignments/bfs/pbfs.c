@@ -57,6 +57,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 
         pfs[tid] = local_u;
+        printf("pfs[%d]: %d\n", tid, pfs[tid]);
 
 #pragma omp master
         {
