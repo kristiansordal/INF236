@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int num_r = 1, num_u = 0, *temp, local_u = 0;
+    int num_r = 1;
     int *T_local = malloc(n * sizeof(int));
     int *pfs = malloc(omp_get_num_threads() + 1 * sizeof(int));
     int tid = omp_get_thread_num();
@@ -53,6 +53,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 if (p[u] == -1) {          // if a node does not have a parent
                     p[u] = v;              // set its parent
                     dist[u] = dist[v] + 1; // update its distance
+                    int a = omp_get_thread_num() == tid;
+                    printf("%d\n", a);
                     T_local[pfs[tid]++] = u;
                 }
             }
