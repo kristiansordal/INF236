@@ -84,5 +84,4 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
     }
     printf("%d, done\n", tid);
-    free(discovered);
 }
