@@ -55,6 +55,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
                 if (p[u] == -1) {
                     p[u] = v;
+                    printf("parent of %d is %d\n", u, v);
                     dist[u] = dist[v] + 1;
                     discovered[tid][num_discovered[tid]++] = u;
                 }
