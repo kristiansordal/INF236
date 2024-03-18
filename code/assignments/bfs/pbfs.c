@@ -31,7 +31,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     discovered = malloc(n * sizeof(int));
     memset(discovered, 0, n * sizeof(int));
 
-#pragma omp master
+#pragma omp single
     {
         memset(p, -1, (n + 1) * sizeof(int));
         memset(dist, -1, (n + 1) * sizeof(int));
@@ -62,7 +62,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
         T[tid] = num_discovered;
         printf("Thread %d discovered %d vertices\n", tid, T[tid]);
-#pragma omp master
+#pragma omp single
         {
             int s = T[0];
             layer_size = s;
