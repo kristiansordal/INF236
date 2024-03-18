@@ -89,10 +89,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             printf("layer_size = %d\n", layer_size);
         }
 
-        memcpy(S + displs[tid], discovered[tid], num_discovered[tid] * sizeof(int));
-        printf("Thread %d: Done copying\n", tid);
-#pragma omp single
-        { memset(num_discovered, 0, threads * sizeof(int)); }
+        if (num_discovered[tid] > 0) {
+            memcpy(S + displs[tid], discovered[tid], num_discovered[tid] * sizeof(int));
+        }
+        num_discovered[tid] = 0;
     }
 
     free(discovered);
