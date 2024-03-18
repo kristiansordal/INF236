@@ -60,7 +60,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int s = pfs[0];
             pfs[0] = 0;
             for (int i = 1; i < omp_get_num_threads() + 1; i++) {
-                s += pfs[i - 1];
+                s += pfs[i];
                 pfs[i] = s;
             }
 
