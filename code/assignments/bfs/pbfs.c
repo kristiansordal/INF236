@@ -36,7 +36,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         dist[1] = 0;
         S[0] = 1;
     }
-    printf("dist[1]:%d\n", dist[1]);
 
 #pragma omp barrier
 
@@ -61,7 +60,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         {
             for (int i = 0; i < local_u; i++) {
                 T[num_u++] = T_local[i];
-                // printf("T[%d]: %d", num_u - 1, T[num_u - 1]);
                 T_local[i] = 0;
             }
             local_u = 0;
@@ -69,6 +67,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
 #pragma omp master
         {
+
+            printf("%d\n", num_u);
             temp = S; // Swap S and T
             S = T;
             T = temp;
