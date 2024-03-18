@@ -25,12 +25,16 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size = 1, *pfs, local_u = 0;
-    int *T_local = malloc(n * sizeof(int));
+    int layer_size = 1, local_u = 0, *pfs, **T_local;
     int tid = omp_get_thread_num();
 
 #pragma omp master
     {
+        T_local = malloc(omp_get_num_threads() * sizeof(int *));
+        for (int i = 0; i < omp_get_num_threads(); i++) {
+            T_local[i] = malloc(n * sizeof(int));
+        }
+
         p = malloc(omp_get_num_threads() + 1 * sizeof(int));
         memset(p, -1, n * sizeof(int));
         memset(dist, -1, n * sizeof(int));
@@ -48,10 +52,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
 
-                if (p[u] == -1) {          // if a node does not have a parent
-                    p[u] = v;              // set its parent
-                    dist[u] = dist[v] + 1; // update its distance
-                    T_local[local_u++] = u;
+                if (p[u] == -1) {
+                    p[u] = v;
+                    dist[u] = dist[v] + 1;
+                    T_local[tid][local_u++] = u;
                 }
             }
         }
