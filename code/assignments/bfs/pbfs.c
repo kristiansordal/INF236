@@ -41,8 +41,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     }
 
     while (num_r != 0) {
-#pragma omp barrier
-        pfs[tid] = 0;
 #pragma omp for // perform each layer in parallel
         for (int i = 0; i < num_r; i++) {
             int v = S[i];
@@ -57,7 +55,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 }
             }
         }
-#pragma omp barrier
 #pragma omp master
         {
             int s = pfs[0];
@@ -68,7 +65,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
 
-#pragma omp barrier
         for (int i = pfs[tid]; i < pfs[tid + 1]; i++) {
             T[i] = T_local[i - pfs[tid]];
         }
@@ -80,6 +76,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             T = temp;
             num_r = pfs[omp_get_num_threads()];
         }
+
+        pfs[tid] = 0;
     }
 
     free(T_local);
