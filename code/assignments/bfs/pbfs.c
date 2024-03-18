@@ -25,13 +25,13 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int num_r = 1, *pfs, local_u = 0;
+    int layer_size = 1, *pfs, local_u = 0;
     int *T_local = malloc(n * sizeof(int));
     int tid = omp_get_thread_num();
 
 #pragma omp master
     {
-        malloc(omp_get_num_threads() + 1 * sizeof(int));
+        p = malloc(omp_get_num_threads() + 1 * sizeof(int));
         memset(p, -1, n * sizeof(int));
         memset(dist, -1, n * sizeof(int));
         memset(pfs, 0, omp_get_num_threads() + 1);
@@ -40,9 +40,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S[0] = 1;
     }
 
-    while (num_r != 0) {
+    while (layer_size != 0) {
 #pragma omp for // perform each layer in parallel
-        for (int i = 0; i < num_r; i++) {
+        for (int i = 0; i < layer_size; i++) {
             int v = S[i];
 
             for (int j = ver[v]; j < ver[v + 1]; j++) {
@@ -68,7 +68,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 pfs[i] = s;
                 s = t;
             }
-            num_r = pfs[omp_get_num_threads() - 1];
+            layer_size = pfs[omp_get_num_threads() - 1];
         }
 
         for (int i = pfs[tid]; i < pfs[tid + 1]; i++) {
