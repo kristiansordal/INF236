@@ -34,14 +34,19 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         discovered = malloc(omp_get_num_threads() * sizeof(int *));
         for (int i = 0; i < omp_get_num_threads(); i++)
             discovered[i] = malloc(n * sizeof(int));
+        printf("Allocated discovered\n");
 
         p = malloc(omp_get_num_threads() + 1 * sizeof(int));
         memset(p, -1, n * sizeof(int));
         memset(dist, -1, n * sizeof(int));
         memset(num_discovered, 0, omp_get_num_threads());
+
+        printf("Allocated discovered\n");
         p[1] = 1;
         dist[1] = 0;
         S[0] = 1;
+
+        printf("Allocated discovered\n");
     }
 
     printf("Starting Search\n");
