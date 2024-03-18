@@ -42,6 +42,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     printf("Starting Search\n");
     while (layer_size != 0) {
+        printf("Thread %d starting round with %d vertices\n", tid, layer_size);
 #pragma omp barrier
 #pragma omp for nowait
         for (int i = 0; i < layer_size; i++) {
