@@ -69,6 +69,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
 
+#pragma omp barrier
         if (num_discovered > 0) {
             memcpy(S + T[tid], discovered, num_discovered * sizeof(int));
             memset(discovered, 0, num_discovered * sizeof(int));
