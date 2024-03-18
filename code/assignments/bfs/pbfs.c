@@ -52,7 +52,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     }
 
     for (int i = 0; i <= threads; i++) {
-        printf("rank: %d, %d", tid, num_discovered[i]);
+        printf("rank: %d, %d\n", tid, num_discovered[i]);
     }
 
     printf("Starting Search\n");
