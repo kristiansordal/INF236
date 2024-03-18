@@ -96,13 +96,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             printf("layer_size = %d\n", layer_size);
         }
 
-#pragma omp barrier
-#pragma omp for
-        for (int i = 0; i < threads; i++) {
-            if (num_discovered[i] > 0) {
-                memcpy(S + displs[i], discovered[i], num_discovered[i] * sizeof(int));
-            }
-        }
+        memcpy(S + displs[tid], discovered[tid], num_discovered[tid] * sizeof(int));
         printf("Thread %d: Done copying\n", tid);
 #pragma omp single
         { memset(num_discovered, 0, threads * sizeof(int)); }
