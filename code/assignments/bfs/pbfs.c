@@ -25,16 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-#pragma omp single
-    {
-        for (int i = 0; i < n; i++) {
-            for (int j = ver[i]; j < ver[i + 1]; j++) {
-                printf("%d -> %d\n", i, edges[j]);
-            }
-        }
-    }
-
-    int layer_size = 1, local_u = 0, *num_discovered, **discovered;
+    int layer_size = 1, *num_discovered, **discovered;
     int tid = omp_get_thread_num();
 
 #pragma omp single
@@ -46,7 +37,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
         memset(p, -1, n * sizeof(int));
         memset(dist, -1, n * sizeof(int));
-        memset(num_discovered, 0, omp_get_num_threads());
+        memset(num_discovered, 0, omp_get_num_threads() + 1);
 
         p[1] = 1;
         dist[1] = 0;
@@ -65,17 +56,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
-                    discovered[tid][local_u++] = u;
-                    printf("discovered %d\n", u);
+                    discovered[tid][num_discovered[tid]++] = u;
                 }
-            }
-        }
-
-        num_discovered[tid] = local_u;
-#pragma omp critical
-        {
-            for (int i = 0; i < num_discovered[tid]; i++) {
-                printf("discovered[%d][%d]: %d\n", tid, i, discovered[tid][i]);
             }
         }
 
@@ -83,20 +65,21 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         {
             int s = num_discovered[0];
             num_discovered[0] = 0;
-            for (int i = 1; i < omp_get_num_threads(); i++) {
+            for (int i = 1; i < omp_get_num_threads() + 1; i++) {
                 const int t = s + num_discovered[i];
                 num_discovered[i] = s;
                 s = t;
             }
-            layer_size = num_discovered[omp_get_num_threads() - 1];
+            layer_size = num_discovered[omp_get_num_threads()];
         }
 
-        // for (int i = num_discovered[tid]; i < num_discovered[tid + 1]; i++) {
-        //     S[i] = discovered[i - num_discovered[tid]];
-        // }
+        for (int i = num_discovered[tid]; i < num_discovered[tid + 1]; i++) {
+            S[i] = discovered[tid][i - num_discovered[tid]];
+        }
 
         num_discovered[tid] = 0;
     }
 
     free(discovered);
+    free(num_discovered);
 }
