@@ -69,7 +69,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         // temp = S; // Swap S and T
         // S = T;
         // T = temp;
-        num_r = pfs[omp_get_num_threads()];
+        num_r = pfs[omp_get_num_threads() - 1];
         // printf("num_r: %d", num_r);
 
         pfs[tid] = 0;
