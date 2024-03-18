@@ -25,80 +25,60 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size = 1, threads = omp_get_num_threads(), *num_discovered, *displs, **discovered;
+    int layer_size = 1, threads = omp_get_num_threads(), num_discovered = 0, *discovered;
     int tid = omp_get_thread_num();
+
+    discovered = malloc(n * sizeof(int));
+    memset(discovered, 0, n * sizeof(int));
 
 #pragma omp master
     {
-        printf("TID: %d\n", tid);
-        discovered = malloc(threads * sizeof(int *));
-        for (int i = 0; i < threads; i++) {
-            discovered[i] = malloc(n * sizeof(int));
-        }
-
-        num_discovered = malloc(threads * sizeof(int));
-
-        for (int i = 1; i <= n; i++) {
-            p[i] = -1;
-            dist[i] = -1;
-        }
-
+        memset(p, -1, (n + 1) * sizeof(int));
+        memset(dist, -1, (n + 1) * sizeof(int));
         p[1] = 1;
         dist[1] = 0;
         S[0] = 1;
     }
 
-    displs = malloc(threads * sizeof(int));
-
-#pragma omp barrier
-    displs[tid] = 0;
-    num_discovered[tid] = 0;
-    for (int i = 0; i < n; i++)
-        discovered[tid][i] = 0;
-
     printf("Starting Search\n");
-#pragma omp barrier
     while (layer_size != 0) {
 #pragma omp for nowait
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
-            printf("Thread %d: Processing vertex %d\n", tid, v);
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
 
-                printf("Thread %d: Processing edge %d\n", tid, u);
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
-                    discovered[tid][num_discovered[tid]++] = u;
+                    discovered[num_discovered++] = u;
                 }
-                printf("Thread %d: Done processing edge %d\n", tid, u);
             }
         }
+        T[tid] = num_discovered;
 #pragma omp master
         {
-            displs[0] = 0;
-            layer_size = 0;
-            for (int i = 0; i < threads; i++)
-                printf("displs[%d],%d\n", i, displs[i]);
-
-            for (int i = 1; i <= threads; i++) {
-                layer_size += num_discovered[i - 1];
-                displs[i] = displs[i - 1] + num_discovered[i - 1];
-                printf("displs[%d] = %d\n", i, displs[i]);
+            int s = T[0];
+            layer_size = s;
+            T[0] = 0;
+            for (int i = 1; i < threads; i++) {
+                layer_size += T[i];
+                const int t = s + T[i];
+                T[i] = s;
+                s = t;
             }
-            layer_size = displs[threads - 1] + num_discovered[threads - 1]; // Total new vertices discovered
-            printf("layer_size = %d\n", layer_size);
         }
 
-        if (num_discovered[tid] > 0) {
-            memcpy(S + displs[tid], discovered[tid], num_discovered[tid] * sizeof(int));
+        if (num_discovered > 0) {
+            memcpy(S + T[tid], discovered, num_discovered * sizeof(int));
+            num_discovered = 0;
         }
-        num_discovered[tid] = 0;
-        memset(discovered[tid], 0, n * sizeof(int));
+#pragma omp single
+        {
+            for (int i = 0; i < layer_size; i++)
+                T[i] = 0;
+        }
     }
 
     free(discovered);
-    free(num_discovered);
-    free(displs);
 }
