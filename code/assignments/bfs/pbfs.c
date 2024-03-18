@@ -36,11 +36,14 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         dist[1] = 0;
         S[0] = 1;
     }
-    printf("dist[1]:%d", dist[1]);
+    printf("dist[1]:%d\n", dist[1]);
 
 #pragma omp barrier
 
     while (num_r != 0) {
+        if (num_r < omp_get_num_threads())
+            omp_set_num_threads(num_r);
+
 #pragma omp for
         for (int i = 0; i < num_r; i++) {
             int v = S[i];
