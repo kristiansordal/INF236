@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size = 1, threads = omp_get_num_threads(), *num_discovered, *temp, *displs, **discovered;
+    int layer_size = 1, threads = omp_get_num_threads(), *num_discovered, *displs, **discovered;
 
     int tid = omp_get_thread_num();
 
@@ -75,7 +75,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
         printf("Thread %d waiting\n", tid);
 #pragma omp barrier
-#pragma omp single
+        printf("Thread %d done waiting\n", tid);
+#pragma omp master
         {
             displs[0] = 0;
             for (int i = 1; i < threads; i++) {
@@ -84,23 +85,18 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             layer_size = displs[threads - 1] + num_discovered[threads - 1]; // Total new vertices discovered
         }
 
+#pragma omp barrier
 #pragma omp for
         for (int i = 0; i < threads; i++) {
             if (num_discovered[i] > 0) {
-                memcpy(T + displs[i], discovered[i], num_discovered[i] * sizeof(int));
+                memcpy(S + displs[i], discovered[i], num_discovered[i] * sizeof(int));
             }
         }
 #pragma omp single
-        {
-            temp = S; // Swap S and T
-            S = T;
-            T = temp;
-            memset(num_discovered, 0, threads * sizeof(int));
-        }
+        { memset(num_discovered, 0, threads * sizeof(int)); }
     }
 
     free(discovered);
     free(num_discovered);
     free(displs);
-    free(temp);
 }
