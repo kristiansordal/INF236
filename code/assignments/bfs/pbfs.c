@@ -36,7 +36,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             discovered[i] = malloc(n * sizeof(int));
         printf("Allocated discovered\n");
 
-        p = malloc(omp_get_num_threads() + 1 * sizeof(int));
         memset(p, -1, n * sizeof(int));
         memset(dist, -1, n * sizeof(int));
         memset(num_discovered, 0, omp_get_num_threads());
