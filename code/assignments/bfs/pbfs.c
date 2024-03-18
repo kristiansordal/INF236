@@ -81,8 +81,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             displs[0] = 0;
             for (int i = 1; i < threads; i++) {
                 displs[i] = displs[i - 1] + num_discovered[i - 1];
+                printf("displs[%d] = %d\n", i, displs[i]);
             }
             layer_size = displs[threads - 1] + num_discovered[threads - 1]; // Total new vertices discovered
+            printf("layer_size = %d\n", layer_size);
         }
 
 #pragma omp barrier
