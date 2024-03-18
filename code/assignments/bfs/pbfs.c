@@ -38,8 +38,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             memset(discovered[i], 0, n * sizeof(int));
         }
 
-        num_discovered = malloc(threads + 1 * sizeof(int));
-        memset(num_discovered, 0, threads + 1);
+        num_discovered = malloc(threads * sizeof(int));
+        memset(num_discovered, 0, threads * sizeof(int));
 
         displs = malloc(threads * sizeof(int));
         memset(displs, 0, threads * sizeof(int));
@@ -54,7 +54,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
 #pragma omp barrier
     printf("tid: %d\n", tid);
-    for (int i = 0; i <= threads; i++) {
+    for (int i = 0; i < threads; i++) {
         printf("rank: %d, %d\n", tid, num_discovered[i]);
     }
 
