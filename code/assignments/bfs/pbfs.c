@@ -58,9 +58,15 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
                 printf("Thread %d: Processing edge %d\n", tid, u);
                 if (p[u] == -1) {
+
+                    printf("1\n");
                     p[u] = v;
+                    printf("2\n");
                     dist[u] = dist[v] + 1;
+
+                    printf("3\n");
                     discovered[tid][num_discovered[tid]++] = u;
+                    printf("4\n");
                 }
                 printf("Thread %d: Done processing edge %d\n", tid, u);
             }
