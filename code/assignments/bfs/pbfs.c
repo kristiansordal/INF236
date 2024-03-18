@@ -29,7 +29,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     int tid = omp_get_thread_num();
 
-#pragma omp single
+#pragma omp master
     {
         discovered = malloc(threads * sizeof(int *));
         for (int i = 0; i < threads; i++) {
@@ -38,18 +38,19 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 
         num_discovered = malloc(threads * sizeof(int));
-        memset(num_discovered, 0, threads * sizeof(int));
 
         displs = malloc(threads * sizeof(int));
-        memset(displs, 0, threads * sizeof(int));
-
-        memset(p, -1, (n + 1) * sizeof(int));
-        memset(dist, -1, (n + 1) * sizeof(int));
-
-        p[1] = 1;
-        dist[1] = 0;
-        S[0] = 1;
     }
+
+    memset(displs, 0, threads * sizeof(int));
+    memset(num_discovered, 0, threads * sizeof(int));
+
+    memset(p, -1, (n + 1) * sizeof(int));
+    memset(dist, -1, (n + 1) * sizeof(int));
+
+    p[1] = 1;
+    dist[1] = 0;
+    S[0] = 1;
 
 #pragma omp barrier
     printf("Starting Search\n");
