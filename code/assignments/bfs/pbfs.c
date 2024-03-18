@@ -52,7 +52,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     printf("Starting Search\n");
     while (layer_size != 0) {
 #pragma omp barrier
-#pragma omp for
+#pragma omp for nowait
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             printf("Thread %d: Processing vertex %d\n", tid, v);
