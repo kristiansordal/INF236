@@ -37,25 +37,22 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S[0] = 1;
     }
 
-#pragma omp barrier
-
     while (num_r != 0) {
-        if (num_r < omp_get_num_threads())
-            omp_set_num_threads(num_r);
-
-#pragma omp for
+#pragma omp for // perform each layer in parallel
         for (int i = 0; i < num_r; i++) {
             int v = S[i];
+
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-                if (p[u] == -1) {
-                    p[u] = v;
-                    dist[u] = dist[v] + 1;
-                    T_local[local_u++] = u;
+
+                if (p[u] == -1) {           // if a node does not have a parent
+                    p[u] = v;               // set its parent
+                    dist[u] = dist[v] + 1;  // update its distance
+                    T_local[local_u++] = u; // put it in the local T (what is to become the queue for the next layer)
+                                            // and increase the pointer
                 }
             }
         }
-
 #pragma omp barrier
 #pragma omp critical
         {
