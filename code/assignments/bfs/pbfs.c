@@ -27,29 +27,21 @@
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, local_u = 0, *num_discovered, **discovered;
     int tid = omp_get_thread_num();
-    printf("Performing setup\n");
 
 #pragma omp single
     {
         discovered = malloc(omp_get_num_threads() * sizeof(int *));
-        num_discovered = malloc(omp_get_num_threads() * sizeof(int));
+        num_discovered = malloc(omp_get_num_threads() + 1 * sizeof(int));
         for (int i = 0; i < omp_get_num_threads(); i++)
             discovered[i] = malloc(n * sizeof(int));
-        printf("Allocated discovered\n");
 
         memset(p, -1, n * sizeof(int));
-        printf("memset p\n");
         memset(dist, -1, n * sizeof(int));
-        printf("memset dist\n");
         memset(num_discovered, 0, omp_get_num_threads());
-        printf("memset num_discovered\n");
 
-        printf("Allocated discovered\n");
         p[1] = 1;
         dist[1] = 0;
         S[0] = 1;
-
-        printf("Allocated discovered\n");
     }
 
     printf("Starting Search\n");
