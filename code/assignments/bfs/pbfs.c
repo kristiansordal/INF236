@@ -51,7 +51,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     }
 
 #pragma omp barrier
-    printf("p[1]: %d", p[1]);
+    for (int i = 0; i < threads; i++) {
+        printf("num_discovered[%d] = %d\n", i, num_discovered[i]);
+    }
     printf("Starting Search\n");
     while (layer_size != 0) {
 
