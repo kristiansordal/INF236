@@ -27,7 +27,7 @@
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int num_r = 1, *temp, local_u = 0;
     int *T_local = malloc(n * sizeof(int));
-    int *pfs = malloc(omp_get_num_threads() * sizeof(int));
+    int *pfs = malloc(omp_get_num_threads() + 1 * sizeof(int));
     int tid = omp_get_thread_num();
 
 #pragma omp single
@@ -58,9 +58,20 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
         pfs[tid] = local_u;
 
-        for (int i = 0; i < omp_get_num_threads(); i++) {
-            printf("pfs[%d]: %d\n", i, pfs[i]);
+#pragma omp master
+        {
+            int s = pfs[0];
+            pfs[0] = 0;
+
+            for (int i = 1; i < omp_get_num_threads() + 1; i++) {
+                pfs[i] = s;
+                s += pfs[i];
+                printf("pfs[%d],%d\n", i, pfs[i]);
+            }
         }
+        // for (int i = 0; i < omp_get_num_threads(); i++) {
+        //     printf("pfs[%d]: %d\n", i, pfs[i]);
+        // }
 
         for (int i = pfs[tid]; i < pfs[tid + 1]; i++) {
             S[i] = T_local[i - pfs[tid]];
