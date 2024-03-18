@@ -34,14 +34,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         discovered = malloc(threads * sizeof(int *));
         for (int i = 0; i < threads; i++) {
             discovered[i] = malloc(n * sizeof(int));
-            for (int j = 0; j < n; j++)
-                discovered[i][j] = 0;
         }
 
         num_discovered = malloc(threads * sizeof(int));
-        for (int i = 0; i < threads; i++)
-            num_discovered[i] = 0;
-
         displs = malloc(threads * sizeof(int));
 
         for (int i = 1; i <= n; i++) {
@@ -53,6 +48,11 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         dist[1] = 0;
         S[0] = 1;
     }
+
+    displs[tid] = 0;
+    num_discovered[tid] = 0;
+    for (int i = 0; i < n; i++)
+        discovered[tid][i] = 0;
 
     printf("Starting Search\n");
 #pragma omp barrier
