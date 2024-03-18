@@ -55,16 +55,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S[0] = 1;
     }
 
-#pragma omp barrier
-    if (tid == 1) {
-        for (int i = 0; i < threads; i++) {
-            printf("tid; %d, num_discovered[%d] = %d\n", tid, i, num_discovered[i]);
-        }
-    }
     printf("Starting Search\n");
 #pragma omp barrier
     while (layer_size != 0) {
-#pragma omp for
+#pragma omp for nowait
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             printf("Thread %d: Processing vertex %d\n", tid, v);
@@ -84,9 +78,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 printf("Thread %d: Done processing edge %d\n", tid, u);
             }
         }
-        printf("Thread %d waiting\n", tid);
-#pragma omp barrier
-        printf("Thread %d done waiting\n", tid);
+        // printf("Thread %d waiting\n", tid);
+        // printf("Thread %d done waiting\n", tid);
 #pragma omp single
         {
             displs[0] = 0;
@@ -110,6 +103,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 memcpy(S + displs[i], discovered[i], num_discovered[i] * sizeof(int));
             }
         }
+        printf("Thread %d: Done copying\n", tid);
 #pragma omp single
         { memset(num_discovered, 0, threads * sizeof(int)); }
     }
