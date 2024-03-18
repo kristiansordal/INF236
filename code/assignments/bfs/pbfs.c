@@ -80,7 +80,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 printf("Thread %d: Done processing edge %d\n", tid, u);
             }
         }
-#pragma omp single
+#pragma omp master
         {
             displs[0] = 0;
             layer_size = 0;
