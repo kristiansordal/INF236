@@ -40,15 +40,15 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         num_discovered = malloc(threads * sizeof(int));
         displs = malloc(threads * sizeof(int));
 
-        memset(num_discovered, 0, threads * sizeof(int));
-        memset(displs, 0, threads * sizeof(int));
-        memset(p, -1, (n + 1) * sizeof(int));
-        memset(dist, -1, (n + 1) * sizeof(int));
-
         p[1] = 1;
         dist[1] = 0;
         S[0] = 1;
     }
+
+    memset(num_discovered, 0, threads * sizeof(int));
+    memset(displs, 0, threads * sizeof(int));
+    memset(p, -1, (n + 1) * sizeof(int));
+    memset(dist, -1, (n + 1) * sizeof(int));
 
 #pragma omp barrier
     if (tid == 1) {
