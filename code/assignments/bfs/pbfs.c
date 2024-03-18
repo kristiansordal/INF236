@@ -43,8 +43,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             num_discovered[i] = 0;
 
         displs = malloc(threads * sizeof(int));
-        for (int i = 0; i < threads; i++)
-            displs[i] = 0;
 
         for (int i = 1; i <= n; i++) {
             p[i] = -1;
@@ -57,7 +55,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     }
 
     printf("Starting Search\n");
-    printf("TID: %d waiting\n", tid);
 #pragma omp barrier
     while (layer_size != 0) {
 #pragma omp for nowait
@@ -69,13 +66,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
                 printf("Thread %d: Processing edge %d\n", tid, u);
                 if (p[u] == -1) {
-                    printf("1\n");
                     p[u] = v;
-                    printf("2\n");
                     dist[u] = dist[v] + 1;
-                    printf("3\n");
                     discovered[tid][num_discovered[tid]++] = u;
-                    printf("4\n");
                 }
                 printf("Thread %d: Done processing edge %d\n", tid, u);
             }
