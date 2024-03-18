@@ -65,14 +65,11 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             T[i] = T_local[i - pfs[tid]];
         }
 
-#pragma omp master
-        {
-            temp = S; // Swap S and T
-            S = T;
-            T = temp;
-            num_r = pfs[omp_get_num_threads()];
-            printf("num_r: %d", num_r);
-        }
+        temp = S; // Swap S and T
+        S = T;
+        T = temp;
+        num_r = pfs[omp_get_num_threads()];
+        printf("num_r: %d", num_r);
 
         pfs[tid] = 0;
     }
