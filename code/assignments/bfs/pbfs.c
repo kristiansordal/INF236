@@ -25,13 +25,13 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int num_r = 1, *temp, local_u = 0;
+    int num_r = 1, *pfs, local_u = 0;
     int *T_local = malloc(n * sizeof(int));
-    int *pfs = malloc(omp_get_num_threads() + 1 * sizeof(int));
     int tid = omp_get_thread_num();
 
 #pragma omp master
     {
+        malloc(omp_get_num_threads() + 1 * sizeof(int));
         memset(p, -1, n * sizeof(int));
         memset(dist, -1, n * sizeof(int));
         memset(pfs, 0, omp_get_num_threads() + 1);
