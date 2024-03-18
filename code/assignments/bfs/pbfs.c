@@ -52,6 +52,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     printf("Starting Search\n");
     while (layer_size != 0) {
 #pragma omp barrier
+#pragma omp for
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             printf("Thread %d: Processing vertex %d\n", tid, v);
@@ -60,7 +61,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
                 printf("Thread %d: Processing edge %d\n", tid, u);
                 if (p[u] == -1) {
-
                     printf("1\n");
                     p[u] = v;
                     printf("2\n");
@@ -72,7 +72,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 printf("Thread %d: Done processing edge %d\n", tid, u);
             }
         }
-
+#pragma omp barrier
 #pragma omp single
         {
             displs[0] = 0;
