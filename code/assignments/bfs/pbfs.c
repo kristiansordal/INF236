@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size = 1, *num_discovered, **discovered;
+    int layer_size = 1, *num_discovered, *temp, **discovered;
     int tid = omp_get_thread_num();
 
 #pragma omp single
@@ -46,10 +46,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     printf("Starting Search\n");
     while (layer_size != 0) {
-#pragma omp for
-        for (int i = 0; i <= omp_get_num_threads(); i++) {
-            num_discovered[i] = 0;
-        }
+#pragma omp barrier
 #pragma omp for
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
@@ -58,7 +55,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
                 if (p[u] == -1) {
                     p[u] = v;
-                    printf("parent of %d is %d\n", u, v);
                     dist[u] = dist[v] + 1;
                     discovered[tid][num_discovered[tid]++] = u;
                 }
@@ -78,8 +74,12 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 
         for (int i = num_discovered[tid]; i < num_discovered[tid + 1]; i++) {
-            S[i] = discovered[tid][i - num_discovered[tid]];
+            T[i] = discovered[tid][i - num_discovered[tid]];
         }
+
+        temp = S; // Swap S and T
+        S = T;
+        T = temp;
 
         num_discovered[tid] = 0;
     }
