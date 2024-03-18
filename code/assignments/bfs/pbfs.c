@@ -51,6 +51,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S[0] = 1;
     }
 
+    for (int i = 0; i <= threads; i++) {
+        printf("rank: %d, %d", tid, num_discovered[i]);
+    }
+
     printf("Starting Search\n");
     while (layer_size != 0) {
 #pragma omp for nowait
