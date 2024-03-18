@@ -41,7 +41,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     }
 
     while (layer_size != 0) {
-#pragma omp barrier
 #pragma omp for
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
