@@ -37,7 +37,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 
         num_discovered = malloc(threads * sizeof(int));
-        displs = malloc(threads * sizeof(int));
 
         for (int i = 1; i <= n; i++) {
             p[i] = -1;
@@ -48,6 +47,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         dist[1] = 0;
         S[0] = 1;
     }
+
+    displs = malloc(threads * sizeof(int));
 
 #pragma omp barrier
     displs[tid] = 0;
