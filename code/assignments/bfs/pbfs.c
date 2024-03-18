@@ -35,8 +35,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         for (int i = 0; i < omp_get_num_threads(); i++)
             discovered[i] = malloc(n * sizeof(int));
 
-        memset(p, -1, n * sizeof(int));
-        memset(dist, -1, n * sizeof(int));
+        memset(p, -1, n + 1 * sizeof(int));
+        memset(dist, -1, n + 1 * sizeof(int));
         memset(num_discovered, 0, omp_get_num_threads() + 1);
 
         p[1] = 1;
@@ -45,7 +45,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     }
 
     printf("Starting Search\n");
-
     while (layer_size != 0) {
 #pragma omp for
         for (int i = 0; i < layer_size; i++) {
