@@ -49,6 +49,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S[0] = 1;
     }
 
+#pragma omp barrier
     displs[tid] = 0;
     num_discovered[tid] = 0;
     for (int i = 0; i < n; i++)
