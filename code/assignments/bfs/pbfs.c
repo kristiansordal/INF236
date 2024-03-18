@@ -28,6 +28,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, threads = omp_get_num_threads(), *num_discovered, *displs, **discovered;
 
     int tid = omp_get_thread_num();
+    printf("tid: %d\n", tid);
 
 #pragma omp master
     {
@@ -51,6 +52,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S[0] = 1;
     }
 
+    printf("tid: %d\n", tid);
     for (int i = 0; i <= threads; i++) {
         printf("rank: %d, %d\n", tid, num_discovered[i]);
     }
