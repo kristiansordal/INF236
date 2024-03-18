@@ -56,6 +56,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
 
+#pragma omp barrier
 #pragma omp critical
         {
             for (int i = 0; i < local_u; i++) {
