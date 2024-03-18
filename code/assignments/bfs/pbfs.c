@@ -29,7 +29,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     int tid = omp_get_thread_num();
 
-#pragma omp master
+#pragma omp single
     {
         discovered = malloc(threads * sizeof(int *));
         for (int i = 0; i < threads; i++) {
@@ -52,15 +52,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     }
 
 #pragma omp barrier
-    printf("tid: %d\n", tid);
-    for (int i = 0; i < threads; i++) {
-        printf("rank: %d, %d\n", tid, num_discovered[i]);
-    }
-#pragma omp barrier
-
     printf("Starting Search\n");
     while (layer_size != 0) {
-#pragma omp for nowait
+
+#pragma omp for
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             printf("Thread %d: Processing vertex %d\n", tid, v);
