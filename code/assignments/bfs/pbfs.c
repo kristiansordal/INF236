@@ -66,6 +66,10 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 T[i] = s;
                 s = t;
             }
+
+            for (int i = 0; i < threads; i++) {
+                printf("%d, %d\n", i, T[i]);
+            }
         }
 
 #pragma omp barrier
