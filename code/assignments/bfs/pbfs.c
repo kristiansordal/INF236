@@ -49,7 +49,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp for
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
-            for (int j = ver[v]; j <= ver[v + 1]; j++) {
+            for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
 
                 if (p[u] == -1) {
