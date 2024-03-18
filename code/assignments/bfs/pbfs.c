@@ -53,6 +53,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
+                printf("u: %d\n", u);
 
                 if (p[u] == -1) {
                     p[u] = v;
