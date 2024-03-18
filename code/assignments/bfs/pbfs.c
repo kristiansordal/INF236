@@ -51,7 +51,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 if (p[u] == -1) {          // if a node does not have a parent
                     p[u] = v;              // set its parent
                     dist[u] = dist[v] + 1; // update its distance
-                    T_local[pfs[tid]++] = u;
+                    T_local[pfs[omp_get_thread_num()]++] = u;
                 }
             }
         }
