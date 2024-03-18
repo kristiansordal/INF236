@@ -78,7 +78,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         printf("Thread %d waiting\n", tid);
 #pragma omp barrier
         printf("Thread %d done waiting\n", tid);
-#pragma omp master
+#pragma omp single
         {
             displs[0] = 0;
             layer_size = 0;
