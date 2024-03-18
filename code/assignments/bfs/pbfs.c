@@ -55,57 +55,57 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         printf("tid; %d, num_discovered[%d] = %d\n", tid, i, num_discovered[i]);
     }
     printf("Starting Search\n");
-#pragma omp barrier
-    while (layer_size != 0) {
-#pragma omp for
-        for (int i = 0; i < layer_size; i++) {
-            int v = S[i];
-            printf("Thread %d: Processing vertex %d\n", tid, v);
-            for (int j = ver[v]; j < ver[v + 1]; j++) {
-                int u = edges[j];
+    // #pragma omp barrier
+    //     while (layer_size != 0) {
+    // #pragma omp for
+    //         for (int i = 0; i < layer_size; i++) {
+    //             int v = S[i];
+    //             printf("Thread %d: Processing vertex %d\n", tid, v);
+    //             for (int j = ver[v]; j < ver[v + 1]; j++) {
+    //                 int u = edges[j];
 
-                printf("Thread %d: Processing edge %d\n", tid, u);
-                if (p[u] == -1) {
-                    printf("1\n");
-                    p[u] = v;
-                    printf("2\n");
-                    dist[u] = dist[v] + 1;
-                    printf("3\n");
-                    discovered[tid][num_discovered[tid]++] = u;
-                    printf("4\n");
-                }
-                printf("Thread %d: Done processing edge %d\n", tid, u);
-            }
-        }
-        printf("Thread %d waiting\n", tid);
-#pragma omp barrier
-        printf("Thread %d done waiting\n", tid);
-#pragma omp single
-        {
-            displs[0] = 0;
-            layer_size = 0;
-            for (int i = 0; i < threads; i++)
-                printf("displs[%d],%d\n", i, displs[i]);
+    //                 printf("Thread %d: Processing edge %d\n", tid, u);
+    //                 if (p[u] == -1) {
+    //                     printf("1\n");
+    //                     p[u] = v;
+    //                     printf("2\n");
+    //                     dist[u] = dist[v] + 1;
+    //                     printf("3\n");
+    //                     discovered[tid][num_discovered[tid]++] = u;
+    //                     printf("4\n");
+    //                 }
+    //                 printf("Thread %d: Done processing edge %d\n", tid, u);
+    //             }
+    //         }
+    //         printf("Thread %d waiting\n", tid);
+    // #pragma omp barrier
+    //         printf("Thread %d done waiting\n", tid);
+    // #pragma omp single
+    //         {
+    //             displs[0] = 0;
+    //             layer_size = 0;
+    //             for (int i = 0; i < threads; i++)
+    //                 printf("displs[%d],%d\n", i, displs[i]);
 
-            for (int i = 1; i <= threads; i++) {
-                layer_size += num_discovered[i - 1];
-                displs[i] = displs[i - 1] + num_discovered[i - 1];
-                printf("displs[%d] = %d\n", i, displs[i]);
-            }
-            layer_size = displs[threads - 1] + num_discovered[threads - 1]; // Total new vertices discovered
-            printf("layer_size = %d\n", layer_size);
-        }
+    //             for (int i = 1; i <= threads; i++) {
+    //                 layer_size += num_discovered[i - 1];
+    //                 displs[i] = displs[i - 1] + num_discovered[i - 1];
+    //                 printf("displs[%d] = %d\n", i, displs[i]);
+    //             }
+    //             layer_size = displs[threads - 1] + num_discovered[threads - 1]; // Total new vertices discovered
+    //             printf("layer_size = %d\n", layer_size);
+    //         }
 
-#pragma omp barrier
-#pragma omp for
-        for (int i = 0; i < threads; i++) {
-            if (num_discovered[i] > 0) {
-                memcpy(S + displs[i], discovered[i], num_discovered[i] * sizeof(int));
-            }
-        }
-#pragma omp single
-        { memset(num_discovered, 0, threads * sizeof(int)); }
-    }
+    // #pragma omp barrier
+    // #pragma omp for
+    //         for (int i = 0; i < threads; i++) {
+    //             if (num_discovered[i] > 0) {
+    //                 memcpy(S + displs[i], discovered[i], num_discovered[i] * sizeof(int));
+    //             }
+    //         }
+    // #pragma omp single
+    //         { memset(num_discovered, 0, threads * sizeof(int)); }
+    //     }
 
     free(discovered);
     free(num_discovered);
