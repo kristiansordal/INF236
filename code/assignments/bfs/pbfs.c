@@ -99,4 +99,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     free(discovered);
     free(num_discovered);
+    free(displs);
+    free(temp);
 }
