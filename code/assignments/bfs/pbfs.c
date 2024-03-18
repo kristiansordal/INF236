@@ -25,9 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int num_r = 1, *temp;
+    int num_r = 1, *temp, local_u = 0;
     int *T_local = malloc(n * sizeof(int));
-    int *pfs = malloc(omp_get_num_threads() + 1 * sizeof(int));
+    int *pfs = malloc(omp_get_num_threads() * sizeof(int));
     int tid = omp_get_thread_num();
 
 #pragma omp single
@@ -51,19 +51,19 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 if (p[u] == -1) {          // if a node does not have a parent
                     p[u] = v;              // set its parent
                     dist[u] = dist[v] + 1; // update its distance
-                    T_local[pfs[tid]++] = u;
+                    T_local[local_u++] = u;
                 }
             }
         }
-#pragma omp master
-        {
-            for (int i = 1; i < omp_get_num_threads() + 1; i++)
-                pfs[i] += pfs[i - 1];
+
+        pfs[tid] = local_u;
+
+        for (int i = 0; i < omp_get_num_threads(); i++) {
+            printf("pfs[%d]: %d\n", i, pfs[i]);
         }
 
         for (int i = pfs[tid]; i < pfs[tid + 1]; i++) {
             S[i] = T_local[i - pfs[tid]];
-            printf("T[%d]: %d\n", i, T[i]);
         }
 
         // temp = S; // Swap S and T
