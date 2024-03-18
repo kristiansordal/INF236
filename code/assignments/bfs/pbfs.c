@@ -68,6 +68,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 s = t;
             }
             num_r = pfs[omp_get_num_threads()];
+            printf("num_r: %d\n", num_r);
         }
 
         for (int i = pfs[tid]; i < pfs[tid + 1]; i++) {
