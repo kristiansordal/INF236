@@ -93,6 +93,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             memcpy(S + displs[tid], discovered[tid], num_discovered[tid] * sizeof(int));
         }
         num_discovered[tid] = 0;
+        memset(discovered[tid], 0, n * sizeof(int));
     }
 
     free(discovered);
