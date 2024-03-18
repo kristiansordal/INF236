@@ -30,7 +30,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int *pfs = malloc(omp_get_num_threads() + 1 * sizeof(int));
     int tid = omp_get_thread_num();
 
-#pragma omp single
+#pragma omp master
     {
         memset(p, -1, n * sizeof(int));
         memset(dist, -1, n * sizeof(int));
