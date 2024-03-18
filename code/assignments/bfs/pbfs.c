@@ -25,6 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = ver[i]; j < ver[i + 1]; j++) {
+            printf("%d -> %d", ver[i], edges[j]);
+        }
+    }
     int layer_size = 1, local_u = 0, *num_discovered, **discovered;
     int tid = omp_get_thread_num();
 
