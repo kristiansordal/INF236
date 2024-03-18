@@ -27,17 +27,22 @@
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int num_r = 1, num_u = 0, *temp, local_u = 0;
     int *T_local = malloc(n * sizeof(int));
+    int *pfs = malloc(omp_get_num_threads() + 1 * sizeof(int));
+    int tid = omp_get_thread_num();
 
 #pragma omp single
     {
         memset(p, -1, n * sizeof(int));
         memset(dist, -1, n * sizeof(int));
+        memset(pfs, 0, omp_get_num_threads() + 1);
         p[1] = 1;
         dist[1] = 0;
         S[0] = 1;
     }
 
     while (num_r != 0) {
+#pragma omp barrier
+        pfs[tid] = 0;
 #pragma omp for // perform each layer in parallel
         for (int i = 0; i < num_r; i++) {
             int v = S[i];
@@ -45,35 +50,45 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
 
-                if (p[u] == -1) {           // if a node does not have a parent
-                    p[u] = v;               // set its parent
-                    dist[u] = dist[v] + 1;  // update its distance
-                    T_local[local_u++] = u; // put it in the local T (what is to become the queue for the next layer)
-                                            // and increase the pointer
+                if (p[u] == -1) {          // if a node does not have a parent
+                    p[u] = v;              // set its parent
+                    dist[u] = dist[v] + 1; // update its distance
+                    T_local[pfs[tid]++] = u;
                 }
             }
         }
 #pragma omp barrier
-#pragma omp critical
-        {
-            for (int i = 0; i < local_u; i++) {
-                T[num_u++] = T_local[i];
-                T_local[i] = 0;
-            }
-            local_u = 0;
-        }
-
 #pragma omp master
         {
-
-            printf("%d\n", num_u);
-            temp = S; // Swap S and T
-            S = T;
-            T = temp;
-
-            num_r = num_u;
-            num_u = 0;
+            pfs[0] = 0;
+            for (int i = 1; i < omp_get_num_threads() + 1; i++)
+                pfs[i] += pfs[i - 1];
         }
+
+#pragma omp barrier
+        for (int i = pfs[tid]; i < pfs[tid + 1]; i++) {
+            T[i] = T_local[i - pfs[tid]];
+        }
+        num_r = pfs[omp_get_num_threads()];
+        // #pragma omp critical
+        //         {
+        //             for (int i = 0; i < local_u; i++) {
+        //                 T[num_u++] = T_local[i];
+        //                 T_local[i] = 0;
+        //             }
+        //             local_u = 0;
+        //         }
+
+        // #pragma omp master
+        //         {
+        //             // printf("%d\n", num_u);
+        //             temp = S; // Swap S and T
+        //             S = T;
+        //             T = temp;
+
+        //             num_r = num_u;
+        //             num_u = 0;
+        //         }
     }
 
     free(T_local);
