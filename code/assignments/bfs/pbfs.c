@@ -57,7 +57,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         {
             for (int i = 0; i < local_u; i++) {
                 T[num_u++] = T_local[i];
-                printf("T[%d]: %d", num_u - 1, T[num_u - 1]);
+                // printf("T[%d]: %d", num_u - 1, T[num_u - 1]);
                 T_local[i] = 0;
             }
             local_u = 0;
