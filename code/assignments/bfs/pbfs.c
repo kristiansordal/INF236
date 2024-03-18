@@ -51,7 +51,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 if (p[u] == -1) {          // if a node does not have a parent
                     p[u] = v;              // set its parent
                     dist[u] = dist[v] + 1; // update its distance
-                    T_local[pfs[omp_get_thread_num()]++] = u;
+                    T_local[pfs[tid]++] = u;
                 }
             }
         }
@@ -59,10 +59,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         {
             for (int i = 1; i < omp_get_num_threads() + 1; i++)
                 pfs[i] += pfs[i - 1];
-
-            for (int i = 0; i < omp_get_num_threads(); i++) {
-                printf("pfs[%d] = %d\n", i, pfs[i]);
-            }
         }
 
         for (int i = pfs[tid]; i < pfs[tid + 1]; i++) {
@@ -75,6 +71,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             S = T;
             T = temp;
             num_r = pfs[omp_get_num_threads()];
+            printf("num_r: %d", num_r);
         }
 
         pfs[tid] = 0;
