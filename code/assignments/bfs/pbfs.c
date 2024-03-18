@@ -36,6 +36,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         dist[1] = 0;
         S[0] = 1;
     }
+    printf("dist[1]:%d", dist[1]);
 
 #pragma omp barrier
 
