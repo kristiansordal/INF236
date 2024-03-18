@@ -56,11 +56,13 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
 
+                printf("Thread %d: Processing edge %d\n", tid, u);
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     discovered[tid][num_discovered[tid]++] = u;
                 }
+                printf("Thread %d: Done processing edge %d\n", tid, u);
             }
         }
 
