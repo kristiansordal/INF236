@@ -94,7 +94,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     while (layer_size != 0) {
         k_steps = depth % k == 0;
-        printf("%d -> %d\n", depth, k_steps);
+        // printf("%d -> %d\n", depth, k_steps);
 
 #pragma omp barrier
         // Discover the layer in parallel
