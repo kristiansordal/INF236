@@ -20,7 +20,7 @@
 // Note that the vertices are numbered from 1 to n (inclusive). Thus there is
 // no vertex 0.
 
-#include "util.h"
+#include "util.c"
 #include <omp.h>
 #include <stdlib.h>
 #include <string.h>
