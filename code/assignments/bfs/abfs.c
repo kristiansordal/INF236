@@ -26,6 +26,7 @@
 //
 
 #include <omp.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -102,8 +103,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             layer_size += T[i];
         }
 
-        if (!k_steps)
+        if (!k_steps) {
             local_layer = num_discovered;
+            printf("Local layer %d\n", local_layer);
+        }
 
         T[threads] = layer_size;
 
