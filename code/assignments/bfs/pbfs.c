@@ -55,6 +55,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
         T[tid] = num_discovered;
+
+#pragma omp barrier
 #pragma omp single
         {
             int s = T[0];
@@ -79,11 +81,11 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             num_discovered = 0;
         }
 
-#pragma omp single
-        {
-            for (int i = 0; i < layer_size; i++)
-                T[i] = 0;
-        }
+        // #pragma omp single
+        //         {
+        //             for (int i = 0; i < layer_size; i++)
+        //                 T[i] = 0;
+        //         }
     }
     printf("%d, done\n", tid);
 }
