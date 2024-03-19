@@ -59,7 +59,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             local_S = malloc(n * sizeof(int));
         }
 
-        k_steps = depth % k == 0;
+        k_steps = depth % k == 0 && depth > 0;
 
 #pragma omp barrier
         // Discover the layer in parallel
@@ -103,6 +103,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 offset = layer_size;
             layer_size += T[i];
         }
+        printf("Threads: %d -> %d\n", tid, local_layer);
 
         T[threads] = layer_size;
 
