@@ -4,4 +4,3 @@
 #include "numa.h"
 #include "pbfs.c"
 #include "sbfs.c"
-#include "util.c"

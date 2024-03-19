@@ -25,7 +25,6 @@
 // no vertex 0.
 //
 
-#include "util.h"
 #include <omp.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,7 +68,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 int v = S[i];
                 for (int j = ver[v]; j < ver[v + 1]; j++) {
                     int u = edges[j];
-                    discover(v, u, &num_discovered, p, dist, discovered);
+                    if (p[u] == -1) {
+                        p[u] = v;
+                        dist[u] = dist[v] + 1;
+                        discovered[num_discovered++] = u;
+                    }
                 }
             }
         } else {
@@ -77,7 +80,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 int v = local_S[i];
                 for (int j = ver[v]; j < ver[v + 1]; j++) {
                     int u = edges[j];
-                    discover(v, u, &num_discovered, p, dist, discovered);
+                    if (p[u] == -1) {
+                        p[u] = v;
+                        dist[u] = dist[v] + 1;
+                        discovered[num_discovered++] = u;
+                    }
                 }
             }
         }
