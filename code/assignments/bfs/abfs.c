@@ -125,7 +125,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
         depth++;
-        printf("depth: %d\n", depth);
+        // printf("depth: %d\n", depth);
 
         // Thread stores the number of discovered vertices
         T[tid] = num_discovered;
@@ -140,7 +140,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             layer_size += T[i];
         }
 
-        printf("Threads: %d -> %d\n", tid, local_layer);
+        // printf("Threads: %d -> %d\n", tid, local_layer);
         T[threads] = layer_size;
 
         if (num_discovered > 0) {
