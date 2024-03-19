@@ -20,6 +20,7 @@
 // Note that the vertices are numbered from 1 to n (inclusive). Thus there is
 // no vertex 0.
 
+#include "util.c"
 #include <omp.h>
 #include <stdlib.h>
 #include <string.h>
@@ -70,7 +71,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
         if (num_discovered > 0) {
             memcpy(S + offset, discovered, num_discovered * sizeof(int));
-            memset(discovered, 0, num_discovered * sizeof(int));
             num_discovered = 0;
         }
     }

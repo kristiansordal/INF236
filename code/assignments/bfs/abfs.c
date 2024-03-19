@@ -33,11 +33,9 @@
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, num_discovered = 0, depth = 0;
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
-    int *discovered;
+    int *discovered, *temp;
     int *local_S, local_layer = 0;
-    int k = 5;
-    int k_steps = 0;
-    int seq_limit = 5;
+    int k = 5, k_steps = 0, seq_limit = 5;
     omp_set_num_threads(1);
 
     // Allocate memory for discovered vertices, private for each rank
@@ -60,6 +58,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             omp_set_num_threads(threads);
             local_S = malloc(n * sizeof(int));
         }
+
         k_steps = depth % k == 0;
 
 #pragma omp barrier
@@ -104,10 +103,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         if (num_discovered > 0) {
             if (k_steps)
                 memcpy(S + offset, discovered, num_discovered * sizeof(int));
-            else
-                memcpy(local_S, discovered, num_discovered * sizeof(int));
-
-            memset(discovered, 0, num_discovered * sizeof(int));
+            else {
+                temp = local_S;
+                local_S = discovered;
+                discovered = temp;
+            }
             num_discovered = 0;
         }
     }
