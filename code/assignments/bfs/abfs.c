@@ -28,11 +28,22 @@
 #include <omp.h>
 #include <stdlib.h>
 #include <string.h>
+
+void discover(int v, int u, int *num_discovered, int *p, int *dist, int *discovered) {
+    if (p[u] == -1) {
+        p[u] = v;
+        dist[u] = dist[v] + 1;
+        discovered[*num_discovered++] = u;
+    }
+}
+
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, num_discovered = 0, depth = 0;
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
     int *discovered;
-    int *local_S;
+    int *local_S, local_layer = 0;
+    int k = 5;
+    int seq_limit = 5;
     omp_set_num_threads(1);
 
     // Allocate memory for discovered vertices, private for each rank
@@ -51,23 +62,28 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     S[0] = 1;
 
     while (layer_size != 0) {
-        if (depth == 5) {
+        if (depth == seq_limit) {
             omp_set_num_threads(threads);
             local_S = malloc(n * sizeof(int));
         }
 
 #pragma omp barrier
         // Discover the layer in parallel
+        if (depth % k == 0) {
 #pragma omp for nowait
-        for (int i = 0; i < layer_size; i++) {
-            int v = S[i];
-            for (int j = ver[v]; j < ver[v + 1]; j++) {
-                int u = edges[j];
-
-                if (p[u] == -1) {
-                    p[u] = v;
-                    dist[u] = dist[v] + 1;
-                    discovered[num_discovered++] = u;
+            for (int i = 0; i < layer_size; i++) {
+                int v = S[i];
+                for (int j = ver[v]; j < ver[v + 1]; j++) {
+                    int u = edges[j];
+                    discover(v, u, &num_discovered, p, dist, discovered);
+                }
+            }
+        } else {
+            for (int i = 0; i < local_layer; i++) {
+                int v = local_S[i];
+                for (int j = ver[v]; j < ver[v + 1]; j++) {
+                    int u = edges[j];
+                    discover(v, u, &num_discovered, p, dist, discovered);
                 }
             }
         }
@@ -88,7 +104,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         T[threads] = layer_size;
 
         if (num_discovered > 0) {
-            memcpy(S + offset, discovered, num_discovered * sizeof(int));
+            if (depth % k == 0)
+                memcpy(S + offset, discovered, num_discovered * sizeof(int));
+            else
+                memcpy(local_S, discovered, num_discovered * sizeof(int));
+
             memset(discovered, 0, num_discovered * sizeof(int));
             num_discovered = 0;
         }
