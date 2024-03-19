@@ -28,9 +28,11 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, threads = omp_get_num_threads(), num_discovered = 0, *discovered;
     int tid = omp_get_thread_num();
 
+    // Allocate memory for discovered vertices, private for each rank
     discovered = malloc(n * sizeof(int));
     memset(discovered, 0, n * sizeof(int));
 
+    // Initialize shared variables
 #pragma omp single
     {
         memset(p, -1, (n + 1) * sizeof(int));
@@ -41,6 +43,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     }
 
     while (layer_size != 0) {
+        // Discover the layer in parallel
 #pragma omp for
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
@@ -54,24 +57,33 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 }
             }
         }
+        // Thread stores the number of discovered vertices
         T[tid] = num_discovered;
 
-#pragma omp barrier
+#pragma omp barrier // Syncronize, threads might not do any work, or finish before others
 #pragma omp single
         {
-            int s = T[0];
-            layer_size = s;
+            // T acts as the prefix sum array
+            // int s = T[0];
+            // layer_size = s;
+            // T[0] = 0;
+            // for (int i = 0; i < threads; i++) {
+            //     layer_size += T[i];
+            //     const int t = s + T[i];
+            //     T[i] = s;
+            //     s = t;
+            // }
+            layer_size = T[0];
             T[0] = 0;
             for (int i = 1; i < threads; i++) {
                 layer_size += T[i];
-                const int t = s + T[i];
-                T[i] = s;
-                s = t;
+                T[i] = layer_size - T[i];
             }
+            T[threads] = layer_size;
 
-            for (int i = 0; i < threads; i++) {
-                printf("%d, %d\n", i, T[i]);
-            }
+            // for (int i = 0; i < threads; i++) {
+            //     printf("%d, %d\n", i, T[i]);
+            // }
         }
 
 #pragma omp barrier
