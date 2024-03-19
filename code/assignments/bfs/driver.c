@@ -18,17 +18,16 @@
 
 #include "driver.h" // Include system files and define variables
 #include "cFiles.h" // Include c-files used for different algorithms
-#include "util.h"
 typedef unsigned int uint;
 
 int main(int argc, char *argv[]) {
 
     /* The following code is used for binding the threads to different cores */
-    if (numa_available() < 0) {
-        printf("No NUMA support available on this system.\n");
-        exit(1);
-    }
-    numa_set_interleave_mask(numa_all_nodes_ptr);
+    // if (numa_available() < 0) {
+    //     printf("No NUMA support available on this system.\n");
+    //     exit(1);
+    // }
+    // numa_set_interleave_mask(numa_all_nodes_ptr);
 
     // Primary graph data structure, using compressed neighbor lists.
     // ver stores pointers into the edges list. Note that numbering of both vertices and edges starts from 1
