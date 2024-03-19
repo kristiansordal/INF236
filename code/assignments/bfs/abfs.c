@@ -36,6 +36,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int *discovered;
     int *local_S, local_layer = 0;
     int k = 5;
+    int k_steps = 0;
     int seq_limit = 5;
     omp_set_num_threads(1);
 
@@ -59,10 +60,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             omp_set_num_threads(threads);
             local_S = malloc(n * sizeof(int));
         }
+        k_steps = depth % k == 0;
 
 #pragma omp barrier
         // Discover the layer in parallel
-        if (depth % k == 0) {
+        if (k_steps) {
 #pragma omp for nowait
             for (int i = 0; i < layer_size; i++) {
                 int v = S[i];
@@ -94,10 +96,13 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             layer_size += T[i];
         }
 
+        if (!k_steps)
+            local_layer = num_discovered;
+
         T[threads] = layer_size;
 
         if (num_discovered > 0) {
-            if (depth % k == 0)
+            if (k_steps)
                 memcpy(S + offset, discovered, num_discovered * sizeof(int));
             else
                 memcpy(local_S, discovered, num_discovered * sizeof(int));

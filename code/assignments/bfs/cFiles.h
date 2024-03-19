@@ -4,4 +4,4 @@
 #include "numa.h"
 #include "pbfs.c"
 #include "sbfs.c"
-#include "util.h"
+#include "util.c"
