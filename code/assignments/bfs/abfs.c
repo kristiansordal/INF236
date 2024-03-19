@@ -1,4 +1,3 @@
-
 // Parallel Breadth First Search
 // -----------------------------
 // Berforms a BFS starting from vertex 1
@@ -24,8 +23,79 @@
 //
 // Note that the vertices are numbered from 1 to n (inclusive). Thus there is
 // no vertex 0.
+//
 
+#include <omp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
+    int layer_size = 1, threads = omp_get_num_threads(), num_discovered = 0, *discovered;
+    int depth = 0;
+    int tid = omp_get_thread_num();
+    omp_set_num_threads(1);
 
-    // Write code here
+    // Allocate memory for discovered vertices, private for each rank
+    discovered = malloc(n * sizeof(int));
+    memset(discovered, 0, n * sizeof(int));
+
+// Initialize shared variables
+#pragma omp for
+    for (int i = 0; i <= n; i++) {
+        p[i] = -1;
+        dist[i] = -1;
+    }
+
+    p[1] = 1;
+    dist[1] = 0;
+    S[0] = 1;
+
+    while (layer_size != 0) {
+        if (depth == 5)
+            omp_set_num_threads(threads);
+
+#pragma omp barrier
+            // Discover the layer in parallel
+#pragma omp for nowait
+        for (int i = 0; i < layer_size; i++) {
+            int v = S[i];
+            for (int j = ver[v]; j < ver[v + 1]; j++) {
+                int u = edges[j];
+
+                if (p[u] == -1) {
+                    p[u] = v;
+                    dist[u] = dist[v] + 1;
+                    discovered[num_discovered++] = u;
+                }
+            }
+        }
+        depth++;
+        // Thread stores the number of discovered vertices
+        T[tid] = num_discovered;
+
+#pragma omp barrier // Syncronize, threads might not do any work, or finish before others
+                    // #pragma omp single
+                    //         {
+        // T acts as the prefix sum array
+        layer_size = T[0];
+        int displ = 0;
+        for (int i = 1; i < threads; i++) {
+            if (i == tid) {
+                displ = layer_size;
+            }
+
+            layer_size += T[i];
+        }
+        T[threads] = layer_size;
+        // layer_size = T[threads];
+
+        // #pragma omp barrier
+        if (num_discovered > 0) {
+            memcpy(S + displ, discovered, num_discovered * sizeof(int));
+            memset(discovered, 0, num_discovered * sizeof(int));
+            num_discovered = 0;
+        }
+    }
 }
+
+// Write code here
