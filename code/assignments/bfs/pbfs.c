@@ -23,6 +23,15 @@
 #include <omp.h>
 #include <stdlib.h>
 #include <string.h>
+
+void discover(int v, int u, int *num_discovered, int *p, int *dist, int *discovered) {
+    if (p[u] == -1) {
+        p[u] = v;
+        dist[u] = dist[v] + 1;
+        discovered[*num_discovered++] = u;
+    }
+}
+
 void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, num_discovered = 0;
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
@@ -52,12 +61,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int v = S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-
-                if (p[u] == -1) {
-                    p[u] = v;
-                    dist[u] = dist[v] + 1;
-                    discovered[num_discovered++] = u;
-                }
+                discover(v, u, &num_discovered, p, dist, discovered);
             }
         }
         // Thread stores the number of discovered vertices
