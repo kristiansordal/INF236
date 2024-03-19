@@ -32,17 +32,19 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     discovered = malloc(n * sizeof(int));
     memset(discovered, 0, n * sizeof(int));
 
-    // Initialize shared variables
-#pragma omp single
-    {
-        memset(p, -1, (n + 1) * sizeof(int));
-        memset(dist, -1, (n + 1) * sizeof(int));
-        p[1] = 1;
-        dist[1] = 0;
-        S[0] = 1;
+// Initialize shared variables
+#pragma omp for
+    for (int i = 0; i <= n; i++) {
+        p[i] = -1;
+        dist[i] = -1;
     }
 
+    p[1] = 1;
+    dist[1] = 0;
+    S[0] = 1;
+
     while (layer_size != 0) {
+#pragma omp barrier
         // Discover the layer in parallel
 #pragma omp for
         for (int i = 0; i < layer_size; i++) {
@@ -61,32 +63,28 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         T[tid] = num_discovered;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
-#pragma omp single
-        {
-            // T acts as the prefix sum array
-            // int s = T[0];
-            // layer_size = s;
-            // T[0] = 0;
-            // for (int i = 0; i < threads; i++) {
-            //     layer_size += T[i];
-            //     const int t = s + T[i];
-            //     T[i] = s;
-            //     s = t;
-            // }
-            layer_size = T[0];
-            T[0] = 0;
-            for (int i = 1; i < threads; i++) {
-                layer_size += T[i];
-                T[i] = layer_size - T[i];
+                    // #pragma omp single
+                    //         {
+        // T acts as the prefix sum array
+        layer_size = T[0];
+        int displ = 0;
+        for (int i = 1; i < threads; i++) {
+            if (i == tid) {
+                displ = layer_size;
             }
-            T[threads] = layer_size;
+
+            layer_size += T[i];
+
+            // T[i] = layer_size - T[i];
         }
+        T[threads] = layer_size;
+        // }
 
         layer_size = T[threads];
 
-#pragma omp barrier
+        // #pragma omp barrier
         if (num_discovered > 0) {
-            memcpy(S + T[tid], discovered, num_discovered * sizeof(int));
+            memcpy(S + displ, discovered, num_discovered * sizeof(int));
             memset(discovered, 0, num_discovered * sizeof(int));
             num_discovered = 0;
         }

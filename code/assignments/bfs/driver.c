@@ -206,11 +206,9 @@ int main(int argc, char *argv[]) {
                 if (PBFS)
                     verify_bfs(n[i], p1, p2);
 
-                printf("Waiting");
 #pragma omp barrier
-                printf("DoneWaiting");
 
-                // Print results to screen
+                    // Print results to screen
 
 #pragma omp master
                 {
