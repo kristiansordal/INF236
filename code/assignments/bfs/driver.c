@@ -18,6 +18,7 @@
 
 #include "driver.h" // Include system files and define variables
 #include "cFiles.h" // Include c-files used for different algorithms
+#include "util.h"
 typedef unsigned int uint;
 
 int main(int argc, char *argv[]) {
