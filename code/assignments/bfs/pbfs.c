@@ -74,11 +74,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
 
             layer_size += T[i];
-
-            // T[i] = layer_size - T[i];
         }
         T[threads] = layer_size;
-        // }
 
         layer_size = T[threads];
 
@@ -89,5 +86,4 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             num_discovered = 0;
         }
     }
-    printf("%d, done\n", tid);
 }
