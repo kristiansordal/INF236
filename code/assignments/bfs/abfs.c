@@ -63,6 +63,7 @@ void sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, 
         layer_size = num_discovered;
         num_discovered = 0;
         k--;
+        printf("Depth: %d\n", k);
     }
 }
 
