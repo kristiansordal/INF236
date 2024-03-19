@@ -25,17 +25,10 @@
 // no vertex 0.
 //
 
+#include "util.h"
 #include <omp.h>
 #include <stdlib.h>
 #include <string.h>
-
-void discover(int v, int u, int *num_discovered, int *p, int *dist, int *discovered) {
-    if (p[u] == -1) {
-        p[u] = v;
-        dist[u] = dist[v] + 1;
-        discovered[*num_discovered++] = u;
-    }
-}
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, num_discovered = 0, depth = 0;
