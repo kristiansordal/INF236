@@ -93,7 +93,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     { sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
 
     while (layer_size != 0) {
-        k_steps = depth % k == 0 && depth > 0;
+        k_steps = depth % k == 0;
         printf("%d -> %d\n", depth, k_steps);
 
 #pragma omp barrier
