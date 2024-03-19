@@ -96,16 +96,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
         layer_size = T[0];
+        local_layer = num_discovered;
         int offset = 0;
         for (int i = 1; i < threads; i++) {
             if (i == tid)
                 offset = layer_size;
             layer_size += T[i];
-        }
-
-        if (!k_steps) {
-            local_layer = num_discovered;
-            printf("Local layer %d\n", local_layer);
         }
 
         T[threads] = layer_size;
