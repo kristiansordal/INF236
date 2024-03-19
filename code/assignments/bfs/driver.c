@@ -62,9 +62,9 @@ int main(int argc, char *argv[]) {
     // Currently there are three available algorithms.
     // Only the algorithms where the boolean value is set to true are run
     //
-    int BFS = true;  /* Sequential BFS */
-    int PBFS = true; /* Parallel BFS */
-    int ABFS = true; /* Alternative Parallel BFS */
+    int BFS = true;   /* Sequential BFS */
+    int PBFS = true;  /* Parallel BFS */
+    int ABFS = false; /* Alternative Parallel BFS */
 
     // Read input and check that it is in order
     if (!get_input(argc, argv, &n_graphs, &n_runs, &n_conf, &conf, &name))
