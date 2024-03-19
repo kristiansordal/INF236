@@ -55,6 +55,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     while (layer_size != 0) {
         if (depth == seq_limit) {
+            printf("Going paraller\n");
             omp_set_num_threads(threads);
             local_S = malloc(n * sizeof(int));
         }
@@ -91,6 +92,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
         depth++;
+        printf("depth: %d\n", depth);
 
         // Thread stores the number of discovered vertices
         T[tid] = num_discovered;
