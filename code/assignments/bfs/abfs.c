@@ -31,7 +31,8 @@
 #include <string.h>
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, threads = omp_get_num_threads(), num_discovered = 0, *discovered;
-    int depth = 0;
+    int depth = 0;
+    // int depth = 0;
     int tid = omp_get_thread_num();
     omp_set_num_threads(1);
 
