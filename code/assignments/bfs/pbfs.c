@@ -80,11 +80,9 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 T[i] = layer_size - T[i];
             }
             T[threads] = layer_size;
-
-            // for (int i = 0; i < threads; i++) {
-            //     printf("%d, %d\n", i, T[i]);
-            // }
         }
+
+        layer_size = T[threads];
 
 #pragma omp barrier
         if (num_discovered > 0) {
@@ -92,12 +90,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             memset(discovered, 0, num_discovered * sizeof(int));
             num_discovered = 0;
         }
-
-        // #pragma omp single
-        //         {
-        //             for (int i = 0; i < layer_size; i++)
-        //                 T[i] = 0;
-        //         }
     }
     printf("%d, done\n", tid);
 }
