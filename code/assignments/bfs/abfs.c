@@ -106,8 +106,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 offset = layer_size;
             layer_size += T[i];
         }
-        printf("Threads: %d -> %d\n", tid, local_layer);
 
+        printf("Threads: %d -> %d\n", tid, local_layer);
         T[threads] = layer_size;
 
         if (num_discovered > 0) {

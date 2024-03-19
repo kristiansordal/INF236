@@ -21,6 +21,7 @@
 // no vertex 0.
 
 #include <omp.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,6 +45,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     p[1] = 1;
     dist[1] = 0;
     S[0] = 1;
+    int depth = 0;
 
     while (layer_size != 0) {
 #pragma omp barrier
@@ -60,6 +62,8 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 }
             }
         }
+        depth++;
+        printf("Depth: %d\n", depth);
         // Thread stores the number of discovered vertices
         T[tid] = num_discovered;
 
