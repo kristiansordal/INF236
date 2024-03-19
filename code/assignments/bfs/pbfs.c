@@ -46,7 +46,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     while (layer_size != 0) {
 #pragma omp barrier
         // Discover the layer in parallel
-#pragma omp for
+#pragma omp for nowait
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
