@@ -75,8 +75,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
             layer_size += T[i];
         }
-        T[threads] = layer_size;
-
+        // T[threads] = layer_size;
         layer_size = T[threads];
 
         // #pragma omp barrier
