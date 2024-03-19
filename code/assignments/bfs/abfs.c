@@ -30,14 +30,48 @@
 #include <stdlib.h>
 #include <string.h>
 
+void sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T, int k) {
+    int layer_size, num_discovered, *temp;
+
+    for (int i = 1; i <= n; i++) {
+        p[i] = -1;
+        dist[i] = -1;
+    }
+
+    p[1] = 1;
+    dist[1] = 0;
+    S[0] = 1;
+
+    layer_size = 1;
+    num_discovered = 0;
+
+    while (layer_size != 0 || k > 0) {
+        for (int i = 0; i < layer_size; i++) {
+            int v = S[i];
+            for (int j = ver[v]; j < ver[v + 1]; j++) {
+                int u = edges[j];
+                if (p[u] == -1) {
+                    p[u] = v;
+                    dist[u] = dist[v] + 1;
+                    T[num_discovered++] = u;
+                }
+            }
+        }
+        temp = S;
+        S = T;
+        T = temp;
+        layer_size = num_discovered;
+        num_discovered = 0;
+        k--;
+    }
+}
+
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, num_discovered = 0, depth = 0;
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
     int *discovered, *temp;
     int *local_S, local_layer = 0;
     int k = 5, k_steps = 0, seq_limit = 5;
-    omp_set_num_threads(1);
-    printf("Threads: %d\n", omp_get_num_threads());
 
     // Allocate memory for discovered vertices, private for each rank
     discovered = malloc(n * sizeof(int));
@@ -54,13 +88,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     dist[1] = 0;
     S[0] = 1;
 
-    while (layer_size != 0) {
-        if (depth == seq_limit) {
-            printf("Going paraller\n");
-            omp_set_num_threads(threads);
-            local_S = malloc(n * sizeof(int));
-        }
+    // Explore k layers sequentially
+#pragma omp single
+    { sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
 
+    while (layer_size != 0) {
         k_steps = depth % k == 0 && depth > 0;
         printf("%d -> %d\n", depth, k_steps);
 

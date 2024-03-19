@@ -17,7 +17,6 @@
 // Note that the vertices are numbered from 1 to n (inclusive). Thus there is
 // no vertex 0.
 
-#include <stdio.h>
 void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     int i, j;         // Loop indices
