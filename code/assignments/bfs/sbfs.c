@@ -17,6 +17,7 @@
 // Note that the vertices are numbered from 1 to n (inclusive). Thus there is
 // no vertex 0.
 
+#include <stdio.h>
 void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     int i, j;         // Loop indices
@@ -35,12 +36,14 @@ void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     num_r = 1; // Number of vertices in S
     num_w = 0; // Number of vertices in T
+    int layer = 0;
 
     while (num_r != 0) {                            // Loop until all vertices have been discovered
         for (i = 0; i < num_r; i++) {               // Loop over vertices in S
             v = S[i];                               // Grab next vertex v in S
             for (j = ver[v]; j < ver[v + 1]; j++) { // Go through the neighbors of v
                 w = edges[j];                       // Get next neighbor w of v
+                printf("discovered %d\n", w);       // Print discovered vertex to check correctness of the code
                 if (p[w] == -1) {                   // Check if w is undiscovered
                     p[w] = v;                       // Set v as the parent of w
                     dist[w] = dist[v] + 1;          // Set distance of w
@@ -51,6 +54,10 @@ void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         temp = S; // Swap S and T
         S = T;
         T = temp;
+        if (layer < 5) {
+            printf("Found: %d at layer %d\n", num_w, layer); // Print number of vertices discovered and layer number
+        }
+        layer++;
         num_r = num_w; // Set number of elements in S
         num_w = 0;     // Set T as empty
     }                  //  End loop over entire graph
