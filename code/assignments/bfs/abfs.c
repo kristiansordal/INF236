@@ -128,6 +128,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
         // Thread stores the number of discovered vertices
         T[tid] = num_discovered;
+        printf("Discovered: %d, %d\n", tid, num_discovered_layer);
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
         layer_size = T[0];
