@@ -97,12 +97,16 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     // Explore k layers sequentially
     int layer = 0;
 #pragma omp master
-    { T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &layer); }
+    {
+        T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &layer);
+        T[1] = layer;
+    }
 #pragma omp barrier
-    printf("Layer: %d\n", layer);
 
     layer_size = T[0];
+    layer = T[1];
 
+    printf("Layer: %d\n", layer);
     // populate local_S
     int chunk = layer_size / threads;
     int start = chunk * tid;
