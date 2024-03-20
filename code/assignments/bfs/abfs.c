@@ -98,7 +98,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     // populate local_S
     int chunk = layer_size / threads;
     for (int i = chunk * tid; i < tid == threads ? layer_size : (chunk + 1) * tid; i++)
-        local_S[i - chunk * tid] = S[i];
+        local_S[local_layer++] = S[i];
 
     while (layer_size != 0) {
         k_steps = depth % k == 0;
