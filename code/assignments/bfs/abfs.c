@@ -99,10 +99,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     printf("Tid: %d, Layer size: %d\n", tid, layer_size);
 
     // populate local_S
+    printf("Threads: %d\n", threads);
     int chunk = layer_size / threads;
     printf("Thread %d, Chunk: %d\n", tid, chunk);
     printf("Thread: %d populates from %d to %d\n", tid, chunk * tid, tid == threads ? layer_size : chunk * (tid + 1));
-    for (int i = chunk * tid; i < tid == threads ? layer_size : chunk * (tid + 1); i++)
+    for (int i = chunk * tid; i < tid == threads - 1 ? layer_size : chunk * (tid + 1); i++)
         local_S[local_layer++] = S[i];
 
     while (layer_size != 0) {
