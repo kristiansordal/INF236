@@ -50,6 +50,7 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
             int v = S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
+                printf("discovered %d\n", u);
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
@@ -60,6 +61,7 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
         temp = S;
         S = T;
         T = temp;
+        printf("Found: %d at layer %d\n", num_discovered, 3 - k);
         layer_size = num_discovered;
         num_discovered = 0;
         k--;
