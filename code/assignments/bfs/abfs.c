@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T, int k, int *l) {
+int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T, int k, int *start_idx) {
     int layer_size, num_discovered, *temp;
 
     for (int i = 1; i <= n; i++) {
@@ -62,7 +62,7 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
         T = temp;
         layer_size = num_discovered;
         if (k == 1)
-            *l = num_discovered;
+            *start_idx = num_discovered;
 
         num_discovered = 0;
         k--;
@@ -74,7 +74,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size = 1, num_discovered = 0, num_discovered_layer = 0, depth = 0;
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
     int *discovered, *temp;
-    int *local_S, local_layer = 0;
+    int *local_S, local_layer = 0, start_idx = 0;
     int k = 5, k_steps = 0, seq_limit = 5;
 
     // Allocate memory for discovered vertices, private for each rank
@@ -95,22 +95,24 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     S[0] = 1;
 
     // Explore k layers sequentially
-    int layer = 0;
 #pragma omp master
     {
-        T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &layer);
-        T[1] = layer;
+        T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &start_idx);
+        T[1] = start_idx; // need to store this in a shared variable
     }
 #pragma omp barrier
 
-    layer_size = T[0];
-    layer = T[1];
+    layer_size = T[0]; // how many vertices were discovered in the last layer
+    start_idx = T[1];  // where in the S array these vertices start
 
-    printf("Layer: %d\n", layer);
     // populate local_S
     int chunk = layer_size / threads;
     int start = chunk * tid;
     int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
+
+    // offset start and end to actually continue search were we left off
+    start += start_idx;
+    end += start_idx;
 
     for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
