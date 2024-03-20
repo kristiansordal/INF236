@@ -108,6 +108,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     while (layer_size != 0) {
         k_steps = depth % k == 0;
+        printf("Layer size: %d, %d\n", layer_size, k_steps);
 #pragma omp barrier
         for (int i = 0; i < local_layer; i++) {
             int v = local_S[i];
