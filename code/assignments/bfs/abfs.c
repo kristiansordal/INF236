@@ -97,7 +97,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // populate local_S
     int idx = 0;
-#pragma omp for schedule(static, 1)
+#pragma omp for schedule(dynamic, 1)
     for (int i = 0; i < n; i++)
         local_S[idx++] = S[i];
 
