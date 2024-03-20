@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T, int k) {
+int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T, int k, int *l) {
     int layer_size, num_discovered, *temp;
 
     for (int i = 1; i <= n; i++) {
@@ -61,11 +61,12 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
         S = T;
         T = temp;
         layer_size = num_discovered;
+        if (k == 1)
+            *l = num_discovered;
+
         num_discovered = 0;
         k--;
     }
-    for (int i = 0; i < layer_size; i++)
-        S[i] = T[num_discovered - layer_size + i];
     return layer_size;
 }
 
@@ -94,9 +95,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     S[0] = 1;
 
     // Explore k layers sequentially
+    int layer = 0;
 #pragma omp master
-    { T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
+    { T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &layer); }
 #pragma omp barrier
+    printf("Layer: %d\n", layer);
 
     layer_size = T[0];
 
