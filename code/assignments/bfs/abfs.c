@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T, int k) {
+int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T, int k) {
     int layer_size, num_discovered, *temp;
 
     for (int i = 1; i <= n; i++) {
@@ -63,8 +63,8 @@ void sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, 
         layer_size = num_discovered;
         num_discovered = 0;
         k--;
-        printf("Depth: %d\n", k);
     }
+    return layer_size;
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
@@ -93,13 +93,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // Explore k layers sequentially
 #pragma omp single
-    { sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
+    { layer_size = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
 
     // populate local_S
-    int idx = 0;
-#pragma omp for schedule(dynamic, 1)
-    for (int i = 0; i < n; i++)
-        local_S[idx++] = S[i];
+    int chunk = layer_size / threads;
+    for (int i = chunk * tid; i < tid == threads ? layer_size : (chunk + 1) * tid; i++)
+        local_S[i - chunk * tid] = S[i];
 
     while (layer_size != 0) {
         k_steps = depth % k == 0;
