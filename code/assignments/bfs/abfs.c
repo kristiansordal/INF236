@@ -125,7 +125,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
         depth++;
-        printf("%d -> %d\n", depth, k_steps);
+        printf("%d -> %d\n", tid, depth);
 
         // Thread stores the number of discovered vertices
         T[tid] = num_discovered;
