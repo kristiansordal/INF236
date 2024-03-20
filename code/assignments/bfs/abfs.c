@@ -97,6 +97,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // populate local_S
     int chunk = layer_size / threads;
+    printf("Chunk: %d\n", chunk);
+    printf("Thread: %d populates from %d to %d\n", tid, chunk * tid, tid == threads ? layer_size : (chunk + 1) * tid);
     for (int i = chunk * tid; i < tid == threads ? layer_size : (chunk + 1) * tid; i++)
         local_S[local_layer++] = S[i];
 
