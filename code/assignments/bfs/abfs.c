@@ -78,6 +78,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     discovered = malloc(n * sizeof(int));
     memset(discovered, 0, n * sizeof(int));
 
+    local_S = malloc(n * sizeof(int));
+    memset(local_S, 0, n * sizeof(int));
+
 // Initialize shared variables
 #pragma omp for
     for (int i = 0; i <= n; i++) {
