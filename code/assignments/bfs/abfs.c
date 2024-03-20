@@ -64,7 +64,6 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
         num_discovered = 0;
         k--;
     }
-    printf("Layer size: %d\n", layer_size);
     return layer_size;
 }
 
@@ -101,16 +100,15 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     printf("Tid: %d, Layer size: %d\n", tid, layer_size);
 
     // populate local_S
-    printf("Threads: %d\n", threads);
     int chunk = layer_size / threads;
-    printf("Thread %d, Chunk: %d\n", tid, chunk);
     int start = chunk * tid;
     int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
+
     printf("Thread %d:  %d -> %d\n", tid, start, end);
 
-    for (int i = start; i < end; i++) {
+    for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
-    }
+
     for (int i = 0; i < local_layer; i++) {
         printf("local_S[%d] = %d\n", i, local_S[i]);
     }
