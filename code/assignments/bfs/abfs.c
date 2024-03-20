@@ -98,7 +98,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     printf("Tid: %d, Layer size: %d\n", tid, T[0]);
     layer_size = T[0];
-    T[0] = 0;
     printf("Tid: %d, Layer size: %d\n", tid, layer_size);
 
     // populate local_S
