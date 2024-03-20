@@ -43,11 +43,13 @@ void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             v = S[i];                               // Grab next vertex v in S
             for (j = ver[v]; j < ver[v + 1]; j++) { // Go through the neighbors of v
                 w = edges[j];                       // Get next neighbor w of v
-                printf("discovered %d\n", w);       // Print discovered vertex to check correctness of the code
-                if (p[w] == -1) {                   // Check if w is undiscovered
-                    p[w] = v;                       // Set v as the parent of w
-                    dist[w] = dist[v] + 1;          // Set distance of w
-                    T[num_w++] = w;                 // Add w to T and increase number of vertices discovered
+                // // if (true) {
+                // }
+                // printf("discovered %d\n", w);       // Print discovered vertex to check correctness of the code
+                if (p[w] == -1) {          // Check if w is undiscovered
+                    p[w] = v;              // Set v as the parent of w
+                    dist[w] = dist[v] + 1; // Set distance of w
+                    T[num_w++] = w;        // Add w to T and increase number of vertices discovered
                 }
             }     // End loop over neighbors of v
         }         // End loop of vertices in S
