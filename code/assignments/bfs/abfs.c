@@ -45,7 +45,7 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
     layer_size = 1;
     num_discovered = 0;
 
-    while (k > 0) {
+    while (k >= 0) {
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
