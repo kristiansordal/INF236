@@ -114,6 +114,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int v = local_S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
+                printf("Threads %d, %d\n", tid, u);
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
@@ -124,7 +125,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 
         depth++;
-        printf("%d -> %d\n", tid, depth);
 
         // Thread stores the number of discovered vertices
         T[tid] = num_discovered;
