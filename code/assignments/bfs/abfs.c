@@ -45,7 +45,7 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
     layer_size = 1;
     num_discovered = 0;
 
-    while (layer_size != 0 && k > 0) {
+    while (k > 0) {
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
@@ -93,7 +93,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // Explore k layers sequentially
 #pragma omp single
-    { layer_size = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
+    { T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
+    layer_size = T[0];
+    T[0] = 0;
+    printf("Tid: %d, Layer size: %d\n", tid, layer_size);
 
     // populate local_S
     int chunk = layer_size / threads;
