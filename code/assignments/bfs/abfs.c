@@ -106,8 +106,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
     printf("Thread %d:  %d -> %d\n", tid, start, end);
     for (int i = start; i < end; i++) {
-        // printf("%d -> %d\n", i, S[i]);
         local_S[local_layer++] = S[i];
+    }
+    for (int i = 0; i < local_layer; i++) {
+        printf("local_S[%d] = %d\n", i, local_S[i]);
     }
 
     while (layer_size != 0) {
