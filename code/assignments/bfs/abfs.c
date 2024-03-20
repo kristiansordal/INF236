@@ -117,6 +117,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
 
+    printf("Thread: %d, start: %d, end: %d, layer_size: %d\n", tid, start, end, layer_size);
+    printf("Thread: %d, local_layer: %d\n", tid, local_layer);
+
     while (layer_size != 0) {
         k_steps = depth % k == 0 && depth > 0;
 #pragma omp barrier
@@ -135,7 +138,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 
         depth++;
-        printf("Thread: %d -> %d", tid, num_discovered_layer);
+        printf("Thread: %d -> %d\n", tid, num_discovered_layer);
         T[tid] = num_discovered;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
