@@ -64,6 +64,8 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
         num_discovered = 0;
         k--;
     }
+    for (int i = 0; i < layer_size; i++)
+        S[i] = T[num_discovered - layer_size + i];
     return layer_size;
 }
 
