@@ -96,6 +96,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     { T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
 #pragma omp barrier
 
+    printf("Tid: %d, Layer size: %d\n", tid, T[0]);
     layer_size = T[0];
     T[0] = 0;
     printf("Tid: %d, Layer size: %d\n", tid, layer_size);
