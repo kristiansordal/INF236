@@ -94,6 +94,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     // Explore k layers sequentially
 #pragma omp single
     { T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit); }
+#pragma omp barrier
 
     layer_size = T[0];
     T[0] = 0;
