@@ -138,17 +138,16 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 offset = layer_size;
             layer_size += T[i];
         }
+        printf("layer_size after pfs: %d\n", layer_size);
 
         T[threads] = layer_size;
 
         if (num_discovered > 0) {
             if (k_steps)
                 memcpy(S + offset, discovered, num_discovered * sizeof(int));
-            else {
-                temp = local_S;
-                local_S = discovered;
-                discovered = temp;
-            }
+            temp = local_S;
+            local_S = discovered;
+            discovered = temp;
             num_discovered_layer = 0;
         }
     }
