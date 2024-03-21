@@ -134,7 +134,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 }
             }
         }
-        printf("\n");
 
         depth++;
         T[tid] = num_discovered;
