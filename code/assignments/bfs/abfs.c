@@ -101,7 +101,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     {
         T[1] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &start_idx);
         T[0] = start_idx; // need to store this in a shared variable
-        printf("To distribute: %d -> %d\n", T[0], T[1]);
+        printf("To distribute: %d -> %d\n", T[0], T[0] + T[1]);
     }
 #pragma omp barrier
 
