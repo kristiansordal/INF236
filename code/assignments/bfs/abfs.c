@@ -104,6 +104,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         printf("Layer size: %d\n", T[0]);
     }
 #pragma omp barrier
+    printf("Tid: %d, Start: %d, Layer size: %d\n", tid, T[1], T[0]);
 
     layer_size = T[0]; // how many vertices were discovered in the last layer
     start_idx = T[1];  // where in the S array these vertices start
