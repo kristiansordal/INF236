@@ -68,7 +68,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size = 1, num_discovered = 0, num_discovered_layer = 0, depth = 0;
+    int layer_size = 1, num_discovered = 0, depth = 0;
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
     int *discovered, *temp;
     int *local_S, local_layer_size = 0;
@@ -117,23 +117,20 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int v = local_S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-                printf("Parent of %d: %d\n", u, p[u]);
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     discovered[num_discovered++] = u;
-                    num_discovered_layer++;
                 }
             }
         }
 
-        // printf("Tid %d discovvered %d nodes\n", tid, num_discovered_layer);
+        printf("Tid %d discovvered %d nodes\n", tid, num_discovered);
         depth++;
         T[tid] = num_discovered;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
         layer_size = T[0];
-        local_layer_size = num_discovered_layer;
         int offset = 0;
         for (int i = 1; i < threads; i++) {
             if (i == tid)
@@ -149,7 +146,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             temp = local_S;
             local_S = discovered;
             discovered = temp;
-            num_discovered_layer = 0;
+            local_layer_size = num_discovered;
+            num_discovered = 0;
         }
     }
 }
