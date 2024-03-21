@@ -1,6 +1,107 @@
 \documentclass{article}
 \input{preamble.tex}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.17}
+
+% 80 32.802406 7.405352 9.848995 22.588494
+
 
 \begin{document}
-    \section{}
+    \pgfplotstableread{
+    T roadusa rggn222s0 delaunayn24 hugebubbles-00020
+    1 1.734203 1.081684 1.783102 3.489007
+    2 1.200486 0.606074 1.025448 1.882132
+    4 0.788950 0.335648 0.627425 0.974213
+    8 0.461280 0.188359 0.355146 0.523627
+    16 0.327205 0.124455 0.236014 0.373559
+    32 0.357365 0.126939 0.246382 0.392521
+    64 0.699687 0.214437 0.498225 0.856313
+    }\timepbfs
+
+    \pgfplotstablecreatecol[create col/expr={1.739677/\thisrow{roadusa}}]{roadusaspeedup}{\timepbfs}
+    \pgfplotstablecreatecol[create col/expr={1.042576/\thisrow{rggn222s0}}]{rggn222s0speedup}{\timepbfs}
+    \pgfplotstablecreatecol[create col/expr={1.549098/\thisrow{delaunayn24}}]{delaunayn24speedup}{\timepbfs}
+    \pgfplotstablecreatecol[create col/expr={4.052872/\thisrow{hugebubbles-00020}}]{hugebubblesspeedup}{\timepbfs}
+
+    \begin{figure}[H]
+       \centering 
+        \begin{minipage}{0.45\textwidth}
+            \begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Number of Threads},
+        ylabel={Execution Time (Seconds)},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        % xticklabels from table={\testdata}{T},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north east,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=roadusa] {\timepbfs};
+    \addlegendentry{road\_usa}
+
+    % Plot for rggn222s0
+    \addplot[color=GBRed, mark=square*] table [x=T, y=rggn222s0] {\timepbfs};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunayn24
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunayn24] {\timepbfs};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=hugebubbles-00020] {\timepbfs};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+\end{minipage}\hspace{0.5cm}
+        \begin{minipage}{0.45\textwidth}
+\begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Number of Threads},
+        ylabel={Speedup},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        % xticklabels from table={\testdata}{T},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north west,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=roadusaspeedup] {\timepbfs};
+    \addlegendentry{road\_usa}
+
+    % Plot for rggn222s0
+    \addplot[color=GBRed, mark=square*] table [x=T, y=rggn222s0speedup] {\timepbfs};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunayn24
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunayn24speedup] {\timepbfs};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=hugebubblesspeedup] {\timepbfs};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+        \end{minipage}
+        \caption{Execution time and speedup of parallel BFS}
+    \end{figure}
 \end{document}
+
+
