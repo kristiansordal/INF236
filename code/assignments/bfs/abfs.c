@@ -145,6 +145,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         if (k_steps) {
             memcpy(S + offset, discovered, num_discovered * sizeof(int));
             int chunk = num_discovered / threads;
+            printf("Chunk: %d\n", chunk);
             int start = chunk * tid;
             int end = tid == threads - 1 ? num_discovered : chunk * (tid + 1);
             local_layer_size = end - start;
