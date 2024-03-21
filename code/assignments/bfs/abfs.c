@@ -122,8 +122,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     discovered[num_discovered++] = u;
-                }
-                if (dist[v] + 1 <= dist[u] && p[u] != -1 && dist[v] != -1) {
+                } else if (dist[v] + 1 <= dist[u] && p[u] != -1 && dist[v] != -1) {
                     // printf("parent of v was: %d, dist was: %d, updates to: %d and %d\n", p[u], dist[u], v, dist[v] +
                     // 1);
                     p[u] = v;
