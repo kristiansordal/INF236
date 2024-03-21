@@ -149,7 +149,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp master
                 { printf("%d ", i - start); }
             }
-            printf("\n");
+
+#pragma omp master
+            { printf("\n"); }
         } else {
             temp = local_S;
             local_S = discovered;
