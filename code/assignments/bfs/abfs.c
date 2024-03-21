@@ -61,6 +61,7 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
         S = T;
         T = temp;
         layer_size = num_discovered;
+
         if (k == 1)
             *start_idx = num_discovered;
 
@@ -110,6 +111,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int start = chunk * tid;
     int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
 
+    printf("Start: %d, End: %d\n", start, end);
     // offset start and end to actually continue search were we left off
     start += start_idx;
     end += start_idx;
