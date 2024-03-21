@@ -111,6 +111,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int start = chunk * tid;
     int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
 
+    printf("Chunk: %d\n", chunk);
     printf("Start: %d, End: %d\n", start, end);
     // offset start and end to actually continue search were we left off
     start += start_idx;
