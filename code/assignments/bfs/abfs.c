@@ -55,7 +55,6 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
-                    printf("Discovered %d, dist: %d\n", u, dist[u]);
                     T[num_discovered++] = u;
                 }
             }
@@ -69,21 +68,10 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         num_discovered = 0;
     }
 
-    for (int i = 0; i < layer_size; i++) {
-        printf("%d ", S_original[i]);
-    }
-    printf("\n");
-    for (int i = 0; i < layer_size; i++) {
-        printf("%d ", T_original[i]);
-    }
-    printf("\n");
-    //
-    // }
-    if (flips % 2 != 0) {
-        for (int i = 0; i < layer_size; i++) {
+    if (flips % 2 != 0)
+        for (int i = 0; i < layer_size; i++)
             S_original[i] = T_original[i];
-        }
-    }
+
     return layer_size;
 }
 
@@ -135,13 +123,13 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         k_steps = depth % k == 0;
         for (int i = 0; i < local_layer_size; i++) {
             int v = local_S[i];
-            printf("Exploring neighbours of %d. dist: %d\n", v, dist[v]);
+            // printf("Exploring neighbours of %d. dist: %d\n", v, dist[v]);
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
-                    printf("Discovered %d, dist: %d\n", u, dist[u]);
+                    // printf("Discovered %d, dist: %d\n", u, dist[u]);
                     discovered[num_discovered++] = u;
                 }
             }
