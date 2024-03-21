@@ -120,7 +120,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
 
-        // printf("Tid %d discovvered %d nodes\n", tid, num_discovered);
         depth++;
         T[tid] = num_discovered;
 
@@ -133,11 +132,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             layer_size += T[i];
         }
 
-        T[threads] = layer_size;
-
         if (num_discovered > 0) {
             if (k_steps)
                 memcpy(S + offset, discovered, num_discovered * sizeof(int));
+
             temp = local_S;
             local_S = discovered;
             discovered = temp;
