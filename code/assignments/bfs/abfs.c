@@ -31,7 +31,7 @@
 #include <string.h>
 
 int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T, int k, int *start_idx) {
-    int layer_size, num_discovered, *temp;
+    int layer_size, num_discovered, *temp, total_discovered = 0;
 
     for (int i = 1; i <= n; i++) {
         p[i] = -1;
@@ -60,10 +60,11 @@ int sequential_k_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, i
         temp = S;
         S = T;
         T = temp;
+        total_discovered += num_discovered;
         layer_size = num_discovered;
 
         if (k == 1)
-            *start_idx = num_discovered;
+            *start_idx = total_discovered;
 
         num_discovered = 0;
         k--;
@@ -118,9 +119,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
-
-    // printf("Thread: %d, start: %d, end: %d, layer_size: %d\n", tid, start, end, layer_size);
-    // printf("Thread: %d, local_layer: %d\n", tid, local_layer);
 
     while (layer_size != 0) {
         k_steps = depth % k == 0 && depth > 0;
