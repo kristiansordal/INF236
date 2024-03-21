@@ -108,7 +108,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     // populate local_S
     int chunk = T[0] / threads;
     int start = chunk * tid;
-    int end = tid == threads - 1 ? T[0] + T[1] : chunk * (tid + 1);
+    int end = tid == threads - 1 ? start + T[1] : chunk * (tid + 1);
 
     // offset start and end to actually continue search were we left off
     start += T[0];
