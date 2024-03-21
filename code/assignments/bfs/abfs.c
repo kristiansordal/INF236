@@ -144,6 +144,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
         if (num_discovered > 0) {
             if (k_steps) {
+                printf("in k step");
                 memcpy(S + offset, discovered, num_discovered * sizeof(int));
                 int chunk = num_discovered / threads;
                 int start = chunk * tid;
