@@ -63,7 +63,6 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
         depth++;
-        printf("Depth: %d\n", depth);
         // Thread stores the number of discovered vertices
         T[tid] = num_discovered;
 
