@@ -146,7 +146,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             local_layer_size = end - start;
             for (int i = start; i < end; i++) {
                 local_S[i - start] = S[i];
-                printf("%d ", i - start);
+#pragma omp master
+                { printf("%d ", i - start); }
             }
             printf("\n");
         } else {
