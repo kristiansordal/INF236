@@ -98,27 +98,23 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     // Explore k layers sequentially
 #pragma omp master
     {
-        T[0] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &start_idx);
-        T[1] = start_idx; // need to store this in a shared variable
-        printf("Start: %d and %d\n", start_idx, T[1]);
-        printf("Layer size: %d\n", T[0]);
+        T[1] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &start_idx);
+        T[0] = start_idx; // need to store this in a shared variable
+        printf("Start: %d and %d\n", start_idx, T[0]);
+        printf("Layer size: %d\n", T[1]);
     }
 #pragma omp barrier
-    printf("Tid: %d, Start: %d, Layer size: %d\n", tid, T[1], T[0]);
-
-    layer_size = T[0]; // how many vertices were discovered in the last layer
-    start_idx = T[1];  // where in the S array these vertices start
 
     // populate local_S
-    int chunk = layer_size / threads;
+    int chunk = T[0] / threads;
     int start = chunk * tid;
-    int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
+    int end = tid == threads - 1 ? T[0] : chunk * (tid + 1);
 
-    printf("Chunk: %d\n", chunk);
-    printf("Start: %d, End: %d\n", start, end);
     // offset start and end to actually continue search were we left off
-    start += start_idx;
-    end += start_idx;
+    start += T[0];
+    end += T[0];
+
+    printf("Tid %d: %d -> %d", tid, start, end);
 
     for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
@@ -144,7 +140,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 
         depth++;
-        printf("Thread: %d -> %d\n", tid, num_discovered_layer);
+        // printf("Thread: %d -> %d\n", tid, num_discovered_layer);
         T[tid] = num_discovered;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
