@@ -120,10 +120,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
 
-    printf("Total layer: %d\n", layer_size);
-
+    printf("Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end, layer_size);
     while (local_layer != 0) {
-        printf("Tid: %d is exploring %d nodes in layer %d\n", tid, local_layer, seq_limit + depth);
         k_steps = depth % k == 0 && depth > 0;
         for (int i = 0; i < local_layer; i++) {
             int v = local_S[i];
