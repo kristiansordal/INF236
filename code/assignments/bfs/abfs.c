@@ -117,19 +117,16 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
 
-#pragma omp critical
-    { layer_size += local_layer; }
     printf("Total layer: %d\n", layer_size);
-    // printf("Tid %d: %d -> %d\nLayer size: %d\n", tid, start, end, local_layer);
 
-    while (layer_size != 0) {
+    while (local_layer != 0) {
+        printf("Tid: %d is exploring %d nodes in layer %d\n", tid, local_layer, seq_limit + depth);
         k_steps = depth % k == 0 && depth > 0;
-#pragma omp barrier
         for (int i = 0; i < local_layer; i++) {
             int v = local_S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-                printf("Tid: %d, %d -> %d", tid, u, p[u]);
+                // printf("Tid: %d, %d -> %d", tid, u, p[u]);
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
