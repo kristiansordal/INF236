@@ -147,7 +147,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int chunk = layer_size / threads;
             printf("Chunk: %d\n", chunk);
             int start = chunk * tid;
-            int end = tid == threads - 1 ? num_discovered : chunk * (tid + 1);
+            int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
             local_layer_size = end - start;
             printf("KSTEP Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end, local_layer_size);
             for (int i = start; i < end; i++)
