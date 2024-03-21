@@ -111,8 +111,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = start; i < end; i++)
         local_S[local_layer_size++] = S[i];
 
-    printf("Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end, local_layer_size);
-
     while (layer_size != 0) {
 #pragma omp barrier
         k_steps = depth % k == 0;
@@ -124,6 +122,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     discovered[num_discovered++] = u;
+                } else {
+                    p[u] = v < p[u] ? v : p[u];
                 }
             }
         }
