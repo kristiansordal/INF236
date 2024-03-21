@@ -45,7 +45,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     layer_size = 1;
     num_discovered = 0;
 
-    while (layer_size <= omp_get_num_threads()) {
+    while (layer_size <= omp_get_num_threads() || layer_size == 0) {
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
@@ -99,7 +99,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int chunk = T[0] / threads;
     int start = chunk * tid;
     int end = tid == threads - 1 ? T[0] : chunk * (tid + 1);
-
     printf("Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end, layer_size);
 
     for (int i = start; i < end; i++)
