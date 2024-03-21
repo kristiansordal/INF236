@@ -23,11 +23,11 @@ typedef unsigned int uint;
 int main(int argc, char *argv[]) {
 
     /* The following code is used for binding the threads to different cores */
-    if (numa_available() < 0) {
-        printf("No NUMA support available on this system.\n");
-        exit(1);
-    }
-    numa_set_interleave_mask(numa_all_nodes_ptr);
+    // if (numa_available() < 0) {
+    //     printf("No NUMA support available on this system.\n");
+    //     exit(1);
+    // }
+    // numa_set_interleave_mask(numa_all_nodes_ptr);
 
     // Primary graph data structure, using compressed neighbor lists.
     // ver stores pointers into the edges list. Note that numbering of both vertices and edges starts from 1
@@ -63,8 +63,8 @@ int main(int argc, char *argv[]) {
     // Only the algorithms where the boolean value is set to true are run
     //
     int BFS = true;   /* Sequential BFS */
-    int PBFS = false; /* Parallel BFS */
-    int ABFS = true;  /* Alternative Parallel BFS */
+    int PBFS = true;  /* Parallel BFS */
+    int ABFS = false; /* Alternative Parallel BFS */
 
     // Read input and check that it is in order
     if (!get_input(argc, argv, &n_graphs, &n_runs, &n_conf, &conf, &name))
