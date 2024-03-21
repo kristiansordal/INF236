@@ -33,6 +33,7 @@
 int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int layer_size, num_discovered, *temp, flips = 0;
     int *S_original = S;
+    int *T_original = T;
 
     for (int i = 1; i <= n; i++) {
         p[i] = -1;
@@ -73,7 +74,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     }
     printf("\n");
     for (int i = 0; i < layer_size; i++) {
-        printf("%d ", T[i]);
+        printf("%d ", T_original[i]);
     }
     printf("\n");
     //
