@@ -115,7 +115,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         k_steps = depth % k == 0;
         for (int i = 0; i < local_layer_size; i++) {
             int v = local_S[i];
-            printf("Exploring neighbours of %d. dist: %d", v, dist[v]);
+            printf("Exploring neighbours of %d. dist: %d\n", v, dist[v]);
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1) {
