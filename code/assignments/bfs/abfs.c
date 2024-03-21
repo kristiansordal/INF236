@@ -117,7 +117,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
 
-    printf("layer_size: %d\n", layer_size);
+#pragma omp critical
+    { layer_size += local_layer; }
+    printf("Total layer: %d\n", layer_size);
     printf("Tid %d: %d -> %d\nLayer size: %d\n", tid, start, end, local_layer);
 
     while (layer_size != 0) {
