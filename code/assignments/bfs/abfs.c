@@ -51,9 +51,9 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1) {
-                    printf("Discovered %d\n", u);
                     p[u] = v;
                     dist[u] = dist[v] + 1;
+                    printf("Discovered %d, dist: %d\n", u, dist[u]);
                     T[num_discovered++] = u;
                 }
             }
@@ -118,13 +118,14 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1) {
-                    printf("Discovered %d, Depth: %d\n", u, dist[v] + 1);
                     p[u] = v;
                     dist[u] = dist[v] + 1;
+                    printf("Discovered %d, dist: %d\n", u, dist[u]);
                     discovered[num_discovered++] = u;
                 }
             }
         }
+        printf("\n");
 
         depth++;
         T[tid] = num_discovered;
