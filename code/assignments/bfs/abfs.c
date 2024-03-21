@@ -118,11 +118,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int v = local_S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-                if (p[u] == -1) {
-                    p[u] = v;
-                    dist[u] = dist[v] + 1;
-                    discovered[num_discovered++] = u;
-                } else if (dist[u] > dist[v] + 1) {
+                if (p[u] == -1 || dist[u] > dist[v] + 1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     discovered[num_discovered++] = u;
