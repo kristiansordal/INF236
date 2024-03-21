@@ -114,7 +114,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     start += T[0];
     end += T[0];
 
-    printf("Tid %d: %d -> %d", tid, start, end);
+    printf("Tid %d: %d -> %d\n", tid, start, end);
 
     for (int i = start; i < end; i++)
         local_S[local_layer++] = S[i];
