@@ -51,6 +51,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1) {
+                    printf("Discovered %d\n", u);
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     T[num_discovered++] = u;
@@ -62,9 +63,9 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         T = temp;
         layer_size = num_discovered;
 
-        for (int i = 0; i < num_discovered; i++)
-            printf("%d ", T[i]);
-        printf("\n");
+        // for (int i = 0; i < num_discovered; i++)
+        //     printf("%d ", T[i]);
+        // printf("\n");
 
         num_discovered = 0;
     }
