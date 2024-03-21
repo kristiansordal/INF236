@@ -31,7 +31,7 @@
 #include <string.h>
 
 int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size, num_discovered, *temp;
+    int layer_size, num_discovered, *temp, flips = 0;
 
     for (int i = 1; i <= n; i++) {
         p[i] = -1;
@@ -62,12 +62,19 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         S = T;
         T = temp;
         layer_size = num_discovered;
+        flips++;
 
         // for (int i = 0; i < num_discovered; i++)
         //     printf("%d ", T[i]);
         // printf("\n");
 
         num_discovered = 0;
+    }
+    if (flips % 2 != 0) {
+        for (int i = 0; i < layer_size; i++) {
+            S[i] = T[i];
+            T[i] = 0;
+        }
     }
     return layer_size;
 }
