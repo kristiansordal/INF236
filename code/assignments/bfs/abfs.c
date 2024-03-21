@@ -105,8 +105,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         local_S[local_layer_size++] = S[i];
 
     printf("Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end, local_layer_size);
-    for (int i = 0; i < local_layer_size; i++)
+    for (int i = 0; i < local_layer_size; i++) {
         printf("Tid: %d node: %d\n", tid, local_S[i]);
+        printf("Tid: %d node parent of %d: %d\n", tid, local_S[i], p[local_S[i]]);
+    }
 
     while (layer_size != 0) {
 #pragma omp barrier
