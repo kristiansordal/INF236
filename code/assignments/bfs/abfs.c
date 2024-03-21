@@ -100,14 +100,15 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int chunk = T[0] / threads;
     int start = chunk * tid;
     int end = tid == threads - 1 ? T[0] : chunk * (tid + 1);
-    printf("Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end, layer_size);
 
     for (int i = start; i < end; i++)
         local_S[local_layer_size++] = S[i];
 
+    printf("Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end, local_layer_size);
+
     while (layer_size != 0) {
 #pragma omp barrier
-        k_steps = depth % k == 0 && depth > 0;
+        k_steps = depth % k == 0;
         for (int i = 0; i < local_layer_size; i++) {
             int v = local_S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
