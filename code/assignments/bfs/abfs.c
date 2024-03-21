@@ -121,7 +121,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             }
         }
 
-        printf("Tid %d discovvered %d nodes\n", tid, num_discovered_layer);
+        // printf("Tid %d discovvered %d nodes\n", tid, num_discovered_layer);
         depth++;
         T[tid] = num_discovered;
 
