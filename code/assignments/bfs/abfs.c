@@ -142,25 +142,23 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             layer_size += T[i];
         }
 
-        if (num_discovered > 0) {
-            if (k_steps) {
-                memcpy(S + offset, discovered, num_discovered * sizeof(int));
-                int chunk = num_discovered / threads;
-                int start = chunk * tid;
-                int end = tid == threads - 1 ? num_discovered : chunk * (tid + 1);
-                local_layer_size = end - start;
-                printf("KSTEP Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end,
-                       local_layer_size);
-                for (int i = start; i < end; i++)
-                    local_S[i - start] = S[i];
-            } else {
-                temp = local_S;
-                local_S = discovered;
-                discovered = temp;
-                local_layer_size = num_discovered;
-            }
-            num_discovered = 0;
+        if (k_steps) {
+            memcpy(S + offset, discovered, num_discovered * sizeof(int));
+            int chunk = num_discovered / threads;
+            int start = chunk * tid;
+            int end = tid == threads - 1 ? num_discovered : chunk * (tid + 1);
+            local_layer_size = end - start;
+            printf("KSTEP Tid: %d will explore node(s) %d -> %d. Layer size: %d\n", tid, start, end, local_layer_size);
+            for (int i = start; i < end; i++)
+                local_S[i - start] = S[i];
+        } else {
+            temp = local_S;
+            local_S = discovered;
+            discovered = temp;
+            local_layer_size = num_discovered;
         }
+
+        num_discovered = 0;
     }
 }
 
