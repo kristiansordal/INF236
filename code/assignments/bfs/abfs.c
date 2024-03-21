@@ -120,7 +120,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp critical
     { layer_size += local_layer; }
     printf("Total layer: %d\n", layer_size);
-    printf("Tid %d: %d -> %d\nLayer size: %d\n", tid, start, end, local_layer);
+    // printf("Tid %d: %d -> %d\nLayer size: %d\n", tid, start, end, local_layer);
 
     while (layer_size != 0) {
         k_steps = depth % k == 0 && depth > 0;
@@ -140,7 +140,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 
         depth++;
-        // printf("Thread: %d -> %d\n", tid, num_discovered_layer);
         T[tid] = num_discovered;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
