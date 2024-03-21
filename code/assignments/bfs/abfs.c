@@ -80,7 +80,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
     int *discovered, *temp;
     int *local_S, local_layer_size = 0;
-    int k = 1, k_steps = 0;
+    int k = 5, k_steps = 0;
 
     // Allocate memory for discovered vertices, private for each rank
     discovered = malloc(n * sizeof(int));
@@ -122,8 +122,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
                     discovered[num_discovered++] = u;
-                } else {
-                    p[u] = v < p[u] ? v : p[u];
                 }
             }
         }
