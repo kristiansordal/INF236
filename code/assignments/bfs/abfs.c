@@ -77,7 +77,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
     int *discovered, *temp;
     int *local_S, local_layer = 0, start_idx = 0;
-    int k = 5, k_steps = 0, seq_limit = 2;
+    int k = 5, k_steps = 0, seq_limit = 10;
 
     // Allocate memory for discovered vertices, private for each rank
     discovered = malloc(n * sizeof(int));
@@ -99,8 +99,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     // Explore k layers sequentially
 #pragma omp master
     {
+        // explore k layers sequentially
+        // T[0] stores the start index in S of the kth layer
+        // T[1] stores the size of the kth layer
         T[1] = sequential_k_steps(n, ver, edges, p, dist, S, T, seq_limit, &start_idx);
-        T[0] = start_idx; // need to store this in a shared variable
+        T[0] = start_idx;
         printf("To distribute: %d -> %d\n", T[0], T[0] + T[1]);
     }
 #pragma omp barrier
@@ -126,7 +129,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int v = local_S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-                // printf("Tid: %d, %d -> %d", tid, u, p[u]);
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
