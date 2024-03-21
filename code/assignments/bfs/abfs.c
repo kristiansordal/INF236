@@ -46,6 +46,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     num_discovered = 0;
 
     while (layer_size <= omp_get_num_threads() || layer_size == 0) {
+        printf("Layer size: %d\n", layer_size);
         for (int i = 0; i < layer_size; i++) {
             int v = S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
