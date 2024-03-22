@@ -41,23 +41,14 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         num_discovered = 0;
     }
 
-    // for (int i = 0; i < layer_size; i++) {
-    //     printf("S[%d]: %d, T[%d],%d\n", i, S[i], i, T[i]);
-    // }
-
     if (flips % 2 == 0) {
+        // Copy contents of T to S_original if flips is even
+        for (int i = 0; i < layer_size; i++) {
+            S_original[i] = T[i];
+        }
+        // Ensure S points to S_original
         S = S_original;
-        T = T_original;
-        // S_original = T;
-        // S = S_original;
     }
-    // for (int i = 0; i < layer_size; i++) {
-    //     printf("S[%d]: %d, T[%d],%d\n", i, S[i], i, T[i]);
-    // }
-
-    // for (int i = 0; i < layer_size; i++) {
-    //     printf("S[%d]: %d, T[%d],%d\n", i, S[i], i, T[i]);
-    // }
 
     return layer_size;
 }
