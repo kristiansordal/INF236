@@ -92,6 +92,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             d = 0;
             for (int i = 0; i < l; i++) {
                 u = queue[i];
+                printf("tid %d processing %d\n", tid, u);
                 for (int j = ver[u]; j < ver[u + 1]; j++) {
                     v = edges[j];
                     if (p[v] == -1 || dist[v] > dist[u] + 1) {
