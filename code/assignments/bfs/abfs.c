@@ -64,7 +64,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         T = temp;
         layer_size = num_discovered;
         flips++;
-        printf("layer: %d", flips);
+        printf("layer: %d\n", flips);
 
         num_discovered = 0;
     }
