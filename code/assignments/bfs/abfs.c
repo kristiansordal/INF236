@@ -155,6 +155,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             local_layer_size = end - start;
             memcpy(local_S, S + start, local_layer_size * sizeof(int));
 
+#pragma omp single
+            {
+                for (int i = 0; i < 50; i++)
+                    printf("p[%d]: %d, dist[%d]: %d\n", i, p[i], i, dist[i]);
+            }
+
         } else {
             temp = local_S;
             local_S = discovered;
