@@ -52,7 +52,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int u, v, l, d, l_tot = 0, k = 4;
+    int u, v, l, d, l_tot = 0, k = 3;
     int *discovered, *queue;
     int *temp;
     int threads = omp_get_num_threads(), tid = omp_get_thread_num();
@@ -95,11 +95,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 u = queue[i];
                 for (int j = ver[u]; j < ver[u + 1]; j++) {
                     v = edges[j];
-                    if (p[v] == -1 || dist[v] > dist[u] + 1) {
+                    if (p[v] == -1) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                        // printf("tid %d, discovered[%d]: %d\n", tid, d - 1, discovered[d - 1]);
                     }
                 }
             }
