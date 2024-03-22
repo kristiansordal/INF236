@@ -135,7 +135,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
         for (int i = 0; i < local_layer_size; i++) {
             int v = local_S[i];
-            printf("Tid: %d, v: %d\n", tid, v);
+            // printf("Tid: %d, v: %d\n", tid, v);
             int new_dist = dist[v] + 1;
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
