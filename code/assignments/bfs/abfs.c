@@ -106,10 +106,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp single
     {
         for (int i = 0; i < T[0]; i++) {
-            printf("dist[%d]: %d", p[S[i]], dist[p[S[i]]]);
-            // printf(dist[i] == -1 ? "X " : "%d ", dist[i]);
+            printf("dist[%d]: %d\n", p[S[i]], dist[p[S[i]]]);
         }
-        printf("\n");
     }
 
     // populate local_S
