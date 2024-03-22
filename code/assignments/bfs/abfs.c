@@ -120,7 +120,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         l = 0;
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
-            queue[l++] = discovered[i];
+            queue[l++] = S[i];
+
         iters++;
     }
 }
