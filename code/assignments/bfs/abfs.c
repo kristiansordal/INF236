@@ -7,9 +7,9 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     int layer_size, num_discovered, *temp, flips = 0;
     int *S_original = S;
     int *T_original = T;
-    printf("S: %p", S);
-    printf("T: %p", T);
 
+    printf("S: %p\n", S);
+    printf("T: %p\n", T);
     for (int i = 1; i <= n; i++) {
         p[i] = -1;
         dist[i] = -1;
@@ -38,8 +38,8 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         temp = S;
         S = T;
         T = temp;
-        printf("S: %p", S);
-        printf("T: %p", T);
+        printf("S: %p\n", S);
+        printf("T: %p\n", T);
         layer_size = num_discovered;
         flips++;
         // if now flips is odd - then S points to T
