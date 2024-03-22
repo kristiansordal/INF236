@@ -89,7 +89,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
 #pragma omp barrier
 #pragma omp for schedule(static)
-    for (int i = 1; i < p[0] + 1; i++) {
+    for (int i = 0; i < p[0]; i++) {
         queue[l] = S[i];
         l++;
     }
