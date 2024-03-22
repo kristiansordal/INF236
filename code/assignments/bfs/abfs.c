@@ -46,12 +46,14 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         num_discovered = 0;
     }
 
-    // if (flips % 2 != 0) {
-    //     // Copy contents of T to S_original if flips is even
-    //     for (int i = 0; i < layer_size; i++) {
-    //         S_original[i] = T[i];
-    //     }
-    // }
+    if (flips % 2 != 0) {
+        // If flips is odd, S and T are swapped, so swap their contents back
+        int *swapTemp = S;
+        S = T;
+        T = swapTemp;
+    }
+    printf("S: %p\n", S);
+    printf("T: %p\n", T);
 
     return layer_size;
 }
