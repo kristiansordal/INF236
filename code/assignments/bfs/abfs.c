@@ -103,18 +103,20 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 #pragma omp barrier
 
-#pragma omp single
-    {
-        for (int i = 0; i < 50; i++)
-            printf("p[%d]: %d, dist[%d]: %d\n", i, p[i], i, dist[i]);
-    }
+    // #pragma omp single
+    //     {
+    //         for (int i = 0; i < 50; i++)
+    //             printf("p[%d]: %d, dist[%d]: %d\n", i, p[i], i, dist[i]);
+    //     }
     // populate local_S
     int chunk = T[0] / threads;
     int start = chunk * tid;
     int end = tid == threads - 1 ? T[0] : chunk * (tid + 1);
 
-    for (int i = start; i < end; i++)
+    for (int i = start; i < end; i++) {
         local_S[local_layer_size++] = S[i];
+        printf("Tid: %d, local_S[%d]: %d\n", tid, i, local_S[i]);
+    }
 
     while (layer_size != 0) {
         k_steps = depth % k == 0;
