@@ -122,7 +122,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     for (int i = start; i < end; i++) {
         local_S[local_layer_size++] = S[i];
-        printf("local_S[%d]: %d, S[%d]: %d\n", i, local_S[i], i, S[i]);
+        printf("local_S[%d]: %d, S[%d]: %d\n", local_layer_size - 1, local_S[i], i, S[i]);
     }
 
     while (layer_size != 0) {
