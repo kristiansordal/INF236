@@ -120,13 +120,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 int u = edges[j];
 
                 if (p[u] == -1) {
-#pragma omp critical
-                    {
-                        if (p[u] == -1) {
-                            p[u] = v;
-                            dist[u] = dist[v] + 1;
-                        }
-                    }
+#pragma omp atomic write
+                    p[u] = v;
+#pragma omp atomic write
+                    dist[u] = depth + 1;
                     discovered[num_discovered++] = u;
                 }
             }
