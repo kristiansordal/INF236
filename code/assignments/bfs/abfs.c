@@ -122,6 +122,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     while (layer_size != 0) {
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
+#pragma omp barrier
             num_discovered = 0;
             for (int i = 0; i < local_layer_size; i++) {
                 int v = local_S[i];
