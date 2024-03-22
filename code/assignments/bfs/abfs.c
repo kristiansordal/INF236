@@ -41,7 +41,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         num_discovered = 0;
     }
 
-    if (flips % 2 == 0) {
+    if (flips % 2 != 0) {
         // Copy contents of T to S_original if flips is even
         for (int i = 0; i < layer_size; i++) {
             S_original[i] = T[i];
