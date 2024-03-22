@@ -126,8 +126,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     p[u] = v;
                     printf("u: %d, v: %d, dist[u]: %d, dist[v]: %d\n", u, v, dist[u], dist[v] + 1);
                     dist[u] = dist[v] + 1;
-
-                    discovered[num_discovered++] = u;
+                    // discovered[num_discovered++] = u;
                 }
             }
         }
