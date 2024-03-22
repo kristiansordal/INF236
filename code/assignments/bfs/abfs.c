@@ -69,7 +69,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     p[1] = 1;
     dist[1] = 0;
-    // S[0] = 1;
+    S[0] = 1;
 
     l = 0;
     d = 0;
@@ -77,6 +77,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     // Perform some rounds of sequential BFS
 #pragma omp single
     { p[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
+
+    for (int i = 0; i < p[0]; i++) {
+        printf("dist[%d]: %d\n", i, dist[i]);
+    }
 
 #pragma omp barrier
 #pragma omp for schedule(static)
