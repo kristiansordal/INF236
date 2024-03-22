@@ -116,14 +116,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         k_steps = depth % k == 0 && depth != 0;
         for (int i = 0; i < local_layer_size; i++) {
             int v = local_S[i];
+            int new_dist = dist[v] + 1;
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-
-                if (p[u] == -1) {
-#pragma omp atomic write
+                if (p[u] == -1 || new_dist < dist[u]) {
                     p[u] = v;
-#pragma omp atomic write
-                    dist[u] = dist[v] + 1;
+                    dist[u] = new_dist;
                     discovered[num_discovered++] = u;
                 }
             }
