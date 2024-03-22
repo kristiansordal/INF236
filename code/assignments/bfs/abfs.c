@@ -30,7 +30,6 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
-                    printf("discovered %d\n", u);
                     T[num_discovered++] = u;
                 }
             }
@@ -93,6 +92,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             d = 0;
             for (int i = 0; i < l; i++) {
                 u = S[i];
+                printf("tid %d u %d\n", tid, u);
                 for (int j = ver[u]; j < ver[u + 1]; j++) {
                     v = edges[j];
                     if (p[v] == -1 || dist[v] > dist[u] + 1) {
