@@ -120,8 +120,13 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1 || new_dist < dist[u]) {
-                    p[u] = v;
-                    dist[u] = new_dist;
+#pragma omp critical
+                    {
+                        if (p[u] == -1 || new_dist < dist[u]) {
+                            p[u] = v;
+                            dist[u] = new_dist;
+                        }
+                    }
                     discovered[num_discovered++] = u;
                 }
                 if (u == 1013 || u == 783) {
