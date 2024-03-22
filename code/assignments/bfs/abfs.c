@@ -69,8 +69,10 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     }
 
     if (flips % 2 != 0)
-        for (int i = 0; i < layer_size; i++)
+        for (int i = 0; i < layer_size; i++) {
             S_original[i] = T_original[i];
+            printf("S[%d]: %d\n", i, S[i]);
+        }
 
     return layer_size;
 }
