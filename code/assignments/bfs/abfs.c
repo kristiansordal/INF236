@@ -8,8 +8,6 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     int *S_original = S;
     int *T_original = T;
 
-    printf("S: %p\n", S);
-    printf("T: %p\n", T);
     for (int i = 1; i <= n; i++) {
         p[i] = -1;
         dist[i] = -1;
@@ -37,8 +35,6 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         temp = S;
         S = T;
         T = temp;
-        printf("S: %p\n", S);
-        printf("T: %p\n", T);
         layer_size = num_discovered;
         flips++;
         num_discovered = 0;
@@ -68,7 +64,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     p[1] = 1;
     dist[1] = 0;
-    S[0] = 1;
+    // S[0] = 1;
 
     l = 0;
     d = 0;
