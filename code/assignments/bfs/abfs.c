@@ -66,7 +66,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     dist[1] = 0;
     S[0] = 1;
 
-    l = 1;
+    l = 0;
     d = 0;
 
     // Perform some rounds of sequential BFS
