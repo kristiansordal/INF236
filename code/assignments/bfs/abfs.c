@@ -118,11 +118,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = start; i < end; i++)
         local_S[local_layer_size++] = S[i];
 
+    printf("local_layer_size: %d\n", local_layer_size);
     while (layer_size != 0) {
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
             num_discovered = 0;
-            printf("local_layer_size: %d\n", local_layer_size);
             for (int i = 0; i < local_layer_size; i++) {
                 int v = local_S[i];
                 int new_dist = dist[v] + 1;
@@ -161,6 +161,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         int start = chunk * tid;
         int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
         local_layer_size = end - start;
+        printf("local_layer_size after update: %d\n", local_layer_size);
         memcpy(local_S, S + start, local_layer_size * sizeof(int));
     }
 }
