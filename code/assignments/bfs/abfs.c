@@ -112,6 +112,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
         int offset = S[tid + 1];
         l_tot = S[0];
+        printf("Thread %d: offset = %d, l_tot = %d\n", tid, offset, l_tot);
 #pragma omp barrier
         memcpy(S + offset, discovered, l * sizeof(int));
         l = 0;
