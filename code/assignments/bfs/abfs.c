@@ -122,6 +122,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
             num_discovered = 0;
+            printf("local_layer_size: %d\n", local_layer_size);
             for (int i = 0; i < local_layer_size; i++) {
                 int v = local_S[i];
                 int new_dist = dist[v] + 1;
@@ -132,7 +133,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         dist[u] = new_dist;
                         discovered[num_discovered++] = u;
                     } else if (dist[u] > new_dist) {
-                        printf("Error: %d %d %d %d\n", u, dist[u], new_dist, v);
                         p[u] = v;
                         dist[u] = new_dist;
                         discovered[num_discovered++] = u;
