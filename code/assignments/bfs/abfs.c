@@ -46,8 +46,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         num_discovered = 0;
     }
 
-    if (flips % 2 != 0) {
-        // If flips is odd, S and T are swapped, so swap their contents back
+    if (flips % 2 == 0) {
         int *swapTemp = S;
         S = T;
         T = swapTemp;
