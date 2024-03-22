@@ -55,6 +55,10 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     printf("S: %p\n", S);
     printf("T: %p\n", T);
 
+    for (int i = 0; i < layer_size; i++) {
+        printf("S[%d]: %d\n", i, S[i]);
+    }
+
     return layer_size;
 }
 
