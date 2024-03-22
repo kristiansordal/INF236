@@ -159,7 +159,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         num_discovered = 0;
     }
 
-    printf("%d, %d, %d, %d", p[1013], p[783], dist[1013], dist[783]);
+#pragma omp single
+    { printf("%d, %d, %d, %d\n", p[1013], p[783], dist[1013], dist[783]); }
 }
 
 // Write code here
