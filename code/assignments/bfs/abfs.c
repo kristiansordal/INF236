@@ -123,7 +123,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     for (int i = start; i < end; i++) {
         local_S[local_layer_size++] = S[i];
-        printf("local_S[%d]: %d, S[%d]: %d\n", local_layer_size - 1, local_S[local_layer_size - 1], i, S[i]);
+        printf("local_S[%d]: %d, S[%d]: %d, %d\n", local_layer_size - 1, local_S[local_layer_size - 1], i, S[i],
+               p[S[i]]);
     }
 
     // for (int i = 0; i < local_layer_size; i++) {
@@ -141,9 +142,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int new_dist = dist[v] + 1;
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-                if (tid == 2 && depth == 0) {
-                    printf("discovered: %d, dist: %d, correct parent: %d, current parent: %d\n", u, new_dist, v, p[u]);
-                }
+                // if (tid == 2 && depth == 0) {
+                //     printf("discovered: %d, dist: %d, correct parent: %d, current parent: %d\n", u, new_dist, v,
+                //     p[u]);
+                // }
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = new_dist;
