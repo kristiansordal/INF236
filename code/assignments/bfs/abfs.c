@@ -118,7 +118,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     while (layer_size != 0) {
         k_steps = depth % k == 0;
-        printf("Tid: %d, depth: %d\n", tid, depth);
+        // printf("Tid: %d, depth: %d\n", tid, depth);
 #pragma omp barrier
         for (int i = 0; i < local_layer_size; i++) {
             int v = local_S[i];
@@ -126,9 +126,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1) {
-                    if (u == 7) {
-                        printf("v: %d, u: %d, new_dist: %d\n", v, u, new_dist);
-                    }
                     p[u] = v;
                     dist[u] = new_dist;
                     discovered[num_discovered++] = u;
@@ -155,11 +152,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             local_layer_size = end - start;
             memcpy(local_S, S + start, local_layer_size * sizeof(int));
 
-#pragma omp single
-            {
-                for (int i = 0; i < 50; i++)
-                    printf("p[%d]: %d, dist[%d]: %d\n", i, p[i], i, dist[i]);
-            }
+            // #pragma omp single
+            //             {
+            //                 for (int i = 0; i < 50; i++)
+            //                     printf("p[%d]: %d, dist[%d]: %d\n", i, p[i], i, dist[i]);
+            //             }
 
         } else {
             temp = local_S;
@@ -169,9 +166,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
         num_discovered = 0;
     }
-
-#pragma omp single
-    { printf("%d, %d, %d, %d\n", p[1013], p[783], dist[1013], dist[783]); }
 }
 
 // Write code here
