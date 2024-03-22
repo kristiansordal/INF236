@@ -48,7 +48,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int u, v, l, d, l_tot = 0, k = 3;
+    int u, v, l, d, l_tot = 0, k = 4;
     int *discovered, *queue;
     int *temp;
     int threads = omp_get_num_threads(), tid = omp_get_thread_num();
