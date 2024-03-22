@@ -18,7 +18,6 @@
 // no vertex 0.
 
 void sbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-
     int i, j;         // Loop indices
     int v, w;         // Pointers to vertices
     int num_r, num_w; // Number of vertices in S and T, respectively

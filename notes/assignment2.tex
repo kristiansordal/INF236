@@ -8,6 +8,7 @@
 
 \title{INF236 - Assignment 2}
 
+\newcommand{\Barrier}{\textbf{barrier}}
 
 \begin{document}
 \maketitle
@@ -18,13 +19,76 @@
 In this assignment, we are experimenting with two different strategies for paralellizing breadth first search. There will be two different parallel algorithms implemented.
 \medskip
 
-Breadth first search or just BFS, is a classical graph exploration algorithm, where the input is given as a graph \( G\left( V,E \right) \), and some starting vertex \( n \in V \). We can then use BFS to figure out various properties about the graph, including (but not limited to) finding the shortest path between the starting node and some other node, the path used to get from one node to another node, and the amount of vertices that are reachable from a given node, and consequently whether or not the graph is connected. 
+Breadth first search or just BFS, is a classical graph exploration algorithm, where the input is given as a graph \( G\left( V,E \right) \), and some starting node \( n \in V \). We can then use BFS to figure out various properties about the graph, including (but not limited to) finding the shortest path between the starting node and some other node, the path used to get from one node to another node, and the amount of nodes that are reachable from a given node, and consequently whether or not the graph is connected. 
 \medskip
 
 BFS explores the graph layer by layer, which means that from the starting node, all of the neighbours of this node are added to a queue, and the distance \( d \) to these nodes will be equal to 1 plus the distance from the starting node. This process is repeated for these nodes neighbours once again, and so on until there are no more nodes to explore (the queue is empty). We also need to keep track of which nodes we have seen, and if we encounter a node we have already seen, we need to check if we have found a shorter distance to this node, and update that nodes distance accordingly.
 
+\section{Parallel BFS}
+Two different verions of parallel BFS have been implemented for this assignment, with two different approached to the parallelization.
 
+\subsection{First implementation}
+When parallelizing BFS, we can observe that nodes are found layer by layer. So given a start node with distance 0, we will discover all its neighbours. These nodes will have distance 1 from the start node, their neighbours again will have distance 2, and so on. This lends itself nicely to paralellizing. If we maintain all nodes found in a given layer in some queue, we can distribute this queue amongst the different threads, using the OpenMP construct \texttt{\#pragma omp for}. Then, every thread can work locally on discovering neighbours of these nodes, and maintaining these found neighbours in a private list. We don't care about which parent a given node points to, as long as the distance from the start node is correct. This means that the first thread that discoveres a node without a parent pointer, will set the parent pointer of that node, even if some other node in the same layer is also a neighbour of this node.
+\medskip
 
+After all nodes in the current layer have been discovered, we can for each thread, copy the private discovered list back into the global layer queue, and continue on, until there are no more nodes to discover.
+\medskip
+
+An outline of this approach is given below. Note that this routine is called from within a parallel environment, where the parameters to the function are shared between all threads.
+
+\begin{algorithm}[H]
+    \caption{Parallel BFS - First approach}
+    \SetAlgoVlined
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+    \Input{\textit{G(V,E)} - Graph, \textit{dist} - Distance Array, \textit{p} - Parent Array, \textit{S} - Global Queue, \textit{T} - Temporary global queue }
+    \Output{\textit{dist} and \textit{p}, populated with distances and parent of all nodes\newline}
+    layerSize \( \leftarrow 1 \)\\
+    numDiscovered \( \leftarrow 0 \)\\
+    discovered \( \leftarrow \) list of size \( n \), initialized to 0\\
+    p[1] \( \leftarrow \) 0 \\
+    dist[1] \( \leftarrow 0 \)  \\
+    S[0] \( \leftarrow 0\) \\
+
+    \While{layerSize \( \neq 0\)}{
+        \Barrier\\
+        \ForPar{ i = 0 \KwTo layerSize}{
+            \For{ \( v \in \text{neighbours}(S[i]) \)}{
+            \If{dist[v] == -1}{
+                dist[v] \( \leftarrow \) dist[S[i]] + 1 \\
+                p[v] \( \leftarrow \) S[i] \\
+                discovered[numDiscovered++] \( \leftarrow \) v \\
+            }
+            }
+        }
+        T[tid] \( \leftarrow \) numDiscovered \\
+        \Barrier\\
+        layerSize \( \leftarrow \) T[0] \\
+        offset \( \leftarrow 0 \)\\
+        \For{ i = 1 \KwTo numThreads}{
+            \If{\( i == tid \)}{
+                offset \( \leftarrow \) layerSize\\
+            }
+            layerSize += T[i] \\
+        }
+
+        \If{numDiscovered \( > 0 \)}{
+            S[offset : numDiscovered] = discovered\\
+            numDiscovered \( \leftarrow 0 \)\\
+        }
+    }
+\end{algorithm}
+
+\subsection{Second implementation}
+For the second implementation, the strategy is as follows. First, we will perform BFS sequentially until some condition is reached. This condition can for example be: \textit{perform sequential BFS until the layer discovered contains \( n \cdot \#threads \) nodes}.
+\medskip
+
+After this, we distribute the newly discovered nodes into a local queue for each thread as evenly as possible. Then each thread will continue discovering all nodes with distance at most \( k \) away from the originally distributed layer. 
+\medskip
+
+Then, we put all nodes in this layer into the global queue, and redistribute the nodes amongst the ranks again, as evenly as possible. This is repeated until there are no more nodes to discover.
+
+\section{Experiments}
 \newpage
     \pgfplotstableread{
     T roadusa rggn222s0 delaunayn24 hugebubbles-00020
@@ -121,5 +185,7 @@ BFS explores the graph layer by layer, which means that from the starting node, 
         \caption{Execution time and speedup of parallel BFS}
     \end{figure}
 \end{document}
+
+
 
 
