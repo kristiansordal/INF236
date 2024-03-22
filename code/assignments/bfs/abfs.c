@@ -103,6 +103,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 #pragma omp barrier
 
+    for (int i = 0; i < 10; i++) {
+        printf(dist[i] == -1 ? "X " : "%d ", dist[i]);
+    }
+
     // populate local_S
     int chunk = T[0] / threads;
     int start = chunk * tid;
