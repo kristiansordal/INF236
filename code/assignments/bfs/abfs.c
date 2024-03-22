@@ -125,6 +125,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1) {
+                    if (u == 7) {
+                        printf("v: %d, u: %d, new_dist: %d\n", v, u, new_dist);
+                    }
                     p[u] = v;
                     dist[u] = new_dist;
                     discovered[num_discovered++] = u;
