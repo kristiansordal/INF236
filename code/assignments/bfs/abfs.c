@@ -160,8 +160,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         int chunk = layer_size / threads;
         int start = chunk * tid;
         int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
+        printf("Tid %d: start: %d, end: %d\n", tid, start, end);
         local_layer_size = end - start;
-        printf("local_layer_size after update: %d\n", local_layer_size);
         memcpy(local_S, S + start, local_layer_size * sizeof(int));
     }
 }
