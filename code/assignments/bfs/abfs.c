@@ -123,5 +123,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             queue[l++] = S[i];
 
         iters++;
+#pragma omp barrier
+
+        printf("Tid %d waiting 3 ... %d\n", tid, iters);
     }
 }
