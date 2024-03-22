@@ -125,7 +125,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     discovered[num_discovered++] = u;
                 }
                 if (u == 1013 || u == 783) {
-                    printf("v: %d, u: %d, p[u]: %d, dist[u]: %d\n", v, u, p[u], dist[u]);
+                    printf("v: %d, u: %d, p[u]: %d, dist[u]: %d, dist[v]+1: %d\n", v, u, p[u], dist[u], dist[v] + 1);
                 }
             }
         }
