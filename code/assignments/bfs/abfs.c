@@ -119,16 +119,19 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int new_dist = dist[v] + 1;
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-                if (p[u] == -1 || new_dist < dist[u]) {
-#pragma omp critical
-                    {
-                        if (p[u] == -1 || new_dist < dist[u]) {
-                            p[u] = v;
-                            dist[u] = new_dist;
-                        }
-                    }
+                if (p[u] == -1) {
+                    p[u] = v;
+                    dist[u] = new_dist;
                     discovered[num_discovered++] = u;
+                } else {
+#pragma omp critical
+                    if (dist[v] + 1 < dist[u]) {
+                        p[u] = v;
+                        dist[u] = new_dist;
+                        discovered[num_discovered++] = u;
+                    }
                 }
+
                 if (u == 1013 || u == 783) {
                     printf("v: %d, u: %d, p[u]: %d, dist[u]: %d, dist[v]+1: %d\n", v, u, p[u], dist[u], dist[v] + 1);
                 }
