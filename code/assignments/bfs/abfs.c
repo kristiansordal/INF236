@@ -124,17 +124,15 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     dist[u] = new_dist;
                     discovered[num_discovered++] = u;
                 } else {
-#pragma omp critical
-                    if (dist[v] + 1 < dist[u]) {
+                    if (new_dist < dist[u]) {
                         p[u] = v;
                         dist[u] = new_dist;
                         discovered[num_discovered++] = u;
                     }
                 }
-
-                if (u == 1013 || u == 783) {
-                    printf("v: %d, u: %d, p[u]: %d, dist[u]: %d, dist[v]+1: %d\n", v, u, p[u], dist[u], dist[v] + 1);
-                }
+                // if (u == 1013 || u == 783) {
+                //     printf("v: %d, u: %d, p[u]: %d, dist[u]: %d, dist[v]+1: %d\n", v, u, p[u], dist[u], dist[v] + 1);
+                // }
             }
         }
 
