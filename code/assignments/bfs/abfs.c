@@ -83,13 +83,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = 0; i < p[0]; i++)
         queue[l++] = S[i];
 
-#pragma omp critical
-    {
-        for (int i = 0; i < l; i++) {
-            printf("tid: %d, queue[%d]: %d\n", tid, i, queue[i]);
-        }
-    }
-
     while (l_tot != 0) {
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
@@ -102,6 +95,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
+                        printf("tid %d discovered %d\n", tid, v);
                     }
                 }
             }
