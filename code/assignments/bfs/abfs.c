@@ -53,9 +53,14 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1) {
-                    p[u] = v;
-                    dist[u] = dist[v] + 1;
-                    T[num_discovered++] = u;
+#pragma omp critical
+                    {
+                        if (p[u] == -1) {
+                            p[u] = v;
+                            dist[u] = dist[v] + 1;
+                            T[num_discovered++] = u;
+                        }
+                    }
                 }
             }
         }
@@ -120,7 +125,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 int u = edges[j];
                 if (p[u] == -1) {
                     p[u] = v;
-                    dist[u] = dist[v] + 1;
+                    dist[u] = depth + 1;
                     discovered[num_discovered++] = u;
                 }
             }
