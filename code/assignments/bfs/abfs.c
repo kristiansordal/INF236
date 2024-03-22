@@ -104,6 +104,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 #pragma omp barrier
         T[tid] = d;
+        printf("tid %d, T[%d]: %d\n", tid, tid, T[tid]);
 
         l_tot = T[0];
         int offset = 0;
