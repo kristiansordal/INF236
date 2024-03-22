@@ -123,13 +123,13 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     p[u] = v;
                     dist[u] = new_dist;
                     discovered[num_discovered++] = u;
-                } else {
-                    if (new_dist < dist[u]) {
-                        p[u] = v;
-                        dist[u] = new_dist;
-                        discovered[num_discovered++] = u;
-                    }
-                }
+                } // else {
+                //     if (new_dist < dist[u]) {
+                //         p[u] = v;
+                //         dist[u] = new_dist;
+                //         discovered[num_discovered++] = u;
+                //     }
+                // }
             }
         }
 
