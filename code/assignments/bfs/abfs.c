@@ -82,8 +82,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     printf("Tid %d, l: %d\n", tid, l);
     l_tot = T[0];
 
+    int iters = 0;
     while (l_tot != 0) {
-        printf("Tid %d waiting 1\n", tid);
+        printf("Tid %d waiting 1 ... %d\n", tid, iters);
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
             d = 0;
@@ -103,7 +104,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             discovered = temp;
             l = d;
         }
-        printf("Tid %d waiting 2\n", tid);
+        printf("Tid %d waiting 2 ... %d\n", tid, iters);
 #pragma omp barrier
         T[tid] = d;
 
@@ -120,5 +121,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
             queue[l++] = discovered[i];
+        iters++;
     }
 }
