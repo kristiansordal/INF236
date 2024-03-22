@@ -6,8 +6,26 @@
 
 % 80 32.802406 7.405352 9.848995 22.588494
 
+\title{INF236 - Assignment 2}
+
 
 \begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{Introduction}
+In this assignment, we are experimenting with two different strategies for paralellizing breadth first search. There will be two different parallel algorithms implemented.
+\medskip
+
+Breadth first search or just BFS, is a classical graph exploration algorithm, where the input is given as a graph \( G\left( V,E \right) \), and some starting vertex \( n \in V \). We can then use BFS to figure out various properties about the graph, including (but not limited to) finding the shortest path between the starting node and some other node, the path used to get from one node to another node, and the amount of vertices that are reachable from a given node, and consequently whether or not the graph is connected. 
+\medskip
+
+BFS explores the graph layer by layer, which means that from the starting node, all of the neighbours of this node are added to a queue, and the distance \( d \) to these nodes will be equal to 1 plus the distance from the starting node. This process is repeated for these nodes neighbours once again, and so on until there are no more nodes to explore (the queue is empty). We also need to keep track of which nodes we have seen, and if we encounter a node we have already seen, we need to check if we have found a shorter distance to this node, and update that nodes distance accordingly.
+
+
+
+\newpage
     \pgfplotstableread{
     T roadusa rggn222s0 delaunayn24 hugebubbles-00020
     1 1.734203 1.081684 1.783102 3.489007
