@@ -145,6 +145,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             local_layer_size = num_discovered;
         }
 
+        printf("num discovered: %d\n", num_discovered);
         T[tid] = local_layer_size;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
