@@ -88,7 +88,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
             d = 0;
-            printf("tid %d round %d\n", tid, i);
+            printf("tid %d round %d, gonna process %d\n", tid, i, l);
             for (int i = 0; i < l; i++) {
                 u = queue[i];
                 printf("tid %d processing %d\n", tid, u);
