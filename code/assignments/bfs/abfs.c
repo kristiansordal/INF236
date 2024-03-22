@@ -37,8 +37,6 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         T = temp;
         layer_size = num_discovered;
         flips++;
-        printf("layer: %d\n", flips);
-
         num_discovered = 0;
     }
 
@@ -78,6 +76,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp for
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
+
+    for (int i = 0; i < l; i++) {
+        printf("queue[%d]: %d\n", i, queue[i]);
+    }
 
     while (l_tot != 0) {
 #pragma omp barrier
