@@ -42,20 +42,12 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         printf("T: %p\n", T);
         layer_size = num_discovered;
         flips++;
-        // if now flips is odd - then S points to T
         num_discovered = 0;
     }
 
     if (flips % 2 != 0)
         for (int i = 0; i < layer_size; i++)
             S_original[i] = T_original[i];
-
-    // printf("S: %p\n", S);
-    // printf("T: %p\n", T);
-
-    // for (int i = 0; i < layer_size; i++) {
-    //     printf("S[%d]: %d\n", i, S[i]);
-    // }
 
     return layer_size;
 }
@@ -84,11 +76,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // Perform some rounds of sequential BFS
 #pragma omp single
-    {
-        T[0] = sequential_steps(n, ver, edges, p, dist, S, T);
-        for (int i = 0; i < T[0]; i++) {
-            printf("%d %d\n", T[i], S[i]);
-        }
+    { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
+    for (int i = 0; i < T[0]; i++) {
+        printf("%d %d\n", T[i], S[i]);
     }
 
 #pragma omp for schedule(static)
