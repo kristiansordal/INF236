@@ -116,6 +116,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         k_steps = depth % k == 0 && depth != 0;
         for (int i = 0; i < local_layer_size; i++) {
             int v = local_S[i];
+#pragma omp barrier
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
                 if (p[u] == -1 /* || (dist[u] > dist[v] + 1 && dist[v] != -1) */) {
