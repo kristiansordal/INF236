@@ -120,8 +120,14 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 int new_dist = dist[v] + 1;
                 for (int j = ver[v]; j < ver[v + 1]; j++) {
                     int u = edges[j];
-                    if (p[u] == -1 || new_dist < dist[u]) {
+                    if (p[u] == -1) {
                         p[u] = v;
+                        dist[u] = new_dist;
+                        discovered[num_discovered++] = u;
+                    } else if (dist[u] > new_dist) {
+#pragma omp atomic write
+                        p[u] = v;
+#pragma omp atomic write
                         dist[u] = new_dist;
                         discovered[num_discovered++] = u;
                     }
@@ -149,7 +155,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         int start = chunk * tid;
         int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
         local_layer_size = end - start;
-        printf("local_layer_size %d\n", local_layer_size);
         memcpy(local_S, S + start, local_layer_size * sizeof(int));
     }
 }
