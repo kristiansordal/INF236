@@ -132,9 +132,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         dist[u] = new_dist;
                         discovered[num_discovered++] = u;
                     } else if (dist[u] > new_dist) {
-#pragma omp atomic write
+                        printf("Error: %d %d %d %d\n", u, dist[u], new_dist, v);
                         p[u] = v;
-#pragma omp atomic write
                         dist[u] = new_dist;
                         discovered[num_discovered++] = u;
                     }
