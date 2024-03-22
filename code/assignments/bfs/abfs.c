@@ -100,6 +100,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             d = 0;
         }
         T[tid] = l;
+#pragma omp barrier
 #pragma omp single
         {
             S[0] = 0;
@@ -108,13 +109,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 S[0] += T[i];
             }
         }
+#pragma omp barrier
         int offset = S[tid + 1];
         l_tot = S[0];
 #pragma omp barrier
-
         memcpy(S + offset, discovered, l * sizeof(int));
         l = 0;
-
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
