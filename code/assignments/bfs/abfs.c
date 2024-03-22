@@ -76,11 +76,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // Perform some rounds of sequential BFS
 #pragma omp single
-    { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
+    { p[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 
 #pragma omp barrier
 #pragma omp for schedule(static)
-    for (int i = 0; i < T[0]; i++) {
+    for (int i = 0; i < p[0]; i++) {
         queue[l] = S[i];
         l++;
     }
