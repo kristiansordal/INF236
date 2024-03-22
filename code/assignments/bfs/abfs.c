@@ -121,7 +121,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 if (p[u] == -1) {
 #pragma omp critical
                     {
-                        if (p[u] == -1 && dist[u] > dist[v] + 1 && dist[v] != -1) {
+                        if (p[u] == -1) {
                             p[u] = v;
                             dist[u] = dist[v] + 1;
                             discovered[num_discovered++] = u;
