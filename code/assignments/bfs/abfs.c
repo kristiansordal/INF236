@@ -132,11 +132,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[u] = v;
                         dist[u] = new_dist;
                         discovered[num_discovered++] = u;
-                    } else if (dist[u] > new_dist) {
-                        p[u] = v;
-                        dist[u] = new_dist;
-                        discovered[num_discovered++] = u;
-                    }
+                    } // else if (dist[u] > new_dist && p[u] != v && p[u] != -1) {
+                    //     p[u] = v;
+                    //     dist[u] = new_dist;
+                    //     discovered[num_discovered++] = u;
+                    // }
                 }
             }
             temp = local_S;
