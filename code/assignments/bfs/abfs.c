@@ -76,11 +76,11 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size = 1, num_discovered = 0;
+    int layer_size = 1, num_discovered = 0, depth = 0;
     int tid = omp_get_thread_num(), threads = omp_get_num_threads();
     int *discovered, *temp;
     int *local_S, local_layer_size = 0;
-    int k = 2;
+    int k = 8, k_steps = 0;
 
     // Allocate memory for discovered vertices, private for each rank
     discovered = malloc(n * sizeof(int));
@@ -103,51 +103,38 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 #pragma omp barrier
 
-#pragma omp single
-    {
-        for (int i = 0; i < T[0]; i++) {
-            printf("dist[%d]: %d\n", S[i], dist[S[i]]);
-        }
-    }
-
     // populate local_S
     int chunk = T[0] / threads;
     int start = chunk * tid;
     int end = tid == threads - 1 ? T[0] : chunk * (tid + 1);
-    // printf("Tid %d: start: %d, end: %d\n", tid, start, end);
 
     for (int i = start; i < end; i++)
         local_S[local_layer_size++] = S[i];
 
     while (layer_size != 0) {
 #pragma omp barrier
-        for (int i = 0; i < k; i++) {
-#pragma omp barrier
-            num_discovered = 0;
-            for (int i = 0; i < local_layer_size; i++) {
-                int v = local_S[i];
-                int new_dist = dist[v] + 1;
-                for (int j = ver[v]; j < ver[v + 1]; j++) {
-                    int u = edges[j];
-                    if (p[u] == -1) {
+        k_steps = depth % k == 0 && depth != 0;
+        for (int i = 0; i < local_layer_size; i++) {
+            int v = local_S[i];
+            int new_dist = dist[v] + 1;
+            for (int j = ver[v]; j < ver[v + 1]; j++) {
+                int u = edges[j];
+                if (p[u] == -1) {
+                    p[u] = v;
+                    dist[u] = new_dist;
+                    discovered[num_discovered++] = u;
+                } else {
+                    if (new_dist < dist[u]) {
                         p[u] = v;
                         dist[u] = new_dist;
                         discovered[num_discovered++] = u;
-                    } // else if (dist[u] > new_dist && p[u] != v && p[u] != -1) {
-                    //     p[u] = v;
-                    //     dist[u] = new_dist;
-                    //     discovered[num_discovered++] = u;
-                    // }
+                    }
                 }
             }
-            temp = local_S;
-            local_S = discovered;
-            discovered = temp;
-            local_layer_size = num_discovered;
         }
 
-        printf("num discovered: %d\n", num_discovered);
-        T[tid] = local_layer_size;
+        depth++;
+        T[tid] = num_discovered;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
         layer_size = T[0];
@@ -158,15 +145,25 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             layer_size += T[i];
         }
 
-#pragma omp single
-        { printf("layer size; %d\n", layer_size); }
-        memcpy(S + offset, discovered, num_discovered * sizeof(int));
-        int chunk = layer_size / threads;
-        int start = chunk * tid;
-        int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
-        printf("Tid %d: start: %d, end: %d\n", tid, start, end);
+        if (k_steps) {
+            memcpy(S + offset, discovered, num_discovered * sizeof(int));
+            int chunk = layer_size / threads;
+            int start = chunk * tid;
+            int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
+            local_layer_size = end - start;
+            memcpy(local_S, S + start, local_layer_size * sizeof(int));
 
-        local_layer_size = end - start;
-        memcpy(local_S, S + start, local_layer_size * sizeof(int));
+        } else {
+            temp = local_S;
+            local_S = discovered;
+            discovered = temp;
+            local_layer_size = num_discovered;
+        }
+        num_discovered = 0;
     }
+
+#pragma omp single
+    { printf("%d, %d, %d, %d\n", p[1013], p[783], dist[1013], dist[783]); }
 }
+
+// Write code here
