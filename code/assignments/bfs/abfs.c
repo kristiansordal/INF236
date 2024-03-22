@@ -82,6 +82,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = 0; i < p[0]; i++)
         queue[l++] = S[i];
 
+    printf("Tid %d, l: %d\n", tid, l);
     l_tot = T[0];
 
     while (l_tot != 0) {
