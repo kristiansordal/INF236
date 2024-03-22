@@ -112,6 +112,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         local_S[local_layer_size++] = S[i];
 
     while (layer_size != 0) {
+#pragma omp barrier
         for (int i = 0; i < k; i++) {
             num_discovered = 0;
             for (int i = 0; i < local_layer_size; i++) {
@@ -132,7 +133,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             local_layer_size = num_discovered;
         }
 
-        T[tid] = num_discovered;
+        T[tid] = local_layer_size;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
         layer_size = T[0];
@@ -148,6 +149,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         int start = chunk * tid;
         int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
         local_layer_size = end - start;
+        printf("local_layer_size %d\n", local_layer_size);
         memcpy(local_S, S + start, local_layer_size * sizeof(int));
     }
 }
