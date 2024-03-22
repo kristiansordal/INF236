@@ -99,7 +99,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                        printf("tid %d, discovered[%d]: %d\n", tid, d, discovered[d]);
+                        printf("tid %d, discovered[%d]: %d\n", tid, d - 1, discovered[d - 1]);
                     }
                 }
             }
@@ -123,7 +123,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         memcpy(S + offset, discovered, d * sizeof(int));
         l = 0;
 #pragma omp for schedule(static)
-        for (int i = 0; i < d; i++)
+        for (int i = 0; i < l_tot; i++)
             queue[l++] = discovered[i];
     }
 }
