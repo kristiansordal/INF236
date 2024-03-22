@@ -106,8 +106,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     printf("Discovered: %d in last layer\n", T[0]);
 #pragma omp single
     {
-        for (int i = 0; i < 25; i++)
-            printf("p[%d]: %d, dist[%d]: %d\n", i, p[i], i, dist[i]);
+        for (int i = 0; i < T[0]; i++) {
+            printf("S[%d]: %d\n", i, S[i]);
+        }
+        // for (int i = 0; i < 25; i++)
+        //     printf("p[%d]: %d, dist[%d]: %d\n", i, p[i], i, dist[i]);
     }
     // populate local_S
     int chunk = T[0] / threads;
