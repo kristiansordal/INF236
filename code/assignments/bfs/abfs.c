@@ -76,7 +76,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // Perform some rounds of sequential BFS
 #pragma omp single
-    { p[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
+    { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 
     for (int i = 0; i < p[0]; i++) {
         printf("dist[%d]: %d, %d\n", i, dist[i], p[i]);
