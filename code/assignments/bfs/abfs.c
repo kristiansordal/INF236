@@ -118,46 +118,45 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             int v = local_S[i];
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
-                if (p[u] == -1) {
-                    p[u] = v;
+                if (dist[u] > dist[v] + 1 && dist[v] != -1) {
                     dist[u] = dist[v] + 1;
+                    p[u] = v;
                     discovered[num_discovered++] = u;
-                } else if (dist[u] > dist[v] + 1 && dist[v] != -1) {
-                    dist[u] = dist[v] + 1;
+                } else if (p[u] == -1) {
                     p[u] = v;
+                    dist[u] = dist[v] + 1;
                     discovered[num_discovered++] = u;
                 }
             }
-        }
 
-        depth++;
-        T[tid] = num_discovered;
+            depth++;
+            T[tid] = num_discovered;
 
 #pragma omp barrier // Syncronize, threads might not do any work, or finish before others
-        layer_size = T[0];
-        int offset = 0;
-        for (int i = 1; i < threads; i++) {
-            if (i == tid)
-                offset = layer_size;
-            layer_size += T[i];
-        }
+            layer_size = T[0];
+            int offset = 0;
+            for (int i = 1; i < threads; i++) {
+                if (i == tid)
+                    offset = layer_size;
+                layer_size += T[i];
+            }
 
-        if (k_steps) {
-            memcpy(S + offset, discovered, num_discovered * sizeof(int));
-            int chunk = layer_size / threads;
-            int start = chunk * tid;
-            int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
-            local_layer_size = end - start;
-            memcpy(local_S, S + start, local_layer_size * sizeof(int));
+            if (k_steps) {
+                memcpy(S + offset, discovered, num_discovered * sizeof(int));
+                int chunk = layer_size / threads;
+                int start = chunk * tid;
+                int end = tid == threads - 1 ? layer_size : chunk * (tid + 1);
+                local_layer_size = end - start;
+                memcpy(local_S, S + start, local_layer_size * sizeof(int));
 
-        } else {
-            temp = local_S;
-            local_S = discovered;
-            discovered = temp;
-            local_layer_size = num_discovered;
+            } else {
+                temp = local_S;
+                local_S = discovered;
+                discovered = temp;
+                local_layer_size = num_discovered;
+            }
+            num_discovered = 0;
         }
-        num_discovered = 0;
     }
-}
 
-// Write code here
+    // Write code here
