@@ -100,25 +100,18 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             d = 0;
         }
         T[tid] = l;
-        l_tot = T[0];
-        printf("tid %d, T[tid]: %d, l_tot: %d\n", tid, T[tid], l_tot);
-        int offset = 0;
-#pragma omp barrier
-        for (int i = 1; i < threads; i++) {
-            if (i == tid)
-                offset = l_tot;
-            l_tot += T[i];
-            printf("tid %d, l_tot: %d\n", tid, l_tot);
+#pragma omp single
+        {
+            l_tot = 0;
+            for (int i = 0; i < threads; i++) {
+                S[i] = l_tot;
+                l_tot += T[i];
+            }
         }
+#pragma omp barrier
+        int offset = S[tid];
 
         memcpy(S + offset, discovered, d * sizeof(int));
-        // #pragma omp single
-        //         {
-
-        //             for (int i = 0; i < l_tot; i++) {
-        //                 printf("tid %d, S[%d]: %d\n", tid, i, S[i]);
-        //             }
-        //         }
         l = 0;
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
