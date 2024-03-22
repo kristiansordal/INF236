@@ -125,12 +125,17 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         printf("local_S[%d]: %d, S[%d]: %d\n", local_layer_size - 1, local_S[local_layer_size - 1], i, S[i]);
     }
 
+    for (int i = 0; i < local_layer_size; i++) {
+        printf("%d\n", local_S[i]);
+    }
+
     while (layer_size != 0) {
         k_steps = depth % k == 0;
         // printf("Tid: %d, depth: %d\n", tid, depth);
 #pragma omp barrier
         for (int i = 0; i < local_layer_size; i++) {
             int v = local_S[i];
+            printf("Tid: %d, v: %d\n", tid, v);
             int new_dist = dist[v] + 1;
             for (int j = ver[v]; j < ver[v + 1]; j++) {
                 int u = edges[j];
