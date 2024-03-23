@@ -17,9 +17,9 @@ T roadusa rgg delaunay hugebubbles
 acc:
 T roadusa rgg delaunay hugebubbles
 1 0 0 0 0
-2 0 0 0 0
-4 0 0 0 0
-8 0 0 10 0
+2 3726713 0 0 6095123
+4 0 0 2 0
+8 0 0 0 0
 16 2084127 20 0 1
 32 2084079 0 1 2
-64 294 0 0 3
+64 294 0 4 1
