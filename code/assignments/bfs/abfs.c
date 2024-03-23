@@ -4,16 +4,10 @@
 #include <string.h>
 
 int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int l, d, *temp, flips = 0;
-    int *S_original = S;
-    int *T_original = T;
-
+    int l = 1, d = 0, *temp;
     S[0] = 1;
 
-    l = 1;
-    d = 0;
-
-    while (l <= omp_get_num_threads() && l > 0) {
+    while (l > 0 && l <= omp_get_num_threads()) {
         for (int i = 0; i < l; i++) {
             int u = S[i];
             for (int j = ver[u]; j < ver[u + 1]; j++) {
@@ -29,14 +23,18 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S = T;
         T = temp;
         l = d;
-        flips++;
         d = 0;
     }
 
-    for (int i = 0; i < l; i++)
-        S_original[i] = T_original[i];
+    // After the final swap, S points to the last discovered layer, but we need to swap back if the loop ended after an
+    // even number of iterations.
+    if (S != T) { // If the final layer is not in the original S array, swap them back.
+        temp = S;
+        S = T;
+        T = temp;
+    }
 
-    return l;
+    return l; // Return the number of nodes in the final layer discovered.
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
@@ -61,10 +59,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     l = 0;
     d = 0;
 
-// Perform some rounds of sequential BFS
+    // Perform some rounds of sequential BFS
 #pragma omp master
     { T[0] = sequential_steps(ver, edges, p, dist, S, T); }
-    // T[0] = 1;
 
 #pragma omp barrier
 #pragma omp for
