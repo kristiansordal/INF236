@@ -127,7 +127,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         int end = (tid == threads - 1) ? l_tot : start + chunk;
         for (int i = start; i < end; i++) {
             queue[l++] = S[i];
-            printf("tid: %d, q[%d]: %d\n", tid, i, queue[i]);
+            printf("tid: %d, q[%d]: %d\n", tid, i, queue[l - 1]);
         }
 
         printf("thread %d will search %d vertices\n", tid, l);
