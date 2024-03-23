@@ -33,9 +33,8 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         d = 0;
     }
 
-    if (flips % 2 != 0)
-        for (int i = 0; i < l; i++)
-            S_original[i] = T_original[i];
+    for (int i = 0; i < l; i++)
+        S_original[i] = T_original[i];
 
     return l;
 }
@@ -62,10 +61,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     l = 0;
     d = 0;
 
-    // Perform some rounds of sequential BFS
-    // #pragma omp master
-    //     { T[0] = sequential_steps(ver, edges, p, dist, S, T); }
-    T[0] = 1;
+// Perform some rounds of sequential BFS
+#pragma omp master
+    { T[0] = sequential_steps(ver, edges, p, dist, S, T); }
+    // T[0] = 1;
 
 #pragma omp barrier
 #pragma omp for
