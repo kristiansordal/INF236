@@ -45,7 +45,7 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int u, v, l, d, offset, l_tot = 0, k = 4;
+    int u, v, l, d, l_tot = 0, k = 4;
     int *discovered, *queue;
     int *temp;
     int threads = omp_get_num_threads(), tid = omp_get_thread_num();
@@ -61,6 +61,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     p[1] = 1;
     dist[1] = 0;
+    dist[0] = 0;
     // S[0] = 1;
 
     l = 0;
@@ -83,8 +84,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     while (l_tot != 0) {
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
-#pragma omp for
-            for (int j = 0; j < l_tot; j++) {
+            for (int j = 0; j < l; j++) {
                 u = queue[j];
                 for (int w = ver[u]; w < ver[u + 1]; w++) {
                     v = edges[w];
@@ -107,19 +107,18 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         {
             l_tot = 0;
             for (int i = 0; i < threads; i++) {
-                int tmp = T[i]; // Save current thread's count
-                T[i] = l_tot;   // Set current thread's offset
-                l_tot += tmp;   // Update total count
+                int tmp = T[i];
+                T[i] = l_tot;
+                l_tot += tmp;
             }
         }
+
 #pragma omp barrier
         memcpy(S + T[tid], queue, l * sizeof(int));
 
         l = 0;
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
-            queue[i] = S[i];
-
-        l = T[tid + 1] - T[tid];
+            queue[l++] = S[i];
     }
 }
