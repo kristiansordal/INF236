@@ -94,12 +94,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     }
                 }
             }
-#pragma omp barrier
             temp = queue;
             queue = discovered;
             discovered = temp;
             l = d;
             d = 0;
+#pragma omp barrier
         }
         T[tid] = l;
 #pragma omp barrier
