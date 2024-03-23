@@ -92,8 +92,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         for (int i = 0; i < k; i++) {
             for (int j = 0; j < l; j++) {
                 u = queue[j];
-                for (int k = ver[u]; k < ver[u + 1]; k++) {
-                    v = edges[k];
+                for (int w = ver[u]; w < ver[u + 1]; w++) {
+                    v = edges[w];
                     if (p[v] == -1 || dist[v] > dist[u] + 1) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
