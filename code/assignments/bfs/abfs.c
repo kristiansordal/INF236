@@ -68,6 +68,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     p[1] = 1;
     dist[1] = 0;
+    S[0] = 1;
 
     l = 0;
     d = 0;
@@ -94,6 +95,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
+                    } else if (dist[v] == dist[u] + 1) {
+                        if (p[v] > u)
+                            p[v] = u;
+                    } else if (dist[v] > dist[u] + 1) {
+                        p[v] = u;
+                        dist[v] = dist[u] + 1;
                     }
                 }
             }
