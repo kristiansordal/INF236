@@ -40,9 +40,9 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         d = 0;
     }
 
-    if (flips % 2 != 0)
-        for (int i = 0; i < l; i++)
-            S_original[i] = T_original[i];
+    // if (flips % 2 != 0)
+    //     for (int i = 0; i < l; i++)
+    //         S_original[i] = T_original[i];
 
     for (int i = 0; i < l; i++) {
         printf("To distribute: %d\n", S_original[i]);
@@ -82,9 +82,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
-    for (int i = 0; i < l; i++) {
+    for (int i = 0; i < l; i++)
         printf("Initial: %d\n", queue[i]);
-    }
+
     l_tot = T[0];
 
     while (l_tot != 0) {
