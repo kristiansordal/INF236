@@ -35,7 +35,7 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     if (flips % 2 != 0)
         for (int i = 0; i < l; i++)
-            S_original[i] = T[i];
+            S_original[i] = T_original[i];
 
     return l;
 }
