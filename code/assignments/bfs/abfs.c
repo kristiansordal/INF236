@@ -75,15 +75,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     // Perform some rounds of sequential BFS
 #pragma omp master
     { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
-
 #pragma omp barrier
-    int layer = T[0];
 
-    printf("Layer size: %d\n", layer);
 #pragma omp for
-    for (int i = 0; i < T[0]; i++) {
+    for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
-    }
 
     l_tot = T[0];
 
@@ -114,13 +110,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         for (int i = 1; i < threads; i++) {
             if (i == tid)
                 offset = l_tot;
-
             l_tot += T[i];
         }
 #pragma omp barrier
         memcpy(S + offset, queue, l * sizeof(int));
-        l = 0;
 
+        l = 0;
 #pragma omp for schedule(static)
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
