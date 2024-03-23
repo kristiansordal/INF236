@@ -20,7 +20,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     l = 1;
     d = 0;
 
-    while (l <= omp_get_num_threads() && l != 0) {
+    while (l <= omp_get_num_threads() || l == 0) {
         for (int i = 0; i < l; i++) {
             int u = S[i];
             for (int j = ver[u]; j < ver[u + 1]; j++) {
@@ -40,9 +40,9 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         d = 0;
     }
 
-    // if (flips % 2 != 0)
-    //     for (int i = 0; i < l; i++)
-    //         S_original[i] = T_original[i];
+    if (flips % 2 != 0)
+        for (int i = 0; i < l; i++)
+            S_original[i] = T_original[i];
 
     for (int i = 0; i < l; i++) {
         printf("To distribute: %d\n", S_original[i]);
