@@ -79,7 +79,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     printf("t[0]; %d\n", T[0]);
 #pragma omp barrier
-#pragma omp for
+#pragma omp for schedule(static)
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
@@ -110,18 +110,18 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
         T[tid] = l;
 #pragma omp barrier
-        S[0] = 0;
-        for (int i = 0; i < threads; i++) {
-            S[i + 1] = S[0];
-            S[0] += T[i];
+        int l_tot = T[0];
+        int offset = 0;
+        for (int i = 1; i < threads; i++) {
+            if (i == tid)
+                offset = l_tot;
+            l_tot += T[i];
         }
-        int offset = S[tid + 1];
-        l_tot = S[0];
         printf("tid: %d l_tot: %d\n", tid, l_tot);
         memcpy(S + offset, discovered, l * sizeof(int));
         l = 0;
 
-#pragma omp for schedule(dynamic, l_tot / threads)
+#pragma omp for schedule(static)
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
     }
