@@ -100,7 +100,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     }
                 }
             }
-            printf("discovered: %d\n", d);
             temp = queue;
             queue = discovered;
             discovered = temp;
@@ -120,16 +119,16 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         printf("tid: %d l_tot: %d\n", tid, l_tot);
         memcpy(S + offset, discovered, l * sizeof(int));
         l = 0;
+#pragma omp master
+        {
+            for (int i = 0; i < l; i++) {
+                printf("S: %d, discovered: %d\n", S[i], discovered[i]);
+            }
+        }
 
 #pragma omp for schedule(static)
         for (int i = 0; i < l_tot; i++) {
             queue[l++] = S[i];
-        }
-#pragma omp master
-        {
-            for (int i = 0; i < l_tot; i++) {
-                printf("S: %d\n", S[i]);
-            }
         }
     }
 }
