@@ -45,6 +45,10 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
         for (int i = 0; i < layer_size; i++)
             S_original[i] = T_original[i];
 
+    for (int i = 0; i < layer_size; i++) {
+        printf("To distribute: %d\n", S_original[i]);
+    }
+
     return layer_size;
 }
 
