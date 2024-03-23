@@ -76,6 +76,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
+#pragma omp critical
+    {
+        for (int i = 0; i < l; i++) {
+            printf("Thread %d: %d\n", tid, queue[i]);
+        }
+    }
     l_tot = T[0];
 
     while (l_tot != 0) {
