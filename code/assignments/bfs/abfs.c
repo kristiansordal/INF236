@@ -118,12 +118,4 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
     }
-
-    int undiscovered = 0;
-    for (int i = 0; i < n; i++) {
-        if (dist[i] == -1) {
-            undiscovered++;
-        }
-    }
-    printf("There are %d undiscovered vertices\n", undiscovered);
 }
