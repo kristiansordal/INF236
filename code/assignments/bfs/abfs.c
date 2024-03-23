@@ -73,7 +73,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     int chunk = l_tot / threads;
     int start = chunk * tid;
-    int end = (tid == threads - 1) ? l_tot : start + chunk;
+    int end = (tid == threads - 1) ? T[0] : start + chunk;
     for (int i = start; i < end; i++)
         queue[l++] = S[i];
 
