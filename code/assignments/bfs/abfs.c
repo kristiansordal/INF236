@@ -19,7 +19,7 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             for (int j = ver[u]; j < ver[u + 1]; j++) {
                 int v = edges[j];
                 if (p[v] == -1) {
-                    p[v] = v;
+                    p[v] = u;
                     dist[v] = dist[u] + 1;
                     T[d++] = v;
                 }
@@ -45,7 +45,7 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int u, v, l, d, offset, l_tot = 0, k = 1;
+    int u, v, l, d, offset, l_tot = 0, k = 4;
     int *discovered, *queue;
     int *temp;
     int threads = omp_get_num_threads(), tid = omp_get_thread_num();
@@ -76,7 +76,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         queue[l++] = S[i];
 
     for (int i = 0; i < l; i++)
-        printf("Initial: %d\n", queue[i]);
+        printf("Initial: %d %d\n", tid, queue[i]);
 
     l_tot = T[0];
 
