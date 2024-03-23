@@ -113,10 +113,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         for (int i = 1; i < threads; i++) {
             if (i == tid) {
                 offset = l_tot;
-                printf("tid: %d offset: %d, %d\n", tid, offset, l);
             }
             l_tot += T[i];
         }
+        printf("tid: %d offset: %d, %d\n", tid, offset, l);
 #pragma omp barrier
         // printf("tid: %d l_tot: %d, offset: %d\n", tid, l_tot, offset);
         memcpy(S + offset, discovered, l * sizeof(int));
