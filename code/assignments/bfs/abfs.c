@@ -110,7 +110,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             l_tot += T[i];
         }
 #pragma omp barrier
-        memcpy(S + offset, queue, l * sizeof(int));
+        if (k % 2 == 0) {
+            memcpy(S + offset, queue, l * sizeof(int));
+        } else {
+            memcpy(S + offset, discovered, l * sizeof(int));
+        }
 
         l = 0;
 #pragma omp for
