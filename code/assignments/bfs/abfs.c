@@ -77,8 +77,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp master
     { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 
+    printf("t[0]; %d\n", T[0]);
 #pragma omp barrier
-#pragma omp for schedule(dynamic, T[0] / threads)
+#pragma omp for
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
