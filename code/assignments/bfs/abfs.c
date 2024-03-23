@@ -97,7 +97,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                     if (p[v] == -1 || dist[v] > dist[u] + 1) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
-                        discovered[d++] = v;
+                        discovered[d++] = u;
                     }
                 }
             }
