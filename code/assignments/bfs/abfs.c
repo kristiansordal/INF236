@@ -74,7 +74,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     l_tot = T[0];
 
     while (l_tot != 0) {
-#pragma omp barrier
         for (int i = 0; i < k; i++) {
 #pragma omp barrier
             for (int j = 0; j < l; j++) {
@@ -108,7 +107,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
 
         l = 0;
-#pragma omp for
+#pragma omp for schedule(static)
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
     }
