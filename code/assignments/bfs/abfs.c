@@ -77,10 +77,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
-    for (int i = 0; i < n; i++) {
-        printf("Distance to root: %d\n", dist[i]);
-    }
-
     for (int i = 0; i < l; i++)
         printf("Initial: %d\n", queue[i]);
 
@@ -93,7 +89,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 u = queue[j];
                 for (int w = ver[u]; w < ver[u + 1]; w++) {
                     v = edges[w];
-                    if (p[v] == -1 || (p[v] != -1 && dist[v] > dist[u] + 1)) {
+                    if (p[v] == -1 || (p[v] != -1 && dist[v] != -1 && dist[v] > dist[u] + 1)) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
