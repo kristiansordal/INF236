@@ -15,10 +15,11 @@ T roadusa rgg delaunay hugebubbles
 64 0.312814 0.204075 0.188006 0.285755
 
 acc:
-1 roadusa rgg delaunay hugebubbles
-2
-4
-8
-16
-32 
-64
+T roadusa rgg delaunay hugebubbles
+1 0 0 0 0
+2 0 0 0 0
+4 0 0 2 5184
+8 0 0 0 0
+16 2084127 20 0 6
+32 2084079 20 10 2
+64 296 20 3 2 1
