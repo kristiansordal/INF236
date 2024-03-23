@@ -117,7 +117,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 offset = l_tot;
             l_tot += T[i];
         }
-        printf("tid: %d l_tot: %d\n", tid, l_tot);
+        printf("tid: %d l_tot: %d, offset: %d\n", tid, l_tot, offset);
         memcpy(S + offset, discovered, l * sizeof(int));
 #pragma omp critical
         {
