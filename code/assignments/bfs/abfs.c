@@ -97,6 +97,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
+                        printf("tid: %d, v: %d\n", tid, v);
                     }
                 }
             }
