@@ -28,6 +28,7 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
                 if (p[u] == -1) {
                     p[u] = v;
                     dist[u] = dist[v] + 1;
+                    printf("seq %d -> %d\n", v, u);
                     T[num_discovered++] = u;
                 }
             }
