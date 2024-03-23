@@ -67,8 +67,14 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     { T[0] = sequential_steps(ver, edges, p, dist, S, T); }
 
 #pragma omp barrier
-#pragma omp for
-    for (int i = 0; i < T[0]; i++)
+    // #pragma omp for
+    //     for (int i = 0; i < T[0]; i++)
+    //         queue[l++] = S[i];
+
+    int chunk = l_tot / threads;
+    int start = chunk * tid;
+    int end = (tid == threads - 1) ? l_tot : start + chunk;
+    for (int i = start; i < end; i++)
         queue[l++] = S[i];
 
     l_tot = T[0];
@@ -107,8 +113,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
 
         l = 0;
-#pragma omp for schedule(static)
-        for (int i = 0; i < l_tot; i++)
+        int chunk = l_tot / threads;
+        int start = chunk * tid;
+        int end = (tid == threads - 1) ? l_tot : start + chunk;
+        for (int i = start; i < end; i++)
             queue[l++] = S[i];
     }
 }
