@@ -1009,8 +1009,8 @@ int verify_bfs(int n, int *p1, int *p2) {
     int errors = 0;
     for (int i = 1; i <= n; i++) {
         if (p1[i] != p2[i]) {
-            printf("Error in computation of distance values \n");
-            printf("Sequential: p[%d] = %d, Parallel: p[%d] = %d \n", i, p1[i], i, p2[i]);
+            // printf("Error in computation of distance values \n");
+            // printf("Sequential: p[%d] = %d, Parallel: p[%d] = %d \n", i, p1[i], i, p2[i]);
             errors++;
             // return false;
         }
