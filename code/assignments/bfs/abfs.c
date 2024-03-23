@@ -111,30 +111,17 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         l_tot = T[0];
         offset = 0;
         for (int i = 1; i < threads; i++) {
-            if (i == tid) {
+            if (i == tid)
                 offset = l_tot;
-            }
+
             l_tot += T[i];
         }
-        // printf("tid: %d offset: %d, %d\n", tid, offset, l);
 #pragma omp barrier
         memcpy(S + offset, queue, l * sizeof(int));
-        // #pragma omp master
-        //         {
-        //             // for (int i = 0; i < l_tot; i++) {
-        //             //     printf(" S[%d]: %d\n", i, S[i]);
-        //             // }
-        //         }
         l = 0;
 
-        int chunk = l_tot / threads;
-        int start = tid * chunk;
-        int end = (tid == threads - 1) ? l_tot : start + chunk;
-        for (int i = start; i < end; i++) {
+#pragma omp for schedule(static)
+        for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
-            // printf("tid: %d, q[%d]: %d\n", tid, l - 1, queue[l - 1]);
-        }
-
-        // printf("thread %d will search %d vertices\n", tid, l);
     }
 }
