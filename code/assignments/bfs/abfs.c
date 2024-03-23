@@ -90,14 +90,14 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     while (l_tot != 0) {
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
-            for (int i = 0; i < l; i++) {
-                u = queue[i];
-                for (int j = ver[u]; j < ver[u + 1]; j++) {
-                    v = edges[j];
+            for (int j = 0; j < l; j++) {
+                u = queue[j];
+                for (int k = ver[u]; k < ver[u + 1]; k++) {
+                    v = edges[k];
                     if (p[v] == -1 || dist[v] > dist[u] + 1) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
-                        discovered[d++] = u;
+                        discovered[d++] = v;
                     }
                 }
             }
