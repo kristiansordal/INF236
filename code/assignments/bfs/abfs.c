@@ -4,7 +4,7 @@
 #include <string.h>
 
 int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int layer_size, num_discovered, *temp, flips = 0;
+    int l, d, *temp, flips = 0;
     int *S_original = S;
     int *T_original = T;
 
@@ -17,39 +17,38 @@ int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int
     dist[1] = 0;
     S[0] = 1;
 
-    layer_size = 1;
-    num_discovered = 0;
+    l = 1;
+    d = 0;
 
-    while (layer_size <= omp_get_num_threads() && layer_size != 0) {
-        for (int i = 0; i < layer_size; i++) {
-            int v = S[i];
-            for (int j = ver[v]; j < ver[v + 1]; j++) {
-                int u = edges[j];
-                if (p[u] == -1) {
-                    p[u] = v;
-                    dist[u] = dist[v] + 1;
-                    printf("seq %d -> %d\n", v, u);
-                    T[num_discovered++] = u;
+    while (l <= omp_get_num_threads() && l != 0) {
+        for (int i = 0; i < l; i++) {
+            int u = S[i];
+            for (int j = ver[u]; j < ver[u + 1]; j++) {
+                int v = edges[j];
+                if (p[v] == -1) {
+                    p[v] = v;
+                    dist[v] = dist[u] + 1;
+                    T[d++] = v;
                 }
             }
         }
         temp = S;
         S = T;
         T = temp;
-        layer_size = num_discovered;
+        l = d;
         flips++;
-        num_discovered = 0;
+        d = 0;
     }
 
     if (flips % 2 != 0)
-        for (int i = 0; i < layer_size; i++)
+        for (int i = 0; i < l; i++)
             S_original[i] = T_original[i];
 
-    for (int i = 0; i < layer_size; i++) {
+    for (int i = 0; i < l; i++) {
         printf("To distribute: %d\n", S_original[i]);
     }
 
-    return layer_size;
+    return l;
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
@@ -109,6 +108,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             d = 0;
         }
         T[tid] = l;
+        printf("tid: %d, l: %d\n", tid, l);
 #pragma omp barrier
         l_tot = T[0];
         offset = 0;
