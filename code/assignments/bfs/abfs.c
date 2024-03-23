@@ -72,7 +72,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
 
 #pragma omp for
-    for (int i = 0; i <= T[0]; i++)
+    for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
     for (int i = 0; i < l; i++)
@@ -111,6 +111,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
 #pragma omp barrier
         memcpy(S + offset, queue, l * sizeof(int));
+#pragma omp barrier
 
         l = 0;
 #pragma omp for
