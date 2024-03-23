@@ -101,7 +101,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             d = 0;
         }
         T[tid] = l;
-#pragma omp barrier
         l_tot = T[0];
         offset = 0;
         for (int i = 1; i < threads; i++) {
