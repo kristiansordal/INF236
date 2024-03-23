@@ -27,9 +27,8 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         d = 0;
     }
     if (SO != S) {
-        temp = S;
-        SO = T;
-        S = T;
+        for (int i = 0; i < l; i++)
+            SO[i] = T[i];
     }
 
     return l; // Return the number of nodes in the final layer discovered.
