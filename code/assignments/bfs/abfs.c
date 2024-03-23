@@ -75,7 +75,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // Perform some rounds of sequential BFS
 #pragma omp master
-    { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
+    {
+        T[0] = sequential_steps(n, ver, edges, p, dist, S, T);
+        for (int i = 0; i < T[0]; i++) {
+            printf("Distance to root: %d\n", dist[S[i]]);
+        }
+    }
 #pragma omp barrier
 
 #pragma omp for
