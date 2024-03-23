@@ -115,7 +115,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         memcpy(S + offset, queue, l * sizeof(int));
 
         l = 0;
-        printf("tid: %d, l_tot: %d, n: %d\n", tid, l_tot, n);
+        // printf("tid: %d, l_tot: %d, n: %d\n", tid, l_tot, n);
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
