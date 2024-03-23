@@ -4,11 +4,16 @@
 #include <string.h>
 
 int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
-    int l = 1, d = 0, *temp;
-    S[0] = 1;
-    int *SO = S;
+    int l, d, *temp, flips = 0;
+    int *S_original = S;
+    int *T_original = T;
 
-    while (l > 0 && l <= omp_get_num_threads()) {
+    S[0] = 1;
+
+    l = 1;
+    d = 0;
+
+    while (l <= omp_get_num_threads() && l > 0) {
         for (int i = 0; i < l; i++) {
             int u = S[i];
             for (int j = ver[u]; j < ver[u + 1]; j++) {
@@ -24,14 +29,15 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         S = T;
         T = temp;
         l = d;
+        flips++;
         d = 0;
     }
-    if (SO != S) {
-        for (int i = 0; i < l; i++)
-            SO[i] = T[i];
-    }
 
-    return l; // Return the number of nodes in the final layer discovered.
+    if (flips % 2 != 0)
+        for (int i = 0; i < l; i++)
+            S_original[i] = T[i];
+
+    return l;
 }
 
 void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
