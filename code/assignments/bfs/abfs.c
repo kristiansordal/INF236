@@ -76,10 +76,11 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp master
     { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 
-    printf("t[0]; %d\n", T[0]);
 #pragma omp for schedule(static)
-    for (int i = 0; i < T[0]; i++)
+    for (int i = 0; i < T[0]; i++) {
+        printf("tid: %d, S[%d]: %d\n", tid, i, T[0]);
         queue[l++] = S[i];
+    }
 
     l_tot = T[0];
 
