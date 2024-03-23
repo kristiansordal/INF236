@@ -118,8 +118,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
         printf("tid: %d offset: %d, %d\n", tid, offset, l);
 #pragma omp barrier
-        // printf("tid: %d l_tot: %d, offset: %d\n", tid, l_tot, offset);
-        memcpy(S + offset, discovered, l * sizeof(int));
+        memcpy(S + offset, queue, l * sizeof(int));
 #pragma omp master
         {
             for (int i = 0; i < l_tot; i++) {
