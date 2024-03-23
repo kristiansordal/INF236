@@ -64,14 +64,55 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     p[1] = 1;
     dist[1] = 0;
-    // S[0] = 1;
 
     l = 0;
     d = 0;
 
     // Perform some rounds of sequential BFS
 #pragma omp single
-    { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
+    {
+        int layer_size, num_discovered, *temp, flips = 0;
+        int *S_original = S;
+        int *T_original = T;
+
+        for (int i = 1; i <= n; i++) {
+            p[i] = -1;
+            dist[i] = -1;
+        }
+
+        p[1] = 1;
+        dist[1] = 0;
+        S[0] = 1;
+
+        layer_size = 1;
+        num_discovered = 0;
+
+        while (layer_size <= omp_get_num_threads() && layer_size != 0) {
+            for (int i = 0; i < layer_size; i++) {
+                int v = S[i];
+                for (int j = ver[v]; j < ver[v + 1]; j++) {
+                    int u = edges[j];
+                    if (p[u] == -1) {
+                        p[u] = v;
+                        dist[u] = dist[v] + 1;
+                        T[num_discovered++] = u;
+                    }
+                }
+            }
+            temp = S;
+            S = T;
+            T = temp;
+            layer_size = num_discovered;
+            flips++;
+            num_discovered = 0;
+        }
+
+        if (flips % 2 != 0)
+            for (int i = 0; i < layer_size; i++)
+                S_original[i] = T_original[i];
+
+        T[0] = layer_size;
+    }
 
 #pragma omp for
     for (int i = 0; i < T[0]; i++)
