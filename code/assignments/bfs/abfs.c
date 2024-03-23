@@ -91,6 +91,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
+                        if (v == 23) {
+                            printf("node 23: %d, %d\n", u, dist[23]);
+                        }
                     }
                 }
             }
