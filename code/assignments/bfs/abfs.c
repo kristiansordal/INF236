@@ -6,6 +6,7 @@
 int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int l = 1, d = 0, *temp;
     S[0] = 1;
+    int *SO = S;
 
     while (l > 0 && l <= omp_get_num_threads()) {
         for (int i = 0; i < l; i++) {
@@ -25,13 +26,10 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         l = d;
         d = 0;
     }
-
-    // After the final swap, S points to the last discovered layer, but we need to swap back if the loop ended after an
-    // even number of iterations.
-    if (S != T) { // If the final layer is not in the original S array, swap them back.
+    if (SO != S) {
         temp = S;
+        SO = T;
         S = T;
-        T = temp;
     }
 
     return l; // Return the number of nodes in the final layer discovered.
