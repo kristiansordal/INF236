@@ -90,13 +90,14 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         for (int i = 0; i < k; i++) {
             for (int i = 0; i < l; i++) {
                 u = queue[i];
+                printf("Thread %d processing node %d\n", tid, u);
                 for (int j = ver[u]; j < ver[u + 1]; j++) {
                     v = edges[j];
                     if (p[v] == -1 || dist[v] > dist[u] + 1) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                        printf("Thread %d: %d -> %d\n", tid, u, v);
+                        printf("Thread %d: %d -> %d, dist: %d\n", tid, u, v, dist[u]);
                     }
                 }
             }
