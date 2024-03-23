@@ -97,7 +97,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                        printf("tid: %d, v: %d\n", tid, v);
+                        // printf("tid: %d, v: %d\n", tid, v);
                     }
                 }
             }
@@ -108,30 +108,31 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             d = 0;
         }
         T[tid] = l;
-        printf("tid: %d, l: %d\n", tid, T[tid]);
+        // printf("tid: %d, l: %d\n", tid, T[tid]);
 #pragma omp barrier
         l_tot = T[0];
         offset = 0;
         for (int i = 1; i < threads; i++) {
             if (i == tid) {
                 offset = l_tot;
-                printf("Thread %d has offset %d\n", tid, offset);
             }
             l_tot += T[i];
         }
         printf("tid: %d l_tot: %d, offset: %d\n", tid, l_tot, offset);
         memcpy(S + offset, discovered, l * sizeof(int));
-#pragma omp critical
-        {
-            for (int i = 0; i < l; i++) {
-                printf("S: %d, discovered: %d\n", S[i + offset], discovered[i]);
-            }
-        }
+        // #pragma omp critical
+        //         {
+        //             for (int i = 0; i < l; i++) {
+        //                 printf("S: %d, discovered: %d\n", S[i + offset], discovered[i]);
+        //             }
+        //         }
         l = 0;
 
 #pragma omp for schedule(static)
         for (int i = 0; i < l_tot; i++) {
             queue[l++] = S[i];
         }
+
+        printf("thread %d will search %d vertices", tid, l);
     }
 }
