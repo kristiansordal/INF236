@@ -87,9 +87,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 for (int j = ver[u]; j < ver[u + 1]; j++) {
                     v = edges[j];
                     if (p[v] == -1 || dist[v] < dist[u] + 1) {
-#pragma omp atomic write
                         p[v] = u;
-#pragma omp atomic write
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
                     }
@@ -103,21 +101,16 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
         T[tid] = l;
 #pragma omp barrier
-#pragma omp single
-        {
-            S[0] = 0;
-            for (int i = 0; i < threads; i++) {
-                S[i + 1] = S[0];
-                S[0] += T[i];
-            }
+        S[0] = 0;
+        for (int i = 0; i < threads; i++) {
+            S[i + 1] = S[0];
+            S[0] += T[i];
         }
-#pragma omp barrier
         int offset = S[tid + 1];
         l_tot = S[0];
-        // printf("Thread %d: offset = %d, l_tot = %d\n", tid, offset, l_tot);
-#pragma omp barrier
         memcpy(S + offset, discovered, l * sizeof(int));
         l = 0;
+
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
