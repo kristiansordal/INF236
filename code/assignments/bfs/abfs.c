@@ -87,7 +87,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 u = queue[j];
                 for (int w = ver[u]; w < ver[u + 1]; w++) {
                     v = edges[w];
-                    if (p[v] == -1) {
+                    if (p[v] == -1 || dist[v] > dist[u] + 1) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
