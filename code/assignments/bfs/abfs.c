@@ -83,7 +83,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     while (l_tot != 0) {
 #pragma omp barrier
         for (int i = 0; i < k; i++) {
-            for (int j = 0; j < l; j++) {
+#pragma omp for
+            for (int j = 0; j < l_tot; j++) {
                 u = queue[j];
                 for (int w = ver[u]; w < ver[u + 1]; w++) {
                     v = edges[w];
