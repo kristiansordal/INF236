@@ -77,7 +77,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp single
     { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 
-#pragma omp for
+#pragma omp for schedule(dynamic, T[0] / threads)
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
@@ -123,7 +123,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         memcpy(S + offset, discovered, l * sizeof(int));
         l = 0;
 
-#pragma omp for
+#pragma omp for schedule(dynamic, l_tot / threads)
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
     }
