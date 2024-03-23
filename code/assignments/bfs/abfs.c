@@ -113,7 +113,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         for (int i = 1; i < threads; i++) {
             if (i == tid) {
                 offset = l_tot;
-                printf("tid: %d offset: %d\n", tid, offset);
+                printf("tid: %d offset: %d, %d\n", tid, offset, l);
             }
             l_tot += T[i];
         }
