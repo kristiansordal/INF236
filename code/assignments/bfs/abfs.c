@@ -82,7 +82,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
-    for (int i = 0; i < T[0]; i++) {
+    for (int i = 0; i < n; i++) {
         printf("Distance to root: %d\n", dist[S[i]]);
     }
 
