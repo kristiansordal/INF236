@@ -91,12 +91,13 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                        if (v == 23) {
-                            printf("node 23: %d, %d\n", u, dist[23]);
+                        if (v == 30) {
+                            printf("node 23: %d, %d\n", u, dist[30]);
                         }
                     }
                 }
             }
+#pragma omp barrier
             temp = queue;
             queue = discovered;
             discovered = temp;
