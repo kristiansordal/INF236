@@ -133,6 +133,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             queue[l++] = S[i];
         }
 
-        printf("thread %d will search %d vertices", tid, l);
+        printf("thread %d will search %d vertices\n", tid, l);
     }
 }
