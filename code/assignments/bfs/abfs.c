@@ -37,10 +37,6 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         for (int i = 0; i < l; i++)
             S_original[i] = T_original[i];
 
-    for (int i = 0; i < l; i++) {
-        printf("To distribute: %d\n", S_original[i]);
-    }
-
     return l;
 }
 
@@ -74,9 +70,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp for
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
-
-    for (int i = 0; i < l; i++)
-        printf("Initial: %d %d\n", tid, queue[i]);
 
     l_tot = T[0];
 
