@@ -91,7 +91,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                        printf("tid %d discovered %d at distance %d\n", tid, v, dist[v]);
+                        if (dist[v] < 10) {
+                            printf("tid %d discovered %d at distance %d\n", tid, v, dist[v]);
+                        }
                     }
                 }
             }
