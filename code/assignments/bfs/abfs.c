@@ -63,7 +63,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     p[1] = 1;
     dist[1] = 0;
-    S[0] = 1;
+    // S[0] = 1;
 
     l = 0;
     d = 0;
@@ -115,7 +115,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         memcpy(S + offset, queue, l * sizeof(int));
 
         l = 0;
-        printf("l_tot: %d, n: %d\n", l_tot, n);
+        printf("tid: %d, l_tot: %d, n: %d\n", tid, l_tot, n);
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
