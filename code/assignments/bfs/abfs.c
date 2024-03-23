@@ -90,7 +90,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 u = queue[j];
                 for (int w = ver[u]; w < ver[u + 1]; w++) {
                     v = edges[w];
-                    if (p[v] == -1 || dist[v] > dist[u] + 1) {
+                    if (p[v] == -1) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
@@ -115,12 +115,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 #pragma omp barrier
         memcpy(S + offset, queue, l * sizeof(int));
 
-#pragma omp master
-        {
-            for (int i = 0; i < l_tot; i++) {
-                printf("To distribute: %d\n", S[i]);
-            }
-        }
+        // #pragma omp master
+        //         {
+        //             for (int i = 0; i < l_tot; i++) {
+        //                 printf("To distribute: %d\n", S[i]);
+        //             }
+        //         }
 
         l = 0;
 #pragma omp for schedule(static)
