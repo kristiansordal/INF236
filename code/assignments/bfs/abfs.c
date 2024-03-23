@@ -74,15 +74,16 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     d = 0;
 
     // Perform some rounds of sequential BFS
-#pragma omp single
+#pragma omp master
     { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
 
+#pragma omp barrier
 #pragma omp for schedule(dynamic, T[0] / threads)
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
 #pragma omp critical
-    { printf("tid %d, %d", tid, l); }
+    { printf("tid %d, %d\n", tid, l); }
     l_tot = T[0];
 
     while (l_tot != 0) {
