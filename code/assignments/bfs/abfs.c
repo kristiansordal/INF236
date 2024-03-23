@@ -82,8 +82,8 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     while (l_tot != 0) {
         for (int i = 0; i < k; i++) {
-#pragma omp barrier
-            for (int j = 0; j < l; j++) {
+#pragma omp for
+            for (int j = 0; j < l_tot; j++) {
                 u = queue[j];
                 for (int w = ver[u]; w < ver[u + 1]; w++) {
                     v = edges[w];
@@ -91,9 +91,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                        if (dist[v] <= 6) {
-                            printf("tid %d discovered %d at distance %d\n", tid, v, dist[v]);
-                        }
                     }
                 }
             }
@@ -102,15 +99,15 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
             discovered = temp;
             l = d;
             d = 0;
-        }
-        T[tid] = l;
+            T[tid] = l;
 #pragma omp barrier
-        l_tot = T[0];
-        offset = 0;
-        for (int i = 1; i < threads; i++) {
-            if (i == tid)
-                offset = l_tot;
-            l_tot += T[i];
+            l_tot = T[0];
+            offset = 0;
+            for (int i = 1; i < threads; i++) {
+                if (i == tid)
+                    offset = l_tot;
+                l_tot += T[i];
+            }
         }
 #pragma omp barrier
         memcpy(S + offset, queue, l * sizeof(int));
