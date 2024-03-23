@@ -82,6 +82,9 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     for (int i = 0; i < T[0]; i++)
         queue[l++] = S[i];
 
+    for (int i = 0; i < l; i++) {
+        printf("Initial: %d\n", queue[i]);
+    }
     l_tot = T[0];
 
     while (l_tot != 0) {
@@ -91,16 +94,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                 u = queue[j];
                 for (int w = ver[u]; w < ver[u + 1]; w++) {
                     v = edges[w];
-                    if (p[v] == -1) {
+                    if (p[v] == -1 || (p[v] != -1 && dist[v] > dist[u] + 1)) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                    } else if (dist[v] == dist[u] + 1) {
-                        if (p[v] > u)
-                            p[v] = u;
-                    } else if (dist[v] > dist[u] + 1) {
-                        p[v] = u;
-                        dist[v] = dist[u] + 1;
                     }
                 }
             }
@@ -123,7 +120,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         memcpy(S + offset, queue, l * sizeof(int));
 
         l = 0;
-#pragma omp for schedule(static)
+#pragma omp for
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
     }
