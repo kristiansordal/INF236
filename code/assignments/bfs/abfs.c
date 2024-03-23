@@ -8,8 +8,6 @@ int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int *S_original = S;
     int *T_original = T;
 
-    p[1] = 1;
-    dist[1] = 0;
     S[0] = 1;
 
     l = 1;
@@ -115,7 +113,6 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         memcpy(S + offset, queue, l * sizeof(int));
 
         l = 0;
-        // printf("tid: %d, l_tot: %d, n: %d\n", tid, l_tot, n);
 #pragma omp for
         for (int i = 0; i < l_tot; i++)
             queue[l++] = S[i];
