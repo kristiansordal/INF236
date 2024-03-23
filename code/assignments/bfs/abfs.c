@@ -120,16 +120,12 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
         }
         printf("tid: %d l_tot: %d, offset: %d\n", tid, l_tot, offset);
         memcpy(S + offset, discovered, l * sizeof(int));
-        // #pragma omp critical
-        //         {
-        //             for (int i = 0; i < l; i++) {
-        //                 printf("S: %d, discovered: %d\n", S[i + offset], discovered[i]);
-        //             }
-        //         }
         l = 0;
 
-#pragma omp for schedule(static)
-        for (int i = 0; i < l_tot; i++) {
+        int chunk = l_tot / threads;
+        int start = tid * chunk;
+        int end = (tid == threads - 1) ? l_tot : start + chunk;
+        for (int i = start; i < end; i++) {
             queue[l++] = S[i];
         }
 
