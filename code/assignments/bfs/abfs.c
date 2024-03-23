@@ -101,10 +101,10 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
                         p[v] = u;
                         dist[v] = dist[u] + 1;
                         discovered[d++] = v;
-                        // printf("Thread %d: %d -> %d, dist: %d\n", tid, u, v, dist[u]);
                     }
                 }
             }
+            printf("discovered: %d\n", d);
             temp = queue;
             queue = discovered;
             discovered = temp;
