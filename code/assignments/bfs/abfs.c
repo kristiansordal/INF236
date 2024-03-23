@@ -3,15 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sequential_steps(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
+int sequential_steps(int *ver, int *edges, int *p, int *dist, int *S, int *T) {
     int l, d, *temp, flips = 0;
     int *S_original = S;
     int *T_original = T;
-
-    for (int i = 1; i <= n; i++) {
-        p[i] = -1;
-        dist[i] = -1;
-    }
 
     p[1] = 1;
     dist[1] = 0;
@@ -75,7 +70,7 @@ void abfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // Perform some rounds of sequential BFS
 #pragma omp master
-    { T[0] = sequential_steps(n, ver, edges, p, dist, S, T); }
+    { T[0] = sequential_steps(ver, edges, p, dist, S, T); }
 #pragma omp barrier
 
 #pragma omp for
