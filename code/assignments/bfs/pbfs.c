@@ -32,7 +32,7 @@ void pbfs(int n, int *ver, int *edges, int *p, int *dist, int *S, int *T) {
 
     // Allocate memory for discovered vertices, private for each rank
     discovered = malloc(n * sizeof(int));
-    memset(discovered, 0, n * sizeof(int));
+    // memset(discovered, 0, n * sizeof(int));
 
 // Initialize shared variables
 #pragma omp for

@@ -45,7 +45,7 @@ An outline of this approach is given below. Note that this routine is called fro
     \Output{\textit{dist} and \textit{p}, populated with distances and parent of all nodes\newline}
     layerSize \( \leftarrow 1 \)\\
     numDiscovered \( \leftarrow 0 \)\\
-    discovered \( \leftarrow \) list of size \( n \), initialized to 0\\
+    discovered \( \leftarrow \) list of size \( n \)\\
     p[1] \( \leftarrow \) 0 \\
     dist[1] \( \leftarrow 0 \)  \\
     S[0] \( \leftarrow 0\) \\
@@ -54,7 +54,7 @@ An outline of this approach is given below. Note that this routine is called fro
         \Barrier\\
         \ForPar{ i = 0 \KwTo layerSize}{
             \For{ \( v \in \text{neighbours}(S[i]) \)}{
-            \If{dist[v] == -1}{
+            \If{p[v] == -1}{
                 dist[v] \( \leftarrow \) dist[S[i]] + 1 \\
                 p[v] \( \leftarrow \) S[i] \\
                 discovered[numDiscovered++] \( \leftarrow \) v \\
@@ -86,7 +86,72 @@ For the second implementation, the strategy is as follows. First, we will perfor
 After this, we distribute the newly discovered nodes into a local queue for each thread as evenly as possible. Then each thread will continue discovering all nodes with distance at most \( k \) away from the originally distributed layer. 
 \medskip
 
-Then, we put all nodes in this layer into the global queue, and redistribute the nodes amongst the ranks again, as evenly as possible. This is repeated until there are no more nodes to discover.
+Then, we put all nodes in this layer into the global queue, and redistribute the nodes amongst the ranks again, as evenly as possible. This is repeated until there are no more nodes to discover. A general outline of how this algorithm is implemented is given below.
+
+\begin{algorithm}[H]
+    \caption{Parallel BFS - Second approach}
+    \SetAlgoVlined
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+    \Input{\textit{G(V,E)} - Graph, \textit{dist} - Distance Array, \textit{p} - Parent Array, \textit{S} - Global Queue, \textit{T} - Temporary global queue }
+    \Output{\textit{dist} and \textit{p}, populated with distances and parent of all nodes\newline}
+    stepsPerRound \( \leftarrow 4 \)\\
+    threadID \( \leftarrow \) index of the current thread\\
+    layerSize \( \leftarrow 1 \)\\
+    localLayerSize \( \leftarrow 0 \)\\
+    localQueue \( \leftarrow \) list of size \( n \)\\
+    discovered \( \leftarrow \) list of size \( n \)\\
+    numDiscovered \( \leftarrow 0 \)\\
+    \phantom{a}\\
+    p[1] \( \leftarrow \) 0 \\
+    dist[1] \( \leftarrow 0 \)  \\
+    S[0] \( \leftarrow 0\) \\
+    \phantom{a}\\
+    Perform sequential BFS until \textit{\#threads} nodes are found, store found nodes at last layer in S, and layer size in T[0]\\
+
+    layerSize \( \leftarrow \) T[0] \\
+    \phantom{a}\\
+
+    Distribute nodes in S to local queues\\
+    \phantom{a}\\
+
+    \While{\( layerSize \neq 0 \)}{
+        \For{\( i = 0 \) \KwTo stepsPerRound}{
+            \Barrier\\
+            \For{\( j = 0 \) \KwTo localLayerSize}{
+                \For{\( v \in \text{neighbours}(S[j]) \)}{
+                    \If{p[v] == -1}{
+                        dist[v] \( \leftarrow \) dist[S[j]] + 1 \\
+                        p[v] \( \leftarrow \) S[j] \\
+                        discovered[numDiscovered++] \( \leftarrow \) v \\
+                    }
+                }
+            }
+            Swap pointers of \textit{localQueue} and \textit{discovered}\\
+            localLayerSize \( \leftarrow \) numDiscovered\\
+            numDiscovered \( \leftarrow 0\)\\
+        }
+        T[tid] \( \leftarrow\) localLayerSize \\
+        \Barrier
+
+        layerSize \( \leftarrow \) T[0] \\
+        offset \( \leftarrow 0 \)\\
+        \For{\( i = 1 \)\KwTo numThreads}{
+            \If{\( i == tid \)}{
+            offset \( \leftarrow \) layerSize\\
+            }
+            layerSize += T[i] \\
+        }
+        \phantom{a}\\
+        \Barrier
+        Copy localQueue to S starting at offset
+        \Barrier
+        \phantom{a}\\
+
+        Redistribute S evenly into local queues
+    }
+\end{algorithm}
+
 
 \section{Experiments}
 \newpage
@@ -185,7 +250,5 @@ Then, we put all nodes in this layer into the global queue, and redistribute the
         \caption{Execution time and speedup of parallel BFS}
     \end{figure}
 \end{document}
-
-
 
 

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1711120822 "assignment2.tex" "assignment2.pdf" "assignment2" 1711120824 0
+["pdflatex"] 1711203565 "assignment2.tex" "assignment2.pdf" "assignment2" 1711203567 0
   "/opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/map/fontname/texfonts.map" 1678549815 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/map/pdftex/updmap/pdftex.map" 1678549815 4609045 74543da1ab9350ba886fce0af49a2cfd ""
   "/opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1678549815 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -286,10 +286,10 @@
   "/opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/tex/latex/zref/zref-base.sty" 1678549815 20785 71a3d72ab517959a6979c27e6176bec1 ""
   "/opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/web2c/texmf.cnf" 1678549815 40748 4081c8bc921e56c865f975bd762e388c ""
   "/opt/homebrew/Cellar/texlive/20230313_2/share/texmf-var/web2c/pdftex/pdflatex.fmt" 1678549815 7884066 8197b5e86c7bf6d7352283907f10d5c2 ""
-  "assignment2.aux" 1711120824 960 032731b2c135aa03473f7e8e30846e36 "pdflatex"
-  "assignment2.tex" 1711120821 8896 0b57cbc65aa2bb273b7db074ada07ed4 ""
-  "assignment2.toc" 1711120824 321 3e0a99ca15838996c69b6b0e312512df "pdflatex"
-  "preamble.tex" 1711028967 8992 2180f485d05660d59b70ea7af6d4df09 ""
+  "assignment2.aux" 1711203567 1100 5079b4448348af802eb224dfdd6b6754 "pdflatex"
+  "assignment2.tex" 1711203563 11280 f84a4ff40ed38e11df48614d354f20f3 ""
+  "assignment2.toc" 1711203567 321 e5aa0f85b6fb023b53f5ecd44c83a95f "pdflatex"
+  "preamble.tex" 1711202489 8992 2180f485d05660d59b70ea7af6d4df09 ""
   (generated)
   "assignment2.aux"
   "assignment2.log"
