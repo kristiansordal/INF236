@@ -13,7 +13,8 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    int send_size = 100000;
+    int send_size;
+    scanf("%d", &send_size);
     int *x = malloc(send_size * sizeof(int));
     memset(x, 0, send_size * sizeof(int));
 
