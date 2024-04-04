@@ -25,7 +25,7 @@ Breadth first search or just BFS, is a classical graph exploration algorithm, wh
 BFS explores the graph layer by layer, which means that from the starting node, all of the neighbours of this node are added to a queue, and the distance \( d \) to these nodes will be equal to 1 plus the distance from the starting node. This process is repeated for these nodes neighbours once again, and so on until there are no more nodes to explore (the queue is empty). We also need to keep track of which nodes we have seen, and if we encounter a node we have already seen, we need to check if we have found a shorter distance to this node, and update that nodes distance accordingly.
 
 \section{Parallel BFS}
-Two different verions of parallel BFS have been implemented for this assignment, with two different approached to the parallelization.
+Two different verions of parallel BFS have been implemented for this assignment, with two different approaches to the parallelization.
 
 \subsection{First implementation}
 When parallelizing BFS, we can observe that nodes are found layer by layer. So given a start node with distance 0, we will discover all its neighbours. These nodes will have distance 1 from the start node, their neighbours again will have distance 2, and so on. This lends itself nicely to paralellizing. If we maintain all nodes found in a given layer in some queue, we can distribute this queue amongst the different threads, using the OpenMP construct \texttt{\#pragma omp for}. Then, every thread can work locally on discovering neighbours of these nodes, and maintaining these found neighbours in a private list. We don't care about which parent a given node points to, as long as the distance from the start node is correct. This means that the first thread that discoveres a node without a parent pointer, will set the parent pointer of that node, even if some other node in the same layer is also a neighbour of this node.
@@ -34,7 +34,10 @@ When parallelizing BFS, we can observe that nodes are found layer by layer. So g
 After all nodes in the current layer have been discovered, we can for each thread, copy the private discovered list back into the global layer queue, and continue on, until there are no more nodes to discover.
 \medskip
 
-An outline of this approach is given below. Note that this routine is called from within a parallel environment, where the parameters to the function are shared between all threads.
+To ensure we copy the nodes back into the global queue in the correct order, we need to keep track of how many nodes each thread has discovered, and where in the global queue they should be placed. We can do this by using the \( T \) array, where each thread will store the amount of nodes they have discovered in their private list. After this, we can calculate the offset for each thread using a prefix sum on the \( T \) array, and copy the nodes back into the global queue. The indices for each thread is given by \( [\textit{offset}, \textit{offset} + \textit{numDiscovered})\).
+\medskip
+
+An outline of this approach is given below. Note that this routine is called from within a parallel environment, where the parameters to the function are shared between all threads, and variables declared inside the function are private to each thread.
 
 \begin{algorithm}[H]
     \caption{Parallel BFS - First approach}
@@ -86,7 +89,7 @@ For the second implementation, the strategy is as follows. First, we will perfor
 After this, we distribute the newly discovered nodes into a local queue for each thread as evenly as possible. Then each thread will continue discovering all nodes with distance at most \( k \) away from the originally distributed layer. 
 \medskip
 
-Then, we put all nodes in this layer into the global queue, and redistribute the nodes amongst the ranks again, as evenly as possible. This is repeated until there are no more nodes to discover. A general outline of how this algorithm is implemented is given below.
+Then, we put all nodes in this layer into the global queue, as we did in the first implementation, and redistribute the nodes amongst the ranks again, as evenly as possible. This is repeated until there are no more nodes to discover. A general outline of how this algorithm is implemented is given below.
 
 \begin{algorithm}[H]
     \caption{Parallel BFS - Second approach}
@@ -136,16 +139,16 @@ Then, we put all nodes in this layer into the global queue, and redistribute the
 
         layerSize \( \leftarrow \) T[0] \\
         offset \( \leftarrow 0 \)\\
-        \For{\( i = 1 \)\KwTo numThreads}{
+        \For{\( i = 1 \) \KwTo numThreads}{
             \If{\( i == tid \)}{
             offset \( \leftarrow \) layerSize\\
             }
             layerSize += T[i] \\
         }
         \phantom{a}\\
-        \Barrier
-        Copy localQueue to S starting at offset
-        \Barrier
+        \Barrier\\
+        Copy localQueue to S starting at offset\\
+        \Barrier\\
         \phantom{a}\\
 
         Redistribute S evenly into local queues
@@ -154,9 +157,24 @@ Then, we put all nodes in this layer into the global queue, and redistribute the
 
 
 \section{Experiments}
-\newpage
+\begin{table}[H]
+\begin{center}
+    \begin{tabular}{|l|c|}
+        \hline
+        Graph & Sequential Time (s) \\
+        \hline
+        road\_usa & 1.739677 \\
+        rgg\_n\_2\_22\_s0 & 1.042576 \\
+        delaunay\_n24 & 1.549098 \\
+        hugebubbles-00020 & 4.052872 \\
+        \hline
+    \end{tabular}
+    \caption{Sequential Execution Times}
+\end{center}
+\end{table}
+\subsection{PBFS}
     \pgfplotstableread{
-    T roadusa rggn222s0 delaunayn24 hugebubbles-00020
+    T roadusa rgg delaunay hugebubbles-00020
     1 1.734203 1.081684 1.783102 3.489007
     2 1.200486 0.606074 1.025448 1.882132
     4 0.788950 0.335648 0.627425 0.974213
@@ -167,20 +185,104 @@ Then, we put all nodes in this layer into the global queue, and redistribute the
     }\timepbfs
 
     \pgfplotstablecreatecol[create col/expr={1.739677/\thisrow{roadusa}}]{roadusaspeedup}{\timepbfs}
-    \pgfplotstablecreatecol[create col/expr={1.042576/\thisrow{rggn222s0}}]{rggn222s0speedup}{\timepbfs}
-    \pgfplotstablecreatecol[create col/expr={1.549098/\thisrow{delaunayn24}}]{delaunayn24speedup}{\timepbfs}
+    \pgfplotstablecreatecol[create col/expr={1.042576/\thisrow{rgg}}]{rggspeedup}{\timepbfs}
+    \pgfplotstablecreatecol[create col/expr={1.549098/\thisrow{delaunay}}]{delaunayspeedup}{\timepbfs}
     \pgfplotstablecreatecol[create col/expr={4.052872/\thisrow{hugebubbles-00020}}]{hugebubblesspeedup}{\timepbfs}
 
+    The following results are from running the first implementation of parallelized BFS on the provided graphs. Please note that no more than 64 threads were used, as using any more than this yielded poorer results, with 80 threads resulting in a ten fold decrease in execution time.
+
+    \begin{figure}[H]
+        \begin{minipage}{0.45\textwidth}
+        \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{|c|c|c|}
+                \hline
+                 Threads & Parallel Time & Speedup \\
+                 \hline
+                 1 & 1.734203 & 1.00 \\
+                 2 & 1.200486 & 1.45 \\
+                 4 & 0.788950 & 2.20 \\
+                 8 & 0.461280 & 3.77 \\
+                 16 & 0.327205 & 5.31 \\
+                 32 & 0.357365 & 4.87 \\
+                 64 & 0.699687 & 2.48 \\
+                \hline
+            \end{tabular}
+        \end{center}
+       \captionof{table}{road\_usa}
+        \end{table}
+        \end{minipage}
+        \begin{minipage}{0.45\textwidth}
+        \begin{table}[H]
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+         Threads & Parallel Time & Speedup \\
+         \hline
+         1 & 1.081684 & 0.96 \\
+         2 & 0.606074 & 1.72 \\
+         4 & 0.335648 & 3.10 \\
+         8 & 0.188359 & 5.54 \\
+         16 & 0.124455 & 8.38 \\
+         32 & 0.126939 & 8.22 \\
+         64 & 0.214437 & 4.86 \\
+        \hline
+    \end{tabular}
+\end{center}
+    \captionof{table}{rgg\_n\_2\_22\_s0}
+\end{table}
+\end{minipage}
+\newline
+\begin{minipage}{0.45\textwidth}
+        \begin{table}[H]
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+         Threads & Parallel Time & Speedup \\
+         \hline
+         1 & 1.783102 & 0.87 \\
+         2 & 1.025448 & 1.51 \\
+         4 & 0.627425 & 2.47 \\
+         8 & 0.355146 & 4.36 \\
+         16 & 0.236014 & 6.56 \\
+         32 & 0.246382 & 6.28 \\
+         64 & 0.498225 & 3.11 \\
+        \hline
+    \end{tabular}
+\end{center}
+\captionof{table}{delaunay\_n24}
+        \end{table}
+    \end{minipage}
+    \begin{minipage}{0.45\textwidth}
+    \begin{table}[H]
+\begin{center}
+        \begin{tabular}{|c|c|c|}
+            \hline
+             Threads & Parallel Time & Speedup \\
+             \hline
+             1 & 3.489007 & 1.16 \\
+             2 & 1.882132 & 2.15 \\
+             4 & 0.974213 & 4.16 \\
+             8 & 0.523627 & 7.75 \\
+             16 & 0.373559 & 10.85 \\
+             32 & 0.392521 & 10.33 \\
+             64 & 0.856313 & 4.73 \\
+            \hline
+        \end{tabular}
+\end{center}
+\caption{hugebubbles-00020}
+    \end{table}
+\end{minipage}
+\end{figure}
     \begin{figure}[H]
        \centering 
         \begin{minipage}{0.45\textwidth}
             \begin{tikzpicture}[scale=0.85]
     \begin{axis}[
-        xlabel={Number of Threads},
+        xlabel={Threads},
         ylabel={Execution Time (Seconds)},
         xmin=1, xmax=64,
         xticklabels={1,2,4,8,16,32,64},
-        % xticklabels from table={\testdata}{T},
         xmode=log,
         log basis x={2},
         ymin=0, % Adjust based on your data
@@ -195,12 +297,12 @@ Then, we put all nodes in this layer into the global queue, and redistribute the
     \addplot[color=GBBlue, mark=*] table [x=T, y=roadusa] {\timepbfs};
     \addlegendentry{road\_usa}
 
-    % Plot for rggn222s0
-    \addplot[color=GBRed, mark=square*] table [x=T, y=rggn222s0] {\timepbfs};
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=rgg] {\timepbfs};
     \addlegendentry{rgg\_n\_2\_22\_s0}
 
-    % Plot for delaunayn24
-    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunayn24] {\timepbfs};
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunay] {\timepbfs};
     \addlegendentry{delaunay\_n24}
 
     % Plot for hugebubbles-00020
@@ -213,7 +315,7 @@ Then, we put all nodes in this layer into the global queue, and redistribute the
         \begin{minipage}{0.45\textwidth}
 \begin{tikzpicture}[scale=0.85]
     \begin{axis}[
-        xlabel={Number of Threads},
+        xlabel={Threads},
         ylabel={Speedup},
         xmin=1, xmax=64,
         xticklabels={1,2,4,8,16,32,64},
@@ -232,12 +334,12 @@ Then, we put all nodes in this layer into the global queue, and redistribute the
     \addplot[color=GBBlue, mark=*] table [x=T, y=roadusaspeedup] {\timepbfs};
     \addlegendentry{road\_usa}
 
-    % Plot for rggn222s0
-    \addplot[color=GBRed, mark=square*] table [x=T, y=rggn222s0speedup] {\timepbfs};
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=rggspeedup] {\timepbfs};
     \addlegendentry{rgg\_n\_2\_22\_s0}
 
-    % Plot for delaunayn24
-    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunayn24speedup] {\timepbfs};
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunayspeedup] {\timepbfs};
     \addlegendentry{delaunay\_n24}
 
     % Plot for hugebubbles-00020
@@ -247,8 +349,591 @@ Then, we put all nodes in this layer into the global queue, and redistribute the
     \end{axis}
     \end{tikzpicture}
         \end{minipage}
-        \caption{Execution time and speedup of parallel BFS}
+        \caption{Plots of execution time and speedup of parallel BFS}
     \end{figure}
-\end{document}
 
+    \subsection{ABFS}
+
+    For the following results, please note that there were some issues with my implementation of this algorithm. Although all vertices were discovered, some vertices did not have the correct distance from the root vertex upon termination of the algorithm. This was due to some issue in the initial sequential part of this algorithm, as the issue was eliminated when the initial sequential part was omitted. Below is a table demonstrating the accuracy of the algorithm for various values of \( k \). The accuracy was calculated by \( \left( 1 - \frac{\text{nodes w/ wrong distance}}{\text{num nonzeros}} \right) \cdot  100 \)
+    \medskip
+
+    \noindent\begin{minipage}{0.45\textwidth}
+        \begin{table}[H]
+            \begin{center}
+                \begin{tabular}[c]{|l|l|l|l|l|}
+                    \hline
+                    T / \( k \) & 2& 4 & 8 & 16   \\
+                    \hline
+                    1&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    2&\( 100\% \)&\( 87.08\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    4&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    8&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    16&\( 92.7\% \)&\( 92.7\% \)&\( 92.7\% \)&\( 92.7\% \)  \\
+                    \hline
+                    32&\( 92.7\% \)&\( 92.7\% \)&\( 92.7\% \)&\( 92.7\% \)  \\
+                    \hline
+                    64&\( 99.9\% \)&\( 99.9\% \)&\( 99.9\% \)&\( 99.9\% \)  \\
+                    \hline
+                \end{tabular}
+            \end{center}
+       \captionof{table}{Accuracy of ABFS on road\_usa}
+        \end{table}
+    \end{minipage}
+    \begin{minipage}{0.45\textwidth}
+        \begin{table}[H]
+            \begin{center}
+                \begin{tabular}[c]{|l|l|l|l|l|}
+                    \hline
+                    T / \( k \) & 2& 4 & 8 & 16   \\
+                    \hline
+                    1&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    2&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    4&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    8&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    16&\( 99.9\% \)&\( 99.9\% \)& \( 99.9\% \)&\( 100\% \) \\
+                    \hline
+                    32&\( 100\% \)&\( 100\% \)& \( 99.9\% \)&\( 100\% \) \\
+                    \hline
+                    64&\( 100\% \)&\( 100\% \)& \( 99.9\% \)&\( 99.9\% \) \\
+                    \hline
+                \end{tabular}
+            \end{center}
+        \captionof{table}{Accuracy of ABFS on rgg\_n\_2\_22\_s0}
+        \end{table}
+    \end{minipage}
+    \newline
+    \begin{minipage}{0.45\textwidth}
+        \begin{table}[H]
+            \begin{center}
+                \begin{tabular}[c]{|l|l|l|l|l|}
+                    \hline
+                    T / \( k \) & 2& 4 & 8 & 16   \\
+                    \hline
+                    1&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    2&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    4&\( 100\% \)&\( 99.9\% \)& \( 99.9\% \)&\( 99.9\% \) \\
+                    \hline
+                    8&\( 99.9\% \)&\( 100\% \)& \( 100\% \)&\( 99.9\% \) \\
+                    \hline
+                    16&\( 100\% \)&\( 99.9\% \)& \( 99.9\% \)&\( 99.9\% \) \\
+                    \hline
+                    32&\( 99.9\% \)&\( 99.9\% \)&\( 99.9\% \)&\( 99.9\% \)  \\
+                    \hline
+                    64&\( 100\% \)&\( 99.9\% \)&\( 99.9\% \)&\( 100\% \)  \\
+                    \hline
+                \end{tabular}
+            \end{center}
+    \captionof{table}{Accuracy of ABFS on delaunay\_n24}
+        \end{table}
+    \end{minipage}
+    \begin{minipage}{0.45\textwidth}
+        \begin{table}[H]
+            \begin{center}
+                \begin{tabular}[c]{|l|l|l|l|l|}
+                    \hline
+                    T / \( k \) & 2& 4 & 8 & 16   \\
+                    \hline
+                    1&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    2&\( 100\% \)&\( 80.8\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    4&\( 100\% \)&\( 100\% \)& \( 99.9\% \)&\( 100\% \) \\
+                    \hline
+                    8&\( 100\% \)&\( 100\% \)& \( 100\% \)&\( 100\% \) \\
+                    \hline
+                    16&\( 99.9\% \)&\( 99.9\% \)& \( 99.9\% \)&\( 100\% \) \\
+                    \hline
+                    32&\( 99.9\% \)&\( 99.9\% \)& \( 99.9\% \)&\( 99.9\% \) \\
+                    \hline
+                    64&\( 99.9\% \)&\( 99.9\% \)& \( 99.9\% \)&\( 99.9\% \) \\
+                    \hline
+                \end{tabular}
+            \end{center}
+        \captionof{table}{Accuracy of ABFS on hugebubbles}
+        \end{table}
+    \end{minipage}
+
+
+\begin{figure}[H]
+    \begin{minipage}{0.45\textwidth}
+    \begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|c|}
+            \hline
+            Threads & Parallel Time & Speedup \\
+            \hline
+            1 & 1.598203 & 1.09 \\
+            2 & 1.375186 & 1.26 \\
+            4 & 0.763902 & 2.27 \\
+            8 & 0.304963 & 5.70 \\
+            16 & 0.265961 & 6.54 \\
+            32 & 0.250951 & 6.93 \\
+            64 & 0.312814 & 5.56 \\
+            \hline
+        \end{tabular}
+    \caption{road\_usa \(  k = 8 \)}
+    \end{center}
+    \end{table}
+    \end{minipage}
+    \begin{minipage}{0.45\textwidth}
+    \begin{table}[H]
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Threads & Parallel Time & Speedup \\
+        \hline
+        1 & 0.872044 & 1.20 \\
+        2 & 0.570689 & 1.83 \\
+        4 & 0.358203 & 2.91 \\
+        8 & 0.204515 & 5.10 \\
+        16 & 0.147258 & 7.08 \\
+        32 & 0.171226 & 6.09 \\
+        64 & 0.204075 & 5.11 \\
+        \hline
+    \end{tabular}
+\caption{rgg\_n\_2\_22\_s0, \( k = 8 \)}
+\end{center}
+\end{table}
+\end{minipage}
+\newline
+\begin{minipage}{0.45\textwidth}
+    \begin{table}[H]
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Threads & Parallel Time & Speedup \\
+        \hline
+        1 & 1.408174 & 1.10 \\
+        2 & 0.994790 & 1.56 \\
+        4 & 0.670101 & 2.31 \\
+        8 & 0.348662 & 4.44 \\
+        16 & 0.210787 & 7.34 \\
+        32 & 0.154256 & 10.04 \\
+        64 & 0.188006 & 8.23 \\
+        \hline
+    \end{tabular}
+\caption{delaunay\_n24, \(  k = 8 \)}
+\end{center}
+\end{table}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+\begin{table}[H]
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Threads & Parallel Time & Speedup \\
+        \hline
+        1 & 3.461700 & 1.17 \\
+        2 & 1.913450 & 2.12 \\
+        4 & 1.027452 & 3.94 \\
+        8 & 0.531675 & 7.62 \\
+        16 & 0.327152 & 12.39 \\
+        32 & 0.243940 & 16.63 \\
+        64 & 0.285755 & 14.19 \\
+        \hline
+    \end{tabular}
+\caption{hugebubbles-00020, \(  k = 8 \)}
+\end{center}
+\end{table}
+\end{minipage}
+\end{figure}
+
+
+    \pgfplotstableread{
+T roadusa rgg delaunay hugebubbles-00020
+1 2.142794 1.257586 1.834949 3.088921
+2 0.998348 0.566198 0.937775 2.056869
+4 0.551180 0.345892 0.638575 1.018592
+8 0.406920 0.195143 0.335836 0.577314
+16 0.292136 0.146025 0.205411 0.398381
+32 0.281443 0.170837 0.151668 0.378849
+64 0.348212 0.218912 0.182695 0.466201
+    }\timetwo
+
+    \pgfplotstablecreatecol[create col/expr={1.739677/\thisrow{roadusa}}]{a2s}{\timetwo}
+    \pgfplotstablecreatecol[create col/expr={1.042576/\thisrow{rgg}}]{b2s}{\timetwo}
+    \pgfplotstablecreatecol[create col/expr={1.549098/\thisrow{delaunay}}]{c2s}{\timetwo}
+    \pgfplotstablecreatecol[create col/expr={4.052872/\thisrow{hugebubbles-00020}}]{d2s}{\timetwo}
+
+    \pgfplotstableread{
+T roadusa rgg delaunay hugebubbles-00020
+1 2.142794 1.257586 1.834949 3.088921
+2 0.998348 0.566198 0.937775 2.056869
+4 0.551180 0.345892 0.638575 1.018592
+8 0.406920 0.195143 0.335836 0.577314
+16 0.292136 0.146025 0.205411 0.398381
+32 0.281443 0.170837 0.151668 0.378849
+64 0.348212 0.218912 0.182695 0.466201
+    }\timefour
+    \pgfplotstablecreatecol[create col/expr={1.739677/\thisrow{roadusa}}]{a4s}{\timefour}
+    \pgfplotstablecreatecol[create col/expr={1.042576/\thisrow{rgg}}]{b4s}{\timefour}
+    \pgfplotstablecreatecol[create col/expr={1.549098/\thisrow{delaunay}}]{c4s}{\timefour}
+    \pgfplotstablecreatecol[create col/expr={4.052872/\thisrow{hugebubbles-00020}}]{d4s}{\timefour}
+
+    \pgfplotstableread{
+T roadusa rgg delaunay hugebubbles-00020
+1 1.598203 0.872044 1.408174 3.461700
+2 1.375186 0.570689 0.994790 1.913450
+4 0.763902 0.358203 0.670101 1.027452
+8 0.304963 0.204515 0.348662 0.531675
+16 0.265961 0.147258 0.210787 0.327152
+32 0.250951 0.171226 0.154256 0.243940
+64 0.312814 0.204075 0.188006 0.285755
+    }\timeeight
+
+    \pgfplotstablecreatecol[create col/expr={1.739677/\thisrow{roadusa}}]{a8s}{\timeeight}
+    \pgfplotstablecreatecol[create col/expr={1.042576/\thisrow{rgg}}]{b8s}{\timeeight}
+    \pgfplotstablecreatecol[create col/expr={1.549098/\thisrow{delaunay}}]{c8s}{\timeeight}
+    \pgfplotstablecreatecol[create col/expr={4.052872/\thisrow{hugebubbles-00020}}]{d8s}{\timeeight}
+    \pgfplotstableread{
+T roadusa rgg delaunay hugebubbles-00020
+1 2.142794 1.257586 1.834949 3.088921
+2 0.998348 0.566198 0.937775 2.056869
+4 0.551180 0.345892 0.638575 1.018592
+8 0.406920 0.195143 0.335836 0.577314
+16 0.292136 0.146025 0.205411 0.398381
+32 0.281443 0.170837 0.151668 0.378849
+64 0.348212 0.218912 0.182695 0.466201
+    }\timesix
+
+    \pgfplotstablecreatecol[create col/expr={1.739677/\thisrow{roadusa}}]{a6s}{\timesix}
+    \pgfplotstablecreatecol[create col/expr={1.042576/\thisrow{rgg}}]{b6s}{\timesix}
+    \pgfplotstablecreatecol[create col/expr={1.549098/\thisrow{delaunay}}]{c6s}{\timesix}
+    \pgfplotstablecreatecol[create col/expr={4.052872/\thisrow{hugebubbles-00020}}]{d6s}{\timesix}
+
+
+    \begin{figure}[H]
+       \centering 
+        \begin{minipage}{0.45\textwidth}
+            \begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Threads},
+        ylabel={Execution Time (Seconds)},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north east,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=roadusa] {\timetwo};
+    \addlegendentry{road\_usa}
+
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=rgg] {\timetwo};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunay] {\timetwo};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=hugebubbles-00020] {\timetwo};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+
+\end{minipage}\hspace{0.5cm}
+        \begin{minipage}{0.45\textwidth}
+\begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Threads},
+        ylabel={Speedup},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        % xticklabels from table={\testdata}{T},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north west,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=a2s] {\timetwo};
+    \addlegendentry{road\_usa}
+
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=b2s] {\timetwo};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=c2s] {\timetwo};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=d2s] {\timetwo};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+        \end{minipage}
+        \caption{Plots of execution time and speedup of alternative BFS, with \( k = 2 \)}
+    \end{figure}
+
+    \begin{figure}[H]
+       \centering 
+        \begin{minipage}{0.45\textwidth}
+            \begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Threads},
+        ylabel={Execution Time (Seconds)},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north east,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=roadusa] {\timefour};
+    \addlegendentry{road\_usa}
+
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=rgg] {\timefour};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunay] {\timefour};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=hugebubbles-00020] {\timefour};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+\end{minipage}\hspace{0.5cm}
+        \begin{minipage}{0.45\textwidth}
+\begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Threads},
+        ylabel={Speedup},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        % xticklabels from table={\testdata}{T},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north west,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=a4s] {\timefour};
+    \addlegendentry{road\_usa}
+
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=b4s] {\timefour};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=c4s] {\timefour};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=d4s] {\timefour};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+        \end{minipage}
+        \caption{Plots of execution time and speedup of alternative BFS, with \( k = 4 \)}
+    \end{figure}
+
+
+    \begin{figure}[H]
+       \centering 
+        \begin{minipage}{0.45\textwidth}
+            \begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Threads},
+        ylabel={Execution Time (Seconds)},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north east,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=roadusa] {\timeeight};
+    \addlegendentry{road\_usa}
+
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=rgg] {\timeeight};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunay] {\timeeight};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=hugebubbles-00020] {\timeeight};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+\end{minipage}\hspace{0.5cm}
+        \begin{minipage}{0.45\textwidth}
+\begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Threads},
+        ylabel={Speedup},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        % xticklabels from table={\testdata}{T},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north west,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=a8s] {\timeeight};
+    \addlegendentry{road\_usa}
+
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=b8s] {\timeeight};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=c8s] {\timeeight};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=d8s] {\timeeight};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+        \end{minipage}
+        \caption{Plots of execution time and speedup of alternative BFS, with \( k = 8 \)}
+    \end{figure}
+
+    \begin{figure}[H]
+       \centering 
+        \begin{minipage}{0.45\textwidth}
+            \begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Threads},
+        ylabel={Execution Time (Seconds)},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north east,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=roadusa] {\timesix};
+    \addlegendentry{road\_usa}
+
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=rgg] {\timesix};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=delaunay] {\timesix};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=hugebubbles-00020] {\timesix};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+\end{minipage}\hspace{0.5cm}
+        \begin{minipage}{0.45\textwidth}
+\begin{tikzpicture}[scale=0.85]
+    \begin{axis}[
+        xlabel={Threads},
+        ylabel={Speedup},
+        xmin=1, xmax=64,
+        xticklabels={1,2,4,8,16,32,64},
+        % xticklabels from table={\testdata}{T},
+        xmode=log,
+        log basis x={2},
+        ymin=0, % Adjust based on your data
+        legend pos=north west,
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+        legend style={cells={anchor=west}, legend pos=north west,font=\tiny},
+    ]
+
+    % Plot for roadusa
+    \addplot[color=GBBlue, mark=*] table [x=T, y=a6s] {\timesix};
+    \addlegendentry{road\_usa}
+
+    % Plot for rgg
+    \addplot[color=GBRed, mark=square*] table [x=T, y=b6s] {\timesix};
+    \addlegendentry{rgg\_n\_2\_22\_s0}
+
+    % Plot for delaunay
+    \addplot[color=GBGreen, mark=triangle*] table [x=T, y=c6s] {\timesix};
+    \addlegendentry{delaunay\_n24}
+
+    % Plot for hugebubbles-00020
+    \addplot [color=GBYellow, mark=pentagon*] table [x=T, y=d6s] {\timesix};
+    \addlegendentry{hugebubbles-00020}
+
+    \end{axis}
+    \end{tikzpicture}
+        \end{minipage}
+        \caption{Plots of execution time and speedup of alternative BFS, with \( k = 16 \)}
+    \end{figure}
+
+    \section{Conclusion}
+    As we can see from the tables and plots, it is possible to gain decently high speedup when parallelizing BFS. Depending on the graph, we can get a speedup \( >10 \), with as little as 16 threads. This ended up being higher than expected going into this assignment.
+    \medskip
+
+    For the alternative BFS, I do believe all results should be taken with a grain of salt, as there are some bugs in the algorithm, which introduces errors into the computation of the distances from the root nodes. However, we can see that for the cases where the results are correct, we get speedup on par with that of the PBFS implementation. Sometimes even exceeding the PBFS implementation, as evident by running it on the hugebubbles graph with \( k = 8 \), where we achieve a speedup of \( 16.63 \). Although, not all distances are correct, as it yields a \( 99.9\% \) accuracy. As far as the optimal value of \( k \), we can see that when \( k  = 8\), we get the best results. This is probably due to a good balance between the barriers present in the code when regathering the local queues and redistributing, and the speed obtained from exploring more than one layer at a time.
+    \medskip
+
+    I wish that the final implementation of ABFS would be more correct, but after hours and hours of debugging, I could not locate and fix the bug which caused the inaccuracies.
+
+\end{document}
 

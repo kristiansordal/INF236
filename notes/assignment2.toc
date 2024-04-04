@@ -2,4 +2,7 @@
 \contentsline {section}{\numberline {2}Parallel BFS}{3}{}%
 \contentsline {subsection}{\numberline {2.1}First implementation}{3}{}%
 \contentsline {subsection}{\numberline {2.2}Second implementation}{4}{}%
-\contentsline {section}{\numberline {3}Experiments}{5}{}%
+\contentsline {section}{\numberline {3}Experiments}{6}{}%
+\contentsline {subsection}{\numberline {3.1}PBFS}{6}{}%
+\contentsline {subsection}{\numberline {3.2}ABFS}{7}{}%
+\contentsline {section}{\numberline {4}Conclusion}{10}{}%
