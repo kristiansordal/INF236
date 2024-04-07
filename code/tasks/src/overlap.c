@@ -51,7 +51,7 @@ char **argv;
         printf("Sending \n");
         MPI_Isend(B, dim * dim, MPI_DOUBLE, (myrank + 1) % np, 10, MPI_COMM_WORLD, &request);
         printf("Receiving \n");
-        MPI_Irecv(D, dim * dim, MPI_DOUBLE, (myrank - 1 + np) % np, 10, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Irecv(D, dim * dim, MPI_DOUBLE, (myrank - 1 + np) % np, 10, MPI_COMM_WORLD, &request);
 
         printf("Copying \n");
         for (i = 0; i < dim; i++)
