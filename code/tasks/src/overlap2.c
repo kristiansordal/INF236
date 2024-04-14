@@ -9,6 +9,8 @@ int main(int argc, char **argv) {
     int myrank;
     int np;
 
+    int i, j, k, it;
+
     double start, end;
 
     double A[dim][dim];
@@ -21,12 +23,11 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &np);
 
     // Set up data localy on each process
-    // srand48(myrank);
     srand(myrank);
-    for (int i = 0; i < dim; i++) {
-        for (int j = 0; j < dim; j++) {
-            A[i][j] = rand() % 100;
-            B[i][j] = rand() % 100;
+    for (i = 0; i < dim; i++) {
+        for (j = 0; j < dim; j++) {
+            A[i][j] = drand48();
+            B[i][j] = drand48();
             C[i][j] = 0.0;
         }
     }
@@ -34,13 +35,13 @@ int main(int argc, char **argv) {
     // Main loop
 
     start = MPI_Wtime();
-    for (int i = 0; i < np; i++) {
-        printf("it = %d \n", i);
+    for (it = 0; it < np; it++) {
+        printf("it = %d \n", it);
 
         // Matrix multiplication
-        for (int i = 0; i < dim; i++)
-            for (int j = 0; j < dim; j++)
-                for (int k = 0; k < dim; k++)
+        for (i = 0; i < dim; i++)
+            for (j = 0; j < dim; j++)
+                for (k = 0; k < dim; k++)
                     C[i][j] += A[i][k] * B[k][j];
 
         MPI_Request request;
@@ -51,15 +52,16 @@ int main(int argc, char **argv) {
         MPI_Irecv(D, dim * dim, MPI_DOUBLE, (myrank - 1 + np) % np, 10, MPI_COMM_WORLD, &request);
 
         printf("Copying \n");
-        for (int i = 0; i < dim; i++)
-            for (int j = 0; j < dim; j++)
-                B[i][j] = D[i][j];
+        for (i = 0; i < dim; i++)
+            for (j = 0; j < dim; j++)
+                B[i][j] = D[i][k];
     }
     end = MPI_Wtime();
 
-    if (myrank == 0)
+    if (myrank == 0) {
         printf("Total time is %f \n", end - start);
+    }
 
     MPI_Finalize();
-    return (0);
+    return 0;
 }
