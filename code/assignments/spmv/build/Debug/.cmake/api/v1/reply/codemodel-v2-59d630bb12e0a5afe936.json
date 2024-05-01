@@ -14,7 +14,7 @@
 					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
-						"string" : "3.17"
+						"string" : "2.8"
 					},
 					"projectIndex" : 0,
 					"source" : ".",
@@ -157,28 +157,28 @@
 				{
 					"directoryIndex" : 3,
 					"id" : "dragonbox_to_chars::@02846b654906f00d92e3",
-					"jsonFile" : "target-dragonbox_to_chars-Debug-793b76a5e9f0c276b5aa.json",
+					"jsonFile" : "target-dragonbox_to_chars-Debug-cb49741bda3f69ba222f.json",
 					"name" : "dragonbox_to_chars",
 					"projectIndex" : 3
 				},
 				{
 					"directoryIndex" : 4,
 					"id" : "ryu::@ccbe1cbfbc219d2e02e2",
-					"jsonFile" : "target-ryu-Debug-7fd0ece70f7b71ed73b7.json",
+					"jsonFile" : "target-ryu-Debug-6285a7b3be3e7765b4a1.json",
 					"name" : "ryu",
 					"projectIndex" : 4
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "seq::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-seq-Debug-cfb85121af40bc756879.json",
+					"jsonFile" : "target-seq-Debug-f09e2caf10ece5d988bb.json",
 					"name" : "seq",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-shared-Debug-4eea9177dfe7ad1f518f.json",
+					"jsonFile" : "target-shared-Debug-e7c164287c782ab9a545.json",
 					"name" : "shared",
 					"projectIndex" : 0
 				}

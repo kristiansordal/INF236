@@ -1,13 +1,11 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 2.8)
 
-project(SpMV
-    VERSION 0.0.1
-    DESCRIPTION "Sparse Matrix Multiplication"
-    LANGUAGES CXX
-)
+project(SpMV)
 
-set(CMAKE_CXX_STANDARD 20)
-
+# Set C++ standard via compiler flags
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
+endif()
 
 # Set include directory
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -15,20 +13,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# Find METIS
-# find_package(METIS REQUIRED)
+# Find OpenMP
 find_package(OpenMP REQUIRED)
 add_subdirectory(submodules/fast_matrix_market)
-
-# Find Fast Matrix Market
-# include(FetchContent)
-# FetchContent_Declare(
-#         fast_matrix_market
-#         GIT_REPOSITORY https://github.com/alugowski/fast_matrix_market
-#         GIT_TAG main
-#         GIT_SHALLOW TRUE
-# )
-# FetchContent_MakeAvailable(fast_matrix_market)
 
 # List of all executables
 set(all_executables
@@ -46,14 +33,14 @@ foreach(executable IN LISTS all_executables)
 endforeach()
 
 foreach(executable IN LISTS all_executables)
-    target_include_directories(${executable} PRIVATE ${METIS_INCLUDE_DIRS})
-    target_link_libraries(${executable} PRIVATE 
+    include_directories(${executable} ${METIS_INCLUDE_DIRS})
+    target_link_libraries(${executable} 
         ${METIS_LIBRARIES}
         OpenMP::OpenMP_CXX
         fast_matrix_market::fast_matrix_market
     )
-    target_compile_options(${executable} PRIVATE -fsanitize=address -O3)
-    target_link_options(${executable} PRIVATE -fsanitize=address)
+    set_target_properties(${executable} PROPERTIES
+        COMPILE_FLAGS "-fsanitize=address -O3"
+        LINK_FLAGS "-fsanitize=address"
+    )
 endforeach()
-
-set(CMAKE_COLOR_DIAGNOSTICS On)
