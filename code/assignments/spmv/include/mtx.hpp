@@ -1,7 +1,5 @@
 #pragma once
 #include <csr.hpp>
-#include <fstream>
-#include <numeric>
 #include <omp.h>
 #include <tuple>
 #include <vector>
@@ -56,11 +54,12 @@ template <typename IT, typename VT> class MTX {
         graph.col_idx.resize(nnz);
         graph.vals.resize(nnz);
 
-        // std::sort(triplets.begin(), triplets.end(), [](const auto &a, const auto &b) {
-        //     if (std::get<0>(a) == std::get<0>(b))
-        //         return std::get<1>(a) < std::get<1>(b);
-        //     return std::get<0>(a) < std::get<0>(b);
-        // });
+        std::sort(triplets.begin(), triplets.end(),
+                  [](const std::tuple<IT, IT, VT> &a, const std::tuple<IT, IT, VT> &b) {
+                      if (std::get<0>(a) == std::get<0>(b))
+                          return std::get<1>(a) < std::get<1>(b);
+                      return std::get<0>(a) < std::get<0>(b);
+                  });
 
 #pragma omp parallel for
         for (int i = 0; i < nnz; i++) {
@@ -70,7 +69,13 @@ template <typename IT, typename VT> class MTX {
             graph.vals[i] = std::get<2>(triplet);
         }
 
-        // std::exclusive_scan(row_count.begin(), row_count.end(), graph.row_ptr.begin(), 0);
+        int sum = 0;
+        for (size_t i = 0; i < row_count.size(); ++i) {
+            sum += row_count[i];
+            if (i + 1 < graph.row_ptr.size()) {
+                graph.row_ptr[i + 1] = sum;
+            }
+        }
         graph.N = N;
         graph.M = M;
         graph.V = N;

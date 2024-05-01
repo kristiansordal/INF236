@@ -13,7 +13,6 @@ else()
 endif()
 
 
-message(STATUS "Using C++ compiler: ${CMAKE_CXX_COMPILER}")
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 
