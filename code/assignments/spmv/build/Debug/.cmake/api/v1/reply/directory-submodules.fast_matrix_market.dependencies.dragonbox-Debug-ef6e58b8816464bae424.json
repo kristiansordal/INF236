@@ -1,0 +1,107 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"submodules/fast_matrix_market/dependencies/dragonbox/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 68,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 84,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 88,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 94,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "dragonbox_Development",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"submodules/fast_matrix_market/dependencies/dragonbox/libdragonbox_to_chars.a"
+			],
+			"targetId" : "dragonbox_to_chars::@02846b654906f00d92e3",
+			"targetIndex" : 0,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/dragonbox-1.1.3",
+			"exportName" : "dragonboxTargets",
+			"exportTargets" : 
+			[
+				{
+					"id" : "dragonbox::@02846b654906f00d92e3",
+					"index" : 0
+				},
+				{
+					"id" : "dragonbox_to_chars::@02846b654906f00d92e3",
+					"index" : 0
+				}
+			],
+			"paths" : 
+			[
+				"submodules/fast_matrix_market/dependencies/dragonbox/CMakeFiles/Export/286441d6212a6f398435cd7e7fea840f/dragonboxTargets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/dragonbox-1.1.3",
+			"paths" : 
+			[
+				"submodules/fast_matrix_market/dependencies/dragonbox/cmake/dragonboxConfig.cmake",
+				"build/Debug/submodules/fast_matrix_market/dependencies/dragonbox/dragonboxConfigVersion.cmake"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Unspecified",
+			"destination" : "include/dragonbox-1.1.3/dragonbox",
+			"paths" : 
+			[
+				"submodules/fast_matrix_market/dependencies/dragonbox/include/dragonbox/dragonbox.h",
+				"submodules/fast_matrix_market/dependencies/dragonbox/include/dragonbox/dragonbox_to_chars.h"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "submodules/fast_matrix_market/dependencies/dragonbox",
+		"source" : "submodules/fast_matrix_market/dependencies/dragonbox"
+	}
+}

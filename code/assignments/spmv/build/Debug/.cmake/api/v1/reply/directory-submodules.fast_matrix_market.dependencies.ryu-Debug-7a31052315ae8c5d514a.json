@@ -1,0 +1,61 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"submodules/fast_matrix_market/dependencies/ryu/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 27,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 28,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"submodules/fast_matrix_market/dependencies/ryu/libryu.a"
+			],
+			"targetId" : "ryu::@ccbe1cbfbc219d2e02e2",
+			"targetIndex" : 1,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "include/ryu",
+			"paths" : 
+			[
+				"submodules/fast_matrix_market/dependencies/ryu/ryu/ryu.h"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "submodules/fast_matrix_market/dependencies/ryu",
+		"source" : "submodules/fast_matrix_market/dependencies/ryu"
+	}
+}
