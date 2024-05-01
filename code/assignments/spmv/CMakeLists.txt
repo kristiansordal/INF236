@@ -16,7 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Find METIS
-find_package(METIS REQUIRED)
+# find_package(METIS REQUIRED)
 find_package(OpenMP REQUIRED)
 
 # Find Fast Matrix Market
