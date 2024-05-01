@@ -48,6 +48,8 @@ template <typename IT, typename VT> class MTX {
         while (file >> row >> col >> val)
             triplets[i++] = std::make_tuple(row, col, val);
 
+        file.close();
+
         std::cout << "|V| = " << N << " |E| = " << nnz << "\n";
         std::cout << "Done reading MTX file...\n";
     }
@@ -69,6 +71,7 @@ template <typename IT, typename VT> class MTX {
         graph.row_ptr.resize(N + 1);
         graph.col_idx.resize(nnz);
         graph.vals.resize(nnz);
+        std::cout << "sorting..." << std::endl;
 
         std::sort(triplets.begin(), triplets.end(),
                   [](const std::tuple<IT, IT, VT> &a, const std::tuple<IT, IT, VT> &b) {
@@ -77,7 +80,7 @@ template <typename IT, typename VT> class MTX {
                       return std::get<0>(a) < std::get<0>(b);
                   });
 
-#pragma omp parallel for
+        std::cout << "done sorting.." << std::endl;
         for (int i = 0; i < nnz; i++) {
             auto triplet = triplets[i];
             row_count[std::get<0>(triplet)]++;
@@ -85,6 +88,7 @@ template <typename IT, typename VT> class MTX {
             graph.vals[i] = std::get<2>(triplet);
         }
 
+        std::cout << "scan" << std::endl;
         int sum = 0;
         for (size_t i = 0; i < row_count.size(); ++i) {
             sum += row_count[i];
@@ -92,6 +96,7 @@ template <typename IT, typename VT> class MTX {
                 graph.row_ptr[i + 1] = sum;
             }
         }
+        std::cout << "scan done" << std::endl;
         graph.N = N;
         graph.M = M;
         graph.V = N;
