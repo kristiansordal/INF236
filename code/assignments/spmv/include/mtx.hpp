@@ -73,9 +73,11 @@ template <typename IT, typename VT> class MTX {
         graph.vals.resize(nnz);
         std::cout << "sorting..." << std::endl;
 
-__gnu_parallel::sort(triplets.begin(), triplets.end(), [](const std::tuple<IT, IT, VT>& a, const std::tuple<IT, IT, VT>& b) {
-    return std::get<0>(a) < std::get<0>(b) || (!(std::get<0>(b) < std::get<0>(a)) && std::get<1>(a) < std::get<1>(b));
-});
+        std::sort(triplets.begin(), triplets.end(),
+                  [](const std::tuple<IT, IT, VT> &a, const std::tuple<IT, IT, VT> &b) {
+                      return std::get<0>(a) < std::get<0>(b) ||
+                             (!(std::get<0>(b) < std::get<0>(a)) && std::get<1>(a) < std::get<1>(b));
+                  });
         std::cout << "done sorting.." << std::endl;
         for (int i = 0; i < nnz; i++) {
             auto triplet = triplets[i];
