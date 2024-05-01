@@ -147,26 +147,6 @@
 			"path" : "/opt/homebrew/Cellar/cmake/3.29.2/share/cmake/Modules/CMakeCommonLanguageInclude.cmake"
 		},
 		{
-			"isCMake" : true,
-			"isExternal" : true,
-			"path" : "/opt/homebrew/Cellar/cmake/3.29.2/share/cmake/Modules/FindOpenMP.cmake"
-		},
-		{
-			"isCMake" : true,
-			"isExternal" : true,
-			"path" : "/opt/homebrew/Cellar/cmake/3.29.2/share/cmake/Modules/CMakeParseImplicitLinkInfo.cmake"
-		},
-		{
-			"isCMake" : true,
-			"isExternal" : true,
-			"path" : "/opt/homebrew/Cellar/cmake/3.29.2/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
-		},
-		{
-			"isCMake" : true,
-			"isExternal" : true,
-			"path" : "/opt/homebrew/Cellar/cmake/3.29.2/share/cmake/Modules/FindPackageMessage.cmake"
-		},
-		{
 			"path" : "submodules/fast_matrix_market/CMakeLists.txt"
 		},
 		{

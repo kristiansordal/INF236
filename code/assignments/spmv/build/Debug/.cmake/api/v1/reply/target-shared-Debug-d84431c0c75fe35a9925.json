@@ -11,15 +11,12 @@
 		"commands" : 
 		[
 			"add_executable",
-			"set_property",
-			"find_package",
 			"target_link_libraries",
 			"include_directories"
 		],
 		"files" : 
 		[
 			"CMakeLists.txt",
-			"/opt/homebrew/Cellar/cmake/3.29.2/share/cmake/Modules/FindOpenMP.cmake",
 			"submodules/fast_matrix_market/CMakeLists.txt"
 		],
 		"nodes" : 
@@ -30,62 +27,46 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 28,
+				"line" : 30,
 				"parent" : 0
 			},
 			{
-				"command" : 2,
+				"command" : 1,
 				"file" : 0,
-				"line" : 17,
+				"line" : 39,
 				"parent" : 0
 			},
 			{
-				"file" : 1,
-				"parent" : 2
+				"file" : 1
 			},
 			{
 				"command" : 1,
 				"file" : 1,
-				"line" : 620,
+				"line" : 104,
 				"parent" : 3
 			},
 			{
-				"file" : 2
-			},
-			{
-				"command" : 3,
-				"file" : 2,
-				"line" : 104,
-				"parent" : 5
-			},
-			{
-				"command" : 3,
-				"file" : 2,
+				"command" : 1,
+				"file" : 1,
 				"line" : 113,
-				"parent" : 5
+				"parent" : 3
 			},
 			{
-				"command" : 3,
-				"file" : 0,
-				"line" : 37,
-				"parent" : 0
-			},
-			{
-				"command" : 4,
+				"command" : 2,
 				"file" : 0,
 				"line" : 11,
 				"parent" : 0
 			},
 			{
-				"command" : 4,
+				"command" : 2,
 				"file" : 0,
-				"line" : 36,
+				"line" : 38,
 				"parent" : 0
 			},
 			{
-				"command" : 4,
+				"command" : 2,
 				"file" : 0,
-				"line" : 36,
+				"line" : 38,
 				"parent" : 0
 			}
 		]
@@ -100,80 +81,67 @@
 				},
 				{
 					"fragment" : "-fsanitize=address -O3"
-				},
-				{
-					"backtrace" : 8,
-					"fragment" : "-Xclang"
-				},
-				{
-					"backtrace" : 8,
-					"fragment" : "-fopenmp"
 				}
 			],
 			"defines" : 
 			[
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"define" : "FMM_FROM_CHARS_INT_SUPPORTED"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"define" : "FMM_TO_CHARS_DOUBLE_SUPPORTED"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"define" : "FMM_TO_CHARS_INT_SUPPORTED"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"define" : "FMM_TO_CHARS_LONG_DOUBLE_SUPPORTED"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"define" : "FMM_USE_DRAGONBOX"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"define" : "FMM_USE_FAST_FLOAT"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"define" : "FMM_USE_RYU"
 				}
 			],
 			"includes" : 
 			[
 				{
-					"backtrace" : 9,
+					"backtrace" : 6,
 					"path" : "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/spmv/include"
 				},
 				{
-					"backtrace" : 10,
+					"backtrace" : 7,
 					"path" : "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/spmv/shared"
 				},
 				{
-					"backtrace" : 11,
+					"backtrace" : 8,
 					"path" : "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/spmv/seq"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"path" : "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/spmv/submodules/fast_matrix_market/include"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"path" : "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/spmv/submodules/fast_matrix_market/dependencies/fast_float/include"
 				},
 				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"path" : "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/spmv/submodules/fast_matrix_market/dependencies/ryu"
 				},
 				{
-					"backtrace" : 8,
-					"isSystem" : true,
-					"path" : "/opt/homebrew/include"
-				},
-				{
-					"backtrace" : 8,
+					"backtrace" : 2,
 					"isSystem" : true,
 					"path" : "/Users/kristiansordal/dev/uib/spring24/inf236/code/assignments/spmv/submodules/fast_matrix_market/dependencies/dragonbox/include"
 				}
@@ -183,8 +151,8 @@
 			{
 				"backtraces" : 
 				[
-					8,
-					8
+					2,
+					2
 				],
 				"standard" : "17"
 			},
@@ -198,11 +166,11 @@
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 8,
+			"backtrace" : 2,
 			"id" : "dragonbox_to_chars::@02846b654906f00d92e3"
 		},
 		{
-			"backtrace" : 8,
+			"backtrace" : 2,
 			"id" : "ryu::@ccbe1cbfbc219d2e02e2"
 		}
 	],
@@ -220,17 +188,17 @@
 				"role" : "flags"
 			},
 			{
-				"backtrace" : 4,
-				"fragment" : "/opt/homebrew/lib/libomp.dylib",
+				"backtrace" : 2,
+				"fragment" : "-lOpenMP::OpenMP_CXX",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 6,
+				"backtrace" : 4,
 				"fragment" : "submodules/fast_matrix_market/dependencies/dragonbox/libdragonbox_to_chars.a",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 7,
+				"backtrace" : 5,
 				"fragment" : "submodules/fast_matrix_market/dependencies/ryu/libryu.a",
 				"role" : "libraries"
 			}

@@ -14,7 +14,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Find OpenMP
-find_package(OpenMP REQUIRED)
+set(OpenMP_CXX_FLAGS "-fopenmp")
+set(OpenMP_CXX_LIB_NAMES "gomp")
+# find_package(OpenMP REQUIRED)
 add_subdirectory(submodules/fast_matrix_market)
 
 # List of all executables
