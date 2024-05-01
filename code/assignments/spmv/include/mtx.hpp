@@ -1,12 +1,10 @@
 #pragma once
 #include <csr.hpp>
-#include <fast_matrix_market/fast_matrix_market.hpp>
 #include <fstream>
 #include <numeric>
 #include <omp.h>
 #include <tuple>
 #include <vector>
-namespace fmm = fast_matrix_market;
 template <typename IT, typename VT> class MTX {
   private:
     int N, M, nnz;
@@ -23,18 +21,18 @@ template <typename IT, typename VT> class MTX {
      */
     void read_mtx(const std::string &file_path) {
         std::cout << "Reading MTX file: " << file_path << "\n";
-        std::ifstream file(file_path);
+        //         std::ifstream file(file_path);
 
-        fmm::read_options options;
-        options.parallel_ok = true;
+        //         fmm::read_options options;
+        //         options.parallel_ok = true;
 
-        fmm::read_matrix_market_triplet(file, N, M, rows, cols, vals, options);
-        nnz = rows.size();
-        triplets.resize(nnz);
+        //         fmm::read_matrix_market_triplet(file, N, M, rows, cols, vals, options);
+        //         nnz = rows.size();
+        //         triplets.resize(nnz);
 
-#pragma omp parallel for
-        for (int i = 0; i < nnz; i++)
-            triplets[i] = {rows[i], cols[i], vals[i]};
+        // #pragma omp parallel for
+        //         for (int i = 0; i < nnz; i++)
+        //             triplets[i] = {rows[i], cols[i], vals[i]};
 
         std::cout << "|V| = " << N << " |E| = " << nnz << "\n";
         std::cout << "Done reading MTX file...\n";

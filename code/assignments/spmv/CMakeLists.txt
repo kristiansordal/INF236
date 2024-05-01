@@ -17,7 +17,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(OpenMP_CXX_FLAGS "-fopenmp")
 set(OpenMP_CXX_LIB_NAMES "gomp")
 # find_package(OpenMP REQUIRED)
-add_subdirectory(submodules/fast_matrix_market)
 
 # List of all executables
 set(all_executables
@@ -39,7 +38,6 @@ foreach(executable IN LISTS all_executables)
     target_link_libraries(${executable} 
         ${METIS_LIBRARIES}
         OpenMP::OpenMP_CXX
-        fast_matrix_market::fast_matrix_market
     )
     set_target_properties(${executable} PROPERTIES
         COMPILE_FLAGS "-fsanitize=address -O3"
