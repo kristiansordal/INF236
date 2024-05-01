@@ -18,16 +18,17 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Find METIS
 # find_package(METIS REQUIRED)
 find_package(OpenMP REQUIRED)
+add_subdirectory(fast_matrix_market)
 
 # Find Fast Matrix Market
-include(FetchContent)
-FetchContent_Declare(
-        fast_matrix_market
-        GIT_REPOSITORY https://github.com/alugowski/fast_matrix_market
-        GIT_TAG main
-        GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(fast_matrix_market)
+# include(FetchContent)
+# FetchContent_Declare(
+#         fast_matrix_market
+#         GIT_REPOSITORY https://github.com/alugowski/fast_matrix_market
+#         GIT_TAG main
+#         GIT_SHALLOW TRUE
+# )
+# FetchContent_MakeAvailable(fast_matrix_market)
 
 # List of all executables
 set(all_executables
