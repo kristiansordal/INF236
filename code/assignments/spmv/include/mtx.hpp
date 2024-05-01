@@ -1,6 +1,8 @@
 #pragma once
 #include <csr.hpp>
+#include <fstream>
 #include <omp.h>
+#include <sstream>
 #include <tuple>
 #include <vector>
 template <typename IT, typename VT> class MTX {
@@ -19,18 +21,32 @@ template <typename IT, typename VT> class MTX {
      */
     void read_mtx(const std::string &file_path) {
         std::cout << "Reading MTX file: " << file_path << "\n";
-        //         std::ifstream file(file_path);
+        std::ifstream file(file_path);
 
-        //         fmm::read_options options;
-        //         options.parallel_ok = true;
+        if (!file.is_open()) {
+            std::cerr << "Error: Could not open file\n";
+            return;
+        }
 
-        //         fmm::read_matrix_market_triplet(file, N, M, rows, cols, vals, options);
-        //         nnz = rows.size();
-        //         triplets.resize(nnz);
+        // skip header
+        // more robust if we parse it to determine graph type
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line[0] == '%')
+                continue;
+            break;
+        }
 
-        // #pragma omp parallel for
-        //         for (int i = 0; i < nnz; i++)
-        //             triplets[i] = {rows[i], cols[i], vals[i]};
+        std::istringstream iss(line);
+        iss >> N >> M >> nnz;
+
+        triplets.resize(nnz);
+        IT row, col;
+        VT val;
+
+        int i = 0;
+        while (file >> row >> col >> val)
+            triplets[i++] = std::make_tuple(row, col, val);
 
         std::cout << "|V| = " << N << " |E| = " << nnz << "\n";
         std::cout << "Done reading MTX file...\n";
