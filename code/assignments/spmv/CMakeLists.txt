@@ -1,22 +1,28 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.29.2)
 
-project(SpMV)
+project(SpMV
+    VERSION 0.0.1
+    DESCRIPTION "Sparse Matrix Multiplication"
+    LANGUAGES CXX
+)
 
-# Set C++ standard via compiler flags
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
+if(CMAKE_VERSION VERSION_LESS "3.1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+    set(CMAKE_CXX_STANDARD 11)
 endif()
 
-# Set include directory
+
+message(STATUS "Using C++ compiler: ${CMAKE_CXX_COMPILER}")
 include_directories(${CMAKE_SOURCE_DIR}/include)
+
 
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# Find OpenMP
-set(OpenMP_CXX_FLAGS "-fopenmp")
-set(OpenMP_CXX_LIB_NAMES "gomp")
-# find_package(OpenMP REQUIRED)
+# Find MPI and METIS
+find_package(OpenMP REQUIRED) 
+
 
 # List of all executables
 set(all_executables
@@ -33,14 +39,14 @@ foreach(executable IN LISTS all_executables)
     )
 endforeach()
 
+
 foreach(executable IN LISTS all_executables)
-    include_directories(${executable} ${METIS_INCLUDE_DIRS})
-    target_link_libraries(${executable} 
-        ${METIS_LIBRARIES}
-        OpenMP::OpenMP_CXX
-    )
-    set_target_properties(${executable} PROPERTIES
-        COMPILE_FLAGS "-fsanitize=address -O3"
-        LINK_FLAGS "-fsanitize=address"
-    )
+    if(OPENMP_FOUND)
+        set_target_properties(${executable} PROPERTIES
+            COMPILE_FLAGS "${OpenMP_CXX_FLAGS} -fsanitize=address -O3"
+            LINK_FLAGS "${OpenMP_CXX_FLAGS} -fsanitize=address"
+        )
+    endif()
 endforeach()
+
+set(CMAKE_COLOR_DIAGNOSTICS On)

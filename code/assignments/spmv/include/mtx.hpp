@@ -56,11 +56,11 @@ template <typename IT, typename VT> class MTX {
         graph.col_idx.resize(nnz);
         graph.vals.resize(nnz);
 
-        std::sort(triplets.begin(), triplets.end(), [](const auto &a, const auto &b) {
-            if (std::get<0>(a) == std::get<0>(b))
-                return std::get<1>(a) < std::get<1>(b);
-            return std::get<0>(a) < std::get<0>(b);
-        });
+        // std::sort(triplets.begin(), triplets.end(), [](const auto &a, const auto &b) {
+        //     if (std::get<0>(a) == std::get<0>(b))
+        //         return std::get<1>(a) < std::get<1>(b);
+        //     return std::get<0>(a) < std::get<0>(b);
+        // });
 
 #pragma omp parallel for
         for (int i = 0; i < nnz; i++) {
@@ -70,7 +70,7 @@ template <typename IT, typename VT> class MTX {
             graph.vals[i] = std::get<2>(triplet);
         }
 
-        std::exclusive_scan(row_count.begin(), row_count.end(), graph.row_ptr.begin(), 0);
+        // std::exclusive_scan(row_count.begin(), row_count.end(), graph.row_ptr.begin(), 0);
         graph.N = N;
         graph.M = M;
         graph.V = N;

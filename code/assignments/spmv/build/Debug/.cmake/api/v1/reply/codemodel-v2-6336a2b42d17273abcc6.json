@@ -9,7 +9,7 @@
 					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
-						"string" : "2.8"
+						"string" : "3.29.2"
 					},
 					"projectIndex" : 0,
 					"source" : ".",
@@ -41,14 +41,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "seq::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-seq-Debug-be3b03c6041b3405389a.json",
+					"jsonFile" : "target-seq-Debug-df683fa910b34f32ffdc.json",
 					"name" : "seq",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-shared-Debug-5bcd02b033edf22bff37.json",
+					"jsonFile" : "target-shared-Debug-080df0946abb59191cd6.json",
 					"name" : "shared",
 					"projectIndex" : 0
 				}
