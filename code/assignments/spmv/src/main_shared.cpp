@@ -1,3 +1,4 @@
+#include "mmio.hpp"
 #include "spmv.hpp"
 #include <csr.hpp>
 #include <mtx.hpp>

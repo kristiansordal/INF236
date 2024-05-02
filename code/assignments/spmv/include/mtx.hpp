@@ -1,8 +1,7 @@
 #pragma once
 #include <csr.hpp>
-#include <fstream>
+#include <mmio.hpp>
 #include <omp.h>
-#include <sstream>
 #include <tuple>
 #include <vector>
 template <typename IT, typename VT> class MTX {
@@ -21,34 +20,37 @@ template <typename IT, typename VT> class MTX {
      */
     void read_mtx(const std::string &file_path) {
         std::cout << "Reading MTX file: " << file_path << "\n";
-        std::ifstream file(file_path);
 
-        if (!file.is_open()) {
-            std::cerr << "Error: Could not open file\n";
+        const char *f = "delaunay_n24.mtx";
+        int M, N, nz;
+        double *val;
+        int *I, *J;
+
+        // Call mmio function to read the matrix
+        int result = mm_read_unsymmetric_sparse(f, &M, &N, &nz, &val, &I, &J);
+        if (result != 0) {
+            std::cerr << "Error reading matrix from file: " << file_path << std::endl;
             return;
         }
 
-        // skip header
-        // more robust if we parse it to determine graph type
-        std::string line;
-        while (std::getline(file, line)) {
-            if (line[0] == '%')
-                continue;
-            break;
+        // Resize vector to hold triplets and fill it
+        triplets.resize(nz);
+        for (int i = 0; i < nz; i++) {
+            triplets[i] = std::make_tuple(I[i], J[i], val[i]);
         }
 
-        std::istringstream iss(line);
-        iss >> N >> M >> nnz;
+        // Free the dynamically allocated memory from mm_read_unsymmetric_sparse
+        free(val);
+        free(I);
+        free(J);
 
-        triplets.resize(nnz);
-        IT row, col;
-        VT val;
+        N = M; // Assuming square matrix for simplicity
+        this->M = M;
+        this->N = N;
+        nnz = nz;
 
-        int i = 0;
-        while (file >> row >> col >> val)
-            triplets[i++] = std::make_tuple(row, col, val);
-
-        file.close();
+        std::cout << "|V| = " << N << " |E| = " << nnz << std::endl;
+        std::cout << "Done reading MTX file...\n";
 
         std::cout << "|V| = " << N << " |E| = " << nnz << "\n";
         std::cout << "Done reading MTX file...\n";
