@@ -21,13 +21,12 @@ template <typename IT, typename VT> class MTX {
     void read_mtx(const std::string &file_path) {
         std::cout << "Reading MTX file: " << file_path << "\n";
 
-        const char *f = "delaunay_n24.mtx";
         int M, N, nz;
         double *val;
         int *I, *J;
 
         // Call mmio function to read the matrix
-        int result = mm_read_unsymmetric_sparse(f, &M, &N, &nz, &val, &I, &J);
+        int result = mm_read_unsymmetric_sparse(file_path.c_str(), &M, &N, &nz, &val, &I, &J);
         if (result != 0) {
             std::cerr << "Error reading matrix from file: " << file_path << std::endl;
             return;
