@@ -75,8 +75,9 @@ template <typename IT, typename VT> class MTX {
 
         std::sort(triplets.begin(), triplets.end(),
                   [](const std::tuple<IT, IT, VT> &a, const std::tuple<IT, IT, VT> &b) {
-                      return std::get<0>(a) < std::get<0>(b) ||
-                             (!(std::get<0>(b) < std::get<0>(a)) && std::get<1>(a) < std::get<1>(b));
+                      if (std::get<0>(a) == std::get<0>(b))
+                          return std::get<1>(a) < std::get<1>(b);
+                      return std::get<0>(a) < std::get<0>(b);
                   });
         std::cout << "done sorting.." << std::endl;
         for (int i = 0; i < nnz; i++) {
