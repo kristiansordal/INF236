@@ -8,11 +8,13 @@
 
 #include <ctype.h>
 #include <iostream>
+#include <istream>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "mmio.hpp"
+#include <mmio.hpp>
 
 int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_, double **val_, int **I_, int **J_) {
     FILE *f;
@@ -166,6 +168,7 @@ int mm_write_mtx_crd_size(FILE *f, int M, int N, int nz) {
 }
 
 int mm_read_mtx_crd_size(FILE *f, int *M, int *N, int *nz) {
+    std::cout << "here" << std::endl;
     char line[MM_MAX_LINE_LENGTH];
     int num_items_read;
 
@@ -179,8 +182,10 @@ int mm_read_mtx_crd_size(FILE *f, int *M, int *N, int *nz) {
     } while (line[0] == '%');
 
     /* line[] is either blank or has M,N, nz */
-    if (sscanf(line, "%d %d %d", M, N, nz) == 3)
+    std::istringstream iss(line);
+    if (iss >> *M >> *N >> *nz) {
         return 0;
+    }
 
     else
         do {

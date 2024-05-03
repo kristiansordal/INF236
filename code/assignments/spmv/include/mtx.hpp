@@ -6,7 +6,7 @@
 #include <vector>
 template <typename IT, typename VT> class MTX {
   private:
-    int N, M, nnz;
+    int N = 0, M = 0, nnz = 0;
     std::vector<IT> rows, cols;
     std::vector<VT> vals;
     std::vector<std::tuple<IT, IT, VT>> triplets;
@@ -53,6 +53,117 @@ template <typename IT, typename VT> class MTX {
 
         std::cout << "|V| = " << N << " |E| = " << nnz << "\n";
         std::cout << "Done reading MTX file...\n";
+    }
+
+    bool read_graph(std::string &file_path, CSR<IT, VT> &csr) {
+        FILE *fp;
+        long int i;
+        int x, y, z;
+        double v, w;
+        MM_typecode matcode;
+        int cs;
+        int mxdeg = 0;
+
+        fp = fopen(file_path.c_str(), "r");
+
+        if (fp == NULL) {
+            std::cout << "Could not open file " << file_path << "\n";
+            return false;
+        }
+
+        if (mm_read_banner(fp, &matcode) != 0) {
+            std::cout << "Could not process Matrix Market banner.\n";
+            return false;
+        }
+
+        if ((mm_read_mtx_crd_size(fp, &N, &M, &nnz)) != 0) {
+            std::cout << "Could not read size of graph.\n";
+            return false;
+        }
+        std::cout << "N: " << N << " M: " << M << " nnz: " << nnz << std::endl;
+
+        if (!mm_is_matrix(matcode) || !mm_is_sparse(matcode) || !mm_is_symmetric(matcode)) {
+            std::cout << "The program can only read files that are sparse symmmetric matrices in coordinate format! \n";
+            return false;
+        }
+
+        std::vector<int> count(N, 0);
+        triplets.resize(nnz);
+        int num_edges = 0;
+
+        // Read in the edges
+        if (mm_is_real(matcode)) {
+            std::cout << "Real matrix, Starting to read " << M << " edges \n";
+            srand48(time(NULL));
+            for (i = 0; i < nnz; i++) {
+                fscanf(fp, "%d %d %lf", &x, &y, &v); // Use this line if there is exactly one double weight
+                if (x != y) {                        // Avoid self-edges
+                    count[--x]++;
+                    count[--y]++;
+                    triplets[num_edges++] = std::make_tuple(x, y, v);
+                }
+            }
+        } else if (mm_is_integer(matcode)) {
+            std::cout << "Integer matrix, Starting to read " << nnz << " edges \n";
+            srand48(time(NULL));
+            for (i = 0; i < nnz; i++) {
+                fscanf(fp, "%d %d %lf", &x, &y, &v); // Use this line if there is exactly one double weight
+                if (x != y) {                        // Avoid self-edges
+                    count[--x]++;
+                    count[--y]++;
+                    triplets[num_edges++] = std::make_tuple(x, y, v);
+                }
+            }
+        } else { // Symbolic matrix
+            srand48(time(NULL));
+            // printf("Symbolic matrix \n");
+            for (i = 0; i < nnz; i++) {
+                fscanf(fp, "%d %d", &x, &y);
+                if (x != y) { // Avoid self-edges
+                    count[--x]++;
+                    count[--y]++;
+                    triplets[num_edges++] = std::make_tuple(x, y, 1.0);
+                }
+            }
+        }
+
+        std::cout << "done triplets" << std::endl;
+        csr.row_ptr.resize(N + 1, 0);
+        csr.col_idx.resize(nnz * 2);
+        csr.vals.resize(nnz * 2);
+        std::vector<int> offsets(N, 0);
+        int sum = 0;
+        for (size_t i = 0; i < count.size(); ++i) {
+            sum += count[i];
+            if (i + 1 < csr.row_ptr.size())
+                csr.row_ptr[i + 1] = sum;
+        }
+
+        for (auto t : triplets) {
+            int v = std::get<0>(t);
+            int u = std::get<1>(t);
+            double w = std::get<2>(t);
+            csr.vals[csr.row_ptr[v] + offsets[v]] = w;
+            csr.vals[csr.row_ptr[u] + offsets[u]] = w;
+            csr.col_idx[csr.row_ptr[v] + offsets[v]++] = u;
+            csr.col_idx[csr.row_ptr[u] + offsets[u]++] = v;
+        }
+
+        for (auto i : csr.row_ptr) {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+        for (auto i : csr.col_idx) {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+        for (auto i : csr.vals) {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+
+        M = num_edges;
+        return true;
     }
 
     double l2_norm_triplet() {

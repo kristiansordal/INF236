@@ -1,6 +1,6 @@
-#include "mmio.hpp"
 #include "spmv.hpp"
 #include <csr.hpp>
+#include <mmio.hpp>
 #include <mtx.hpp>
 #include <omp.h>
 
@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
     MTX<int, double> mtx;
     CSR<int, double> g;
     std::string file = argv[1];
-    mtx.read_mtx(file);
+    mtx.read_graph(file, g);
     g = mtx.mtx_to_csr();
     std::vector<double> A(g.N, 0), y(g.N, 0);
 
@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     }
 
     t_end = omp_get_wtime();
-    ops = 2 * g.nnz * num_steps;
+    ops = 2 * 2 * g.nnz * num_steps; // 2 flops per nnz
     std::cout << "Time: " << t_end - t_start << "s\n";
     std::cout << "OPS: " << ops << "\n";
     std::cout << "GFLOPS: " << ops / ((t_end - t_start) * 1e9) << "\n";

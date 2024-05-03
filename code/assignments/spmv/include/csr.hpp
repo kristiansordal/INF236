@@ -20,6 +20,14 @@ template <typename IT, typename VT> class CSR {
     std::vector<VT> vals;
 
     CSR() = default;
+    CSR(int _N, int _M, int _nnz)
+        : N(_N),
+          M(_M),
+          nnz(_nnz) {
+        row_ptr.resize(N + 1, 0);
+        col_idx.resize(nnz, 0);
+        vals.resize(nnz, 0);
+    };
     ~CSR() = default;
 
     /* Partitions a graph into k parts usint METIS_PartGraphRecursive
