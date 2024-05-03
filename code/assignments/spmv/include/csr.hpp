@@ -4,6 +4,7 @@
 #include <numeric>
 #include <omp.h>
 #include <set>
+#include <tuple>
 #include <vector>
 
 // TODO: Create a struct to store dimensions of matrix, as it is easy to confuse with V and E
@@ -18,6 +19,7 @@ template <typename IT, typename VT> class CSR {
     unsigned long long int nnz;
     std::vector<IT> row_ptr, col_idx;
     std::vector<VT> vals;
+    std::vector<std::tuple<IT, IT>> partition;
 
     CSR() = default;
     CSR(int _N, int _M, int _nnz)
@@ -30,6 +32,35 @@ template <typename IT, typename VT> class CSR {
     };
     ~CSR() = default;
 
+    void partition_naive(int p) {
+        partition.resize(p);
+        int avg_nnz = nnz / p;
+        int tid = 0;
+        int prev_idx = 0;
+
+        std::cout << std::endl;
+        std::cout << "avg nnz: " << avg_nnz << std::endl;
+        for (int i = 0; i < N; i++) {
+            if (tid == p - 1) {
+                partition[tid] = std::make_tuple(prev_idx, N);
+                break;
+            }
+            if (row_ptr[i + 1] - row_ptr[prev_idx] > avg_nnz) {
+                partition[tid] = std::make_tuple(prev_idx, i);
+                prev_idx = i;
+                tid++;
+            }
+        }
+        std::cout << "NNZ: " << nnz << " Avg NNZ: " << avg_nnz << std::endl;
+        int nnzsum = 0;
+        for (int i = 0; i < p; i++) {
+            // std::cout << row_ptr[std::get<1>(partition[i])] - row_ptr[std::get<0>(partition[i])] << std::endl;
+            std::cout << "tid: " << i << " has: " << std::get<1>(partition[i]) - std::get<0>(partition[i]) << " nodes "
+                      << std::endl;
+            nnzsum += row_ptr[std::get<1>(partition[i])] - row_ptr[std::get<0>(partition[i])];
+        }
+        std::cout << nnzsum << std::endl;
+    }
     /* Partitions a graph into k parts usint METIS_PartGraphRecursive
      * @param k - The number of partitions to make
      * @param p - The partition vector of size |k|+1, where the ith element is the starting index of the ith partition

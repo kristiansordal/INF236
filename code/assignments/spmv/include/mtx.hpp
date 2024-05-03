@@ -152,8 +152,9 @@ template <typename IT, typename VT> class MTX {
         csr.N = N;
         csr.M = M;
         csr.V = N;
-        csr.E = nnz;
-        csr.nnz = nnz;
+        //  this only applies for symmetrical matrices
+        csr.E = 2 * nnz;
+        csr.nnz = 2 * nnz;
         return true;
     }
 

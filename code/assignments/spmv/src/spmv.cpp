@@ -20,6 +20,21 @@ void spmv_shared(CSR<int, double> &csr, std::vector<double> &A, std::vector<doub
     }
 }
 
+void spmv_partition_naive(CSR<int, double> &csr, std::vector<double> &A, std::vector<double> &y) {
+#pragma omp parallel
+    {
+        int tid = omp_get_thread_num();
+        int start = std::get<0>(csr.partition[tid]);
+        int end = std::get<1>(csr.partition[tid]);
+        for (int v = start; v < end; v++) {
+            double sum = 0;
+            for (int u = csr.row_ptr[v]; u < csr.row_ptr[v + 1]; u++)
+                sum += csr.vals[u] * A[csr.col_idx[u]];
+            y[v] = sum;
+        }
+    }
+}
+
 double l2_norm(CSR<int, double> &g) {
     double norm = 0;
     for (int i = 0; i < g.V; i++)
