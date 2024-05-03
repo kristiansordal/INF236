@@ -10,26 +10,15 @@
 // TODO: Create a struct to store dimensions of matrix, as it is easy to confuse with V and E
 template <typename IT, typename VT> class CSR {
   public:
-    // V: number of vertices
-    // E: number of edges
     // N: Number of rows in matrix
     // M: Number of columns in matrix
-    // delta: Offset for row_ptr, i.e. where in the
-    int V, E, N, M, offset;
+    int N, M;
     unsigned long long int nnz;
     std::vector<IT> row_ptr, col_idx;
     std::vector<VT> vals;
     std::vector<std::tuple<IT, IT>> partition;
 
     CSR() = default;
-    CSR(int _N, int _M, int _nnz)
-        : N(_N),
-          M(_M),
-          nnz(_nnz) {
-        row_ptr.resize(N + 1, 0);
-        col_idx.resize(nnz, 0);
-        vals.resize(nnz, 0);
-    };
     ~CSR() = default;
 
     void partition_naive(int p) {
