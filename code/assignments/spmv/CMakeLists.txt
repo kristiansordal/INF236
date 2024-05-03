@@ -27,6 +27,7 @@ find_package(OpenMP REQUIRED)
 set(all_executables
     shared
     seq
+    naive
 )
 
 # Adding executables
@@ -39,6 +40,10 @@ foreach(executable IN LISTS all_executables)
     )
 endforeach()
 
+add_executable(io
+src/test.cpp
+)
+
 
 foreach(executable IN LISTS all_executables)
     if(OPENMP_FOUND)
@@ -48,5 +53,10 @@ foreach(executable IN LISTS all_executables)
         )
     endif()
 endforeach()
+
+set_target_properties(io PROPERTIES
+    COMPILE_FLAGS "${OpenMP_CXX_FLAGS} -fsanitize=address -O3"
+    LINK_FLAGS "${OpenMP_CXX_FLAGS} -fsanitize=address"
+)
 
 set(CMAKE_COLOR_DIAGNOSTICS On)

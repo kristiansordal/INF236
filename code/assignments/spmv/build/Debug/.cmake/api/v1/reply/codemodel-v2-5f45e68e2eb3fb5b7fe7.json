@@ -16,7 +16,9 @@
 					"targetIndexes" : 
 					[
 						0,
-						1
+						1,
+						2,
+						3
 					]
 				}
 			],
@@ -32,7 +34,9 @@
 					"targetIndexes" : 
 					[
 						0,
-						1
+						1,
+						2,
+						3
 					]
 				}
 			],
@@ -40,15 +44,29 @@
 			[
 				{
 					"directoryIndex" : 0,
+					"id" : "io::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-io-Debug-e04cc9abf80e8d4a1e89.json",
+					"name" : "io",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "naive::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-naive-Debug-1c05ff0a24985d520601.json",
+					"name" : "naive",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
 					"id" : "seq::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-seq-Debug-e035d7762d9a5a2f0139.json",
+					"jsonFile" : "target-seq-Debug-43154df6fb47670089f7.json",
 					"name" : "seq",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-shared-Debug-8f6f28785b4db845c39c.json",
+					"jsonFile" : "target-shared-Debug-5d42226c7f802d246cf2.json",
 					"name" : "shared",
 					"projectIndex" : 0
 				}

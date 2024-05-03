@@ -1,143 +1,68 @@
 #pragma once
 #include <csr.hpp>
-#include <mmio.hpp>
-#include <omp.h>
-#include <tuple>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <vector>
+
+struct MatrixType {
+    char object, format, field, symmetry;
+
+    bool is_matrix() { return object == 'm'; }
+    bool is_coordinate() { return format == 'c'; }
+    bool is_not_complex() { return field != 'c'; }
+    void print() {
+        std::cout << "Object: " << object << std::endl;
+        std::cout << "Format: " << format << std::endl;
+        std::cout << "Field: " << field << std::endl;
+        std::cout << "Symmetry: " << symmetry << std::endl;
+    }
+};
+
 template <typename IT, typename VT> class MTX {
-  private:
-    int N = 0, M = 0, nnz = 0;
-    std::vector<IT> rows, cols;
-    std::vector<VT> vals;
-    std::vector<std::tuple<IT, IT, VT>> triplets;
-
   public:
-    MTX() = default;
-    ~MTX() = default;
+    int N, M, nnz;
+    std::vector<std::tuple<IT, IT, VT>> triplets;
+    std::vector<IT> counts;
+    MatrixType type;
 
-    /* Reads a .mtx file and stores the values in the triplet vector
-     * @param file_path: path to the .mtx file
-     */
-    void read_mtx(const std::string &file_path) {
-        std::cout << "Reading MTX file: " << file_path << "\n";
+    void parse(const std::string &filename) {
+        std::ifstream file(filename);
+        parse_banner(file);
+        type.print();
 
-        int M, N, nz;
-        double *val;
-        int *I, *J;
-
-        // Call mmio function to read the matrix
-        int result = mm_read_unsymmetric_sparse(file_path.c_str(), &M, &N, &nz, &val, &I, &J);
-        if (result != 0) {
-            std::cerr << "Error reading matrix from file: " << file_path << std::endl;
-            return;
+        if (type.field == 'p')
+            if (type.symmetry == 's')
+                parse_symmetric_coordinate_matrix(file);
+            else
+                parse_general_coordinate_matrix(file);
+        else {
+            if (type.symmetry == 's')
+                parse_symmetric_matrix(file);
+            else
+                parse_general_matrix(file);
         }
-
-        // Resize vector to hold triplets and fill it
-        triplets.resize(nz);
-        for (int i = 0; i < nz; i++) {
-            triplets[i] = std::make_tuple(I[i], J[i], val[i]);
-        }
-
-        // Free the dynamically allocated memory from mm_read_unsymmetric_sparse
-        free(val);
-        free(I);
-        free(J);
-
-        N = M; // Assuming square matrix for simplicity
-        this->M = M;
-        this->N = N;
-        nnz = nz;
-
-        std::cout << "|V| = " << N << " |E| = " << nnz << std::endl;
-        std::cout << "Done reading MTX file...\n";
-
-        std::cout << "|V| = " << N << " |E| = " << nnz << "\n";
-        std::cout << "Done reading MTX file...\n";
+        file.close();
     }
 
-    bool read_graph(std::string &file_path, CSR<IT, VT> &csr) {
-        FILE *fp;
-        long int i;
-        int x, y, z;
-        double v, w;
-        MM_typecode matcode;
-        int cs;
-        int mxdeg = 0;
+    void mtx_to_csr(CSR<IT, VT> &csr) {
+        csr.N = N;
+        csr.M = M;
+        csr.nnz = nnz;
 
-        fp = fopen(file_path.c_str(), "r");
+        if (type.symmetry == 's')
+            csr.nnz *= 2;
+        csr.row_ptr.resize(N + 1);
+        csr.col_idx.resize(csr.nnz);
+        csr.vals.resize(csr.nnz);
 
-        if (fp == NULL) {
-            std::cout << "Could not open file " << file_path << "\n";
-            return false;
-        }
-
-        if (mm_read_banner(fp, &matcode) != 0) {
-            std::cout << "Could not process Matrix Market banner.\n";
-            return false;
-        }
-
-        if ((mm_read_mtx_crd_size(fp, &N, &M, &nnz)) != 0) {
-            std::cout << "Could not read size of graph.\n";
-            return false;
-        }
-        std::cout << "N: " << N << " M: " << M << " nnz: " << nnz << std::endl;
-
-        if (!mm_is_matrix(matcode) || !mm_is_sparse(matcode) || !mm_is_symmetric(matcode)) {
-            std::cout << "The program can only read files that are sparse symmmetric matrices in coordinate format! \n";
-            return false;
-        }
-
-        std::vector<int> count(N, 0);
-        triplets.resize(nnz);
-        int num_edges = 0;
-
-        // Read in the edges
-        if (mm_is_real(matcode)) {
-            std::cout << "Real matrix, Starting to read " << M << " edges \n";
-            srand48(time(NULL));
-            for (i = 0; i < nnz; i++) {
-                fscanf(fp, "%d %d %lf", &x, &y, &v); // Use this line if there is exactly one double weight
-                if (x != y) {                        // Avoid self-edges
-                    count[--x]++;
-                    count[--y]++;
-                    triplets[num_edges++] = std::make_tuple(x, y, v);
-                }
-            }
-        } else if (mm_is_integer(matcode)) {
-            std::cout << "Integer matrix, Starting to read " << nnz << " edges \n";
-            srand48(time(NULL));
-            for (i = 0; i < nnz; i++) {
-                fscanf(fp, "%d %d %lf", &x, &y, &v); // Use this line if there is exactly one double weight
-                if (x != y) {                        // Avoid self-edges
-                    count[--x]++;
-                    count[--y]++;
-                    triplets[num_edges++] = std::make_tuple(x, y, v);
-                }
-            }
-        } else { // Symbolic matrix
-            srand48(time(NULL));
-            // printf("Symbolic matrix \n");
-            for (i = 0; i < nnz; i++) {
-                fscanf(fp, "%d %d", &x, &y);
-                if (x != y) { // Avoid self-edges
-                    count[--x]++;
-                    count[--y]++;
-                    triplets[num_edges++] = std::make_tuple(x, y, 1.0);
-                }
-            }
-        }
-
-        std::cout << "done triplets" << std::endl;
-        csr.row_ptr.resize(N + 1, 0);
-        csr.col_idx.resize(nnz * 2);
-        csr.vals.resize(nnz * 2);
         std::vector<int> offsets(N, 0);
         int sum = 0;
-        for (size_t i = 0; i < count.size(); ++i) {
-            sum += count[i];
-            if (i + 1 < csr.row_ptr.size())
-                csr.row_ptr[i + 1] = sum;
+        for (size_t i = 0; i < N; ++i) {
+            csr.row_ptr[i] = sum;
+            sum += counts[i];
         }
+        csr.row_ptr[csr.N] = csr.nnz;
 
         for (auto t : triplets) {
             int v = std::get<0>(t);
@@ -149,63 +74,124 @@ template <typename IT, typename VT> class MTX {
             csr.col_idx[csr.row_ptr[u] + offsets[u]++] = v;
         }
 
-        csr.N = N;
-        csr.M = M;
-        csr.V = N;
-        //  this only applies for symmetrical matrices
-        csr.E = 2 * nnz;
-        csr.nnz = 2 * nnz;
-        return true;
+        // for (auto i : csr.row_ptr) {
+        //     std::cout << i << " ";
+        // }
+        // std::cout << std::endl;
+        // for (auto i : csr.col_idx) {
+        //     std::cout << i << " ";
+        // }
+        // std::cout << std::endl;
     }
 
-    double l2_norm_triplet() {
-        double norm = 0;
-        for (int i = 0; i < nnz; i++)
-            norm += std::get<2>(triplets[i]) * std::get<2>(triplets[i]);
-        return sqrt(norm);
-    }
+    void parse_banner(std::ifstream &file) {
+        std::string line;
+        std::istringstream iss;
+        std::string word;
+        std::vector<std::string> tokens;
 
-    /* Converts the triplet vector to CSR format
-     * @return: Graph object in CSR format
-     */
-    CSR<IT, VT> mtx_to_csr() {
-        std::cout << "Converting from MTX to CSR...\n";
-        CSR<IT, VT> graph{};
-        std::vector<IT> row_count(N + 1, 0);
-        graph.row_ptr.resize(N + 1);
-        graph.col_idx.resize(nnz);
-        graph.vals.resize(nnz);
-        std::cout << "sorting..." << std::endl;
+        // parse matrix type
+        if (std::getline(file, line)) {
+            iss = std::istringstream(line);
+            while (iss >> word)
+                tokens.push_back(word);
 
-        std::sort(triplets.begin(), triplets.end(),
-                  [](const std::tuple<IT, IT, VT> &a, const std::tuple<IT, IT, VT> &b) {
-                      if (std::get<0>(a) == std::get<0>(b))
-                          return std::get<1>(a) < std::get<1>(b);
-                      return std::get<0>(a) < std::get<0>(b);
-                  });
-        std::cout << "done sorting.." << std::endl;
-        for (int i = 0; i < nnz; i++) {
-            auto triplet = triplets[i];
-            row_count[std::get<0>(triplet)]++;
-            graph.col_idx[i] = std::get<1>(triplet);
-            graph.vals[i] = std::get<2>(triplet);
+            type.object = tokens[1][0];
+            type.format = tokens[2][0];
+            type.field = tokens[3][0];
+            type.symmetry = tokens[4][0];
+
+            tokens.clear();
         }
 
-        std::cout << "scan" << std::endl;
-        int sum = 0;
-        for (size_t i = 0; i < row_count.size(); ++i) {
-            sum += row_count[i];
-            if (i + 1 < graph.row_ptr.size()) {
-                graph.row_ptr[i + 1] = sum;
+        if (!type.is_matrix()) {
+            std::cerr << "MatrixMarket object " << type.object << " not supported!\n";
+            return;
+        }
+
+        if (!type.is_coordinate()) {
+            std::cerr << "Only coordinate format matrices are supported!\n";
+            return;
+        }
+        if (!type.is_not_complex()) {
+            std::cerr << "Complex valued matrices are not supported!\n";
+            return;
+        }
+
+        // parse rest of information until we encounter the dimensions
+        while (std::getline(file, line))
+            if (line[0] != '%') {
+                iss = std::istringstream(line);
+                while (iss >> word)
+                    tokens.push_back(word);
+                N = std::stoi(tokens[0]);
+                M = std::stoi(tokens[1]);
+                nnz = std::stoi(tokens[2]);
+                triplets.resize(nnz);
+                counts.resize(N);
+                break;
             }
+    }
+
+    // Parses a symmetric coordinate matrix
+    void parse_symmetric_coordinate_matrix(std::ifstream &file) {
+        std::string line;
+        std::istringstream iss;
+        IT v, u;
+        int edges = 0;
+        while (std::getline(file, line)) {
+            iss = std::istringstream(line);
+            iss >> v >> u;
+            triplets[edges++] = std::make_tuple(--v, --u, 1.0);
+            counts[v]++;
+            if (v != u)
+                counts[u]++;
         }
-        std::cout << "scan done" << std::endl;
-        graph.N = N;
-        graph.M = M;
-        graph.V = N;
-        graph.E = nnz;
-        graph.nnz = nnz;
-        std::cout << "Done converting from MTX to CSR...\n";
-        return graph;
+    }
+
+    // Parses a general coordinate matrix
+    void parse_general_coordinate_matrix(std::ifstream &file) {
+        std::string line;
+        std::istringstream iss;
+        IT v, u;
+        int edges = 0;
+        while (std::getline(file, line)) {
+            iss = std::istringstream(line);
+            iss >> v >> u;
+            triplets[edges++] = std::make_tuple(--v, --u, 1.0);
+            counts[v]++;
+        }
+    }
+
+    // Parses a symmetric matrix with nonzero entries
+    void parse_symmetric_matrix(std::ifstream &file) {
+        std::string line;
+        std::istringstream iss;
+        IT v, u;
+        VT w;
+        int edges = 0;
+        while (std::getline(file, line)) {
+            iss = std::istringstream(line);
+            iss >> v >> u >> w;
+            triplets[edges++] = std::make_tuple(--v, --u, w);
+            counts[v]++;
+            if (v != u)
+                counts[u]++;
+        }
+    }
+
+    // Parses a general matrix with nonzero entries
+    void parse_general_matrix(std::ifstream &file) {
+        std::string line;
+        std::istringstream iss;
+        IT v, u;
+        VT w;
+        int edges = 0;
+        while (std::getline(file, line)) {
+            iss = std::istringstream(line);
+            iss >> v >> u >> w;
+            triplets[edges++] = std::make_tuple(--v, --u, w);
+            counts[v]++;
+        }
     }
 };
