@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "io"
+			"path" : "shared"
 		}
 	],
 	"backtrace" : 1,
@@ -25,7 +25,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 43,
+				"line" : 35,
 				"parent" : 0
 			},
 			{
@@ -66,11 +66,12 @@
 			},
 			"sourceIndexes" : 
 			[
-				0
+				0,
+				1
 			]
 		}
 	],
-	"id" : "io::@6890427a1f51a3e7e1df",
+	"id" : "shared::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -86,8 +87,8 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "io",
-	"nameOnDisk" : "io",
+	"name" : "shared",
+	"nameOnDisk" : "shared",
 	"paths" : 
 	{
 		"build" : ".",
@@ -99,7 +100,15 @@
 			"name" : "Source Files",
 			"sourceIndexes" : 
 			[
-				0
+				0,
+				1
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				2
 			]
 		}
 	],
@@ -108,8 +117,19 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/test.cpp",
+			"path" : "src/main_shared.cpp",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/spmv.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/spmv.hpp",
+			"sourceGroupIndex" : 1
 		}
 	],
 	"type" : "EXECUTABLE"

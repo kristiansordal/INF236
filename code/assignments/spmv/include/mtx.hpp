@@ -7,9 +7,9 @@
 
 struct MatrixType {
     char object, format, field, symmetry;
-
     bool is_matrix() { return object == 'm'; }
     bool is_coordinate() { return format == 'c'; }
+    bool is_symmetric() { return symmetry == 's'; }
     bool is_not_complex() { return field != 'c'; }
     void print() {
         std::cout << "Object: " << object << std::endl;
@@ -20,70 +20,10 @@ struct MatrixType {
 };
 
 template <typename IT, typename VT> class MTX {
-  public:
+  private:
     int N, M, nnz;
     std::vector<std::tuple<IT, IT, VT>> triplets;
     std::vector<IT> counts;
-    MatrixType type;
-
-    void parse(const std::string &filename) {
-        std::ifstream file(filename);
-        parse_banner(file);
-        type.print();
-
-        if (type.field == 'p')
-            if (type.symmetry == 's')
-                parse_symmetric_coordinate_matrix(file);
-            else
-                parse_general_coordinate_matrix(file);
-        else {
-            if (type.symmetry == 's')
-                parse_symmetric_matrix(file);
-            else
-                parse_general_matrix(file);
-        }
-        file.close();
-    }
-
-    void mtx_to_csr(CSR<IT, VT> &csr) {
-        csr.N = N;
-        csr.M = M;
-        csr.nnz = nnz;
-
-        if (type.symmetry == 's')
-            csr.nnz *= 2;
-        csr.row_ptr.resize(N + 1);
-        csr.col_idx.resize(csr.nnz);
-        csr.vals.resize(csr.nnz);
-
-        std::vector<int> offsets(N, 0);
-        int sum = 0;
-        for (size_t i = 0; i < N; ++i) {
-            csr.row_ptr[i] = sum;
-            sum += counts[i];
-        }
-        csr.row_ptr[csr.N] = csr.nnz;
-
-        for (auto t : triplets) {
-            int v = std::get<0>(t);
-            int u = std::get<1>(t);
-            double w = std::get<2>(t);
-            csr.vals[csr.row_ptr[v] + offsets[v]] = w;
-            csr.vals[csr.row_ptr[u] + offsets[u]] = w;
-            csr.col_idx[csr.row_ptr[v] + offsets[v]++] = u;
-            csr.col_idx[csr.row_ptr[u] + offsets[u]++] = v;
-        }
-
-        // for (auto i : csr.row_ptr) {
-        //     std::cout << i << " ";
-        // }
-        // std::cout << std::endl;
-        // for (auto i : csr.col_idx) {
-        //     std::cout << i << " ";
-        // }
-        // std::cout << std::endl;
-    }
-
     void parse_banner(std::ifstream &file) {
         std::string line;
         std::istringstream iss;
@@ -192,6 +132,62 @@ template <typename IT, typename VT> class MTX {
             iss >> v >> u >> w;
             triplets[edges++] = std::make_tuple(--v, --u, w);
             counts[v]++;
+        }
+    }
+
+  public:
+    MTX() = default;
+    ~MTX() = default;
+    MatrixType type;
+
+    void parse(const std::string &filename) {
+        std::ifstream file(filename);
+        parse_banner(file);
+        type.print();
+
+        if (type.field == 'p')
+            if (type.symmetry == 's')
+                parse_symmetric_coordinate_matrix(file);
+            else
+                parse_general_coordinate_matrix(file);
+        else {
+            if (type.symmetry == 's')
+                parse_symmetric_matrix(file);
+            else
+                parse_general_matrix(file);
+        }
+        file.close();
+    }
+
+    void mtx_to_csr(CSR<IT, VT> &csr) {
+        csr.N = N;
+        csr.M = M;
+        csr.nnz = nnz;
+
+        if (type.symmetry == 's')
+            csr.nnz *= 2;
+        csr.row_ptr.resize(N + 1);
+        csr.col_idx.resize(csr.nnz);
+        csr.vals.resize(csr.nnz);
+
+        std::vector<int> offsets(N, 0);
+        int sum = 0;
+        for (size_t i = 0; i < N; ++i) {
+            csr.row_ptr[i] = sum;
+            sum += counts[i];
+        }
+        csr.row_ptr[csr.N] = csr.nnz;
+
+        for (auto t : triplets) {
+            int v = std::get<0>(t);
+            int u = std::get<1>(t);
+            double w = std::get<2>(t);
+            csr.vals[csr.row_ptr[v] + offsets[v]] = w;
+            csr.col_idx[csr.row_ptr[v] + offsets[v]++] = u;
+            if (type.is_symmetric() && v != u) {
+                csr.vals[csr.row_ptr[u] + offsets[u]] = w;
+                csr.col_idx[csr.row_ptr[u] + offsets[u]++] = v;
+            }
         }
     }
 };

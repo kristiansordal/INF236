@@ -36,7 +36,6 @@ foreach(executable IN LISTS all_executables)
     src/main_${executable}.cpp
     src/spmv.cpp
     src/spmv.hpp
-    include/mmio.cpp
     )
 endforeach()
 

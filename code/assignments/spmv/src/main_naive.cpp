@@ -1,6 +1,5 @@
 #include "spmv.hpp"
 #include <csr.hpp>
-#include <mmio.hpp>
 #include <mtx.hpp>
 #include <omp.h>
 
@@ -13,8 +12,8 @@ int main(int argc, char **argv) {
 #pragma omp single
         { p = omp_get_num_threads(); }
     }
-    std::string file = argv[1];
-    mtx.read_graph(file, csr);
+    mtx.parse(argv[1]);
+    mtx.mtx_to_csr(csr);
     csr.partition_naive(p);
     for (int i = 0; i < csr.partition.size(); i++) {
         std::cout << i << " " << std::get<0>(csr.partition[i]) << " " << std::get<1>(csr.partition[i]) << std::endl;

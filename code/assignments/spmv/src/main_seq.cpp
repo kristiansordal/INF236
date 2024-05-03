@@ -6,8 +6,8 @@
 int main(int argc, char **argv) {
     MTX<int, double> mtx;
     CSR<int, double> csr;
-    std::string file = argv[1];
-    mtx.read_graph(file, csr);
+    mtx.parse(argv[1]);
+    mtx.mtx_to_csr(csr);
     std::vector<double> A(csr.N, 0), y(csr.N, 0);
 
     int num_steps = 100;
