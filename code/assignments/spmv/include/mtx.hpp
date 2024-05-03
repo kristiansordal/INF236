@@ -149,20 +149,11 @@ template <typename IT, typename VT> class MTX {
             csr.col_idx[csr.row_ptr[u] + offsets[u]++] = v;
         }
 
-        for (auto i : csr.row_ptr) {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        for (auto i : csr.col_idx) {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-        for (auto i : csr.vals) {
-            std::cout << i << " ";
-        }
-        std::cout << std::endl;
-
-        M = num_edges;
+        csr.N = N;
+        csr.M = M;
+        csr.V = N;
+        csr.E = nnz;
+        csr.nnz = nnz;
         return true;
     }
 
