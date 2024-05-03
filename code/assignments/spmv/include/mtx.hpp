@@ -26,13 +26,12 @@ template <typename IT, typename VT> class MTX {
     std::vector<IT> counts;
     void parse_banner(std::ifstream &file) {
         std::string line;
-        std::istringstream iss;
         std::string word;
         std::vector<std::string> tokens;
 
         // parse matrix type
         if (std::getline(file, line)) {
-            iss = std::istringstream(line);
+            std::istringstream iss(line);
             while (iss >> word)
                 tokens.push_back(word);
 
@@ -61,7 +60,7 @@ template <typename IT, typename VT> class MTX {
         // parse rest of information until we encounter the dimensions
         while (std::getline(file, line))
             if (line[0] != '%') {
-                iss = std::istringstream(line);
+                std::istringstream iss(line);
                 while (iss >> word)
                     tokens.push_back(word);
                 N = std::stoi(tokens[0]);
@@ -80,7 +79,7 @@ template <typename IT, typename VT> class MTX {
         IT v, u;
         int edges = 0;
         while (std::getline(file, line)) {
-            iss = std::istringstream(line);
+            std::istringstream iss(line);
             iss >> v >> u;
             triplets[edges++] = std::make_tuple(--v, --u, 1.0);
             counts[v]++;
@@ -96,7 +95,7 @@ template <typename IT, typename VT> class MTX {
         IT v, u;
         int edges = 0;
         while (std::getline(file, line)) {
-            iss = std::istringstream(line);
+            std::istringstream iss(line);
             iss >> v >> u;
             triplets[edges++] = std::make_tuple(--v, --u, 1.0);
             counts[v]++;
@@ -106,12 +105,11 @@ template <typename IT, typename VT> class MTX {
     // Parses a symmetric matrix with nonzero entries
     void parse_symmetric_matrix(std::ifstream &file) {
         std::string line;
-        std::istringstream iss;
         IT v, u;
         VT w;
         int edges = 0;
         while (std::getline(file, line)) {
-            iss = std::istringstream(line);
+            std::istringstream iss(line);
             iss >> v >> u >> w;
             triplets[edges++] = std::make_tuple(--v, --u, w);
             counts[v]++;
@@ -123,12 +121,11 @@ template <typename IT, typename VT> class MTX {
     // Parses a general matrix with nonzero entries
     void parse_general_matrix(std::ifstream &file) {
         std::string line;
-        std::istringstream iss;
         IT v, u;
         VT w;
         int edges = 0;
         while (std::getline(file, line)) {
-            iss = std::istringstream(line);
+            std::istringstream iss(line);
             iss >> v >> u >> w;
             triplets[edges++] = std::make_tuple(--v, --u, w);
             counts[v]++;
