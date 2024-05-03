@@ -29,9 +29,16 @@ int main(int argc, char **argv) {
         A[i] = ((double)rand() / (RAND_MAX)) + 1;
 
     t_start = omp_get_wtime();
-    for (int i = 0; i < num_steps; i++) {
-        spmv_partition_naive(csr, A, y);
-        std::swap(A, y);
+#pragma omp parallel
+    {
+        int start = std::get<0>(csr.partition[omp_get_thread_num()]);
+        int end = std::get<1>(csr.partition[omp_get_thread_num()]);
+        for (int i = 0; i < num_steps; i++) {
+            spmv_partition_naive(csr, start, end, A, y);
+#pragma omp barrier
+            std::copy(y.begin() + start, y.begin() + end, A.begin() + start);
+        }
+#pragma omp barrier
     }
 
     t_end = omp_get_wtime();
