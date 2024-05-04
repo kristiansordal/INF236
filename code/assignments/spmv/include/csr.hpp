@@ -37,7 +37,7 @@ template <typename IT, typename VT> class CSR {
                 tid++;
             }
         }
-        std::cout << "NNZ: " << nnz << " Avg NNZ: " << avg_nnz << std::endl;
+        // std::cout << "NNZ: " << nnz << " Avg NNZ: " << avg_nnz << std::endl;
     }
 
     /* Partitions a graph into k parts usint METIS_PartGraphRecursive
@@ -47,7 +47,7 @@ template <typename IT, typename VT> class CSR {
      * @param A - The input vector for SPMV
      */
     void partition_metis(int k, std::vector<int> &start_indices, std::vector<double> &A) {
-        std::cout << "Starting graph partitioning...\n";
+        // std::cout << "Starting graph partitioning...\n";
         start_indices[0] = 0;
 
         if (k == 1) {
@@ -108,6 +108,6 @@ template <typename IT, typename VT> class CSR {
         col_idx = new_edges;
         vals = new_vals;
         A = new_A;
-        std::cout << "Graph partitioning done\n";
+        // std::cout << "Graph partitioning done\n";
     }
 };

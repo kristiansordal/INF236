@@ -25,7 +25,7 @@ template <typename IT, typename VT> class MTX {
     std::vector<std::tuple<IT, IT, VT>> triplets;
     std::vector<IT> counts;
     void parse_banner(std::ifstream &file) {
-        std::cout << "Reading Banner\n";
+        // std::cout << "Reading Banner\n";
         std::string line;
         std::string word;
         std::vector<std::string> tokens;
@@ -72,7 +72,7 @@ template <typename IT, typename VT> class MTX {
                 break;
             }
 
-        std::cout << "Done reading banner\n";
+        // std::cout << "Done reading banner\n";
     }
 
     // Parses a symmetric coordinate matrix
@@ -85,9 +85,9 @@ template <typename IT, typename VT> class MTX {
         while (std::getline(file, line)) {
             num_read++;
 
-            if (num_read % 100000 == 0) {
-                std::cout << num_read << " of " << nnz << std::endl;
-            }
+            // if (num_read % 100000 == 0) {
+            //     std::cout << num_read << " of " << nnz << std::endl;
+            // }
             std::istringstream iss(line);
             iss >> v >> u;
             triplets[edges++] = std::make_tuple(--v, --u, 1.0);
@@ -106,9 +106,9 @@ template <typename IT, typename VT> class MTX {
         int edges = 0;
         while (std::getline(file, line)) {
             num_read++;
-            if (num_read % 100000 == 0) {
-                std::cout << num_read << " of " << nnz << std::endl;
-            }
+            // if (num_read % 100000 == 0) {
+            //     std::cout << num_read << " of " << nnz << std::endl;
+            // }
             std::istringstream iss(line);
             iss >> v >> u;
             triplets[edges++] = std::make_tuple(--v, --u, 1.0);
@@ -126,9 +126,9 @@ template <typename IT, typename VT> class MTX {
         while (std::getline(file, line)) {
 
             num_read++;
-            if (num_read % 100000 == 0) {
-                std::cout << num_read << " of " << nnz << std::endl;
-            }
+            // if (num_read % 100000 == 0) {
+            //     std::cout << num_read << " of " << nnz << std::endl;
+            // }
             std::istringstream iss(line);
             iss >> v >> u >> w;
             triplets[edges++] = std::make_tuple(--v, --u, w);
@@ -148,9 +148,9 @@ template <typename IT, typename VT> class MTX {
         while (std::getline(file, line)) {
 
             num_read++;
-            if (num_read % 100000 == 0) {
-                std::cout << num_read << " of " << nnz << std::endl;
-            }
+            // if (num_read % 100000 == 0) {
+            //     std::cout << num_read << " of " << nnz << std::endl;
+            // }
             std::istringstream iss(line);
             iss >> v >> u >> w;
             triplets[edges++] = std::make_tuple(--v, --u, w);
@@ -166,9 +166,9 @@ template <typename IT, typename VT> class MTX {
     void parse(const std::string &filename) {
         std::ifstream file(filename);
         parse_banner(file);
-        type.print();
+        // type.print();
 
-        std::cout << "Starting reading triplet" << std::endl;
+        // std::cout << "Starting reading triplet" << std::endl;
         if (type.field == 'p')
             if (type.symmetry == 's')
                 parse_symmetric_coordinate_matrix(file);
@@ -180,12 +180,12 @@ template <typename IT, typename VT> class MTX {
             else
                 parse_general_matrix(file);
         }
-        std::cout << "Done reading matrix" << std::endl;
+        // std::cout << "Done reading matrix" << std::endl;
         file.close();
     }
 
     void mtx_to_csr(CSR<IT, VT> &csr) {
-        std::cout << "Converting to mtx" << std::endl;
+        // std::cout << "Converting to mtx" << std::endl;
         csr.N = N;
         csr.M = M;
         csr.nnz = nnz;
@@ -215,6 +215,6 @@ template <typename IT, typename VT> class MTX {
                 csr.col_idx[csr.row_ptr[u] + offsets[u]++] = v;
             }
         }
-        std::cout << "Done converting to mtx" << std::endl;
+        // std::cout << "Done converting to mtx" << std::endl;
     }
 };

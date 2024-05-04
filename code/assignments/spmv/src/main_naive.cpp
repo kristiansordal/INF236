@@ -15,9 +15,9 @@ int main(int argc, char **argv) {
     mtx.parse(argv[1]);
     mtx.mtx_to_csr(csr);
     csr.partition_naive(k);
-    for (int i = 0; i < csr.partition.size(); i++) {
-        std::cout << i << " " << std::get<0>(csr.partition[i]) << " " << std::get<1>(csr.partition[i]) << std::endl;
-    }
+    // for (int i = 0; i < csr.partition.size(); i++) {
+    //     std::cout << i << " " << std::get<0>(csr.partition[i]) << " " << std::get<1>(csr.partition[i]) << std::endl;
+    // }
     std::vector<double> A(csr.N, 0), y(csr.N, 0);
     int num_steps = 100;
     double t_start, t_end;
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     t_end = omp_get_wtime();
     ops = 2 * csr.nnz * num_steps; // 2 flops per nnz
     std::cout << "Time: " << t_end - t_start << "s\n";
-    std::cout << "NNZ: " << csr.nnz << "\n";
-    std::cout << "OPS: " << ops << "\n";
+    // std::cout << "NNZ: " << csr.nnz << "\n";
+    // std::cout << "OPS: " << ops << "\n";
     std::cout << "GFLOPS: " << ops / ((t_end - t_start) * 1e9) << "\n";
 }
