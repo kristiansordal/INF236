@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
     t_end = omp_get_wtime();
     ops = 2 * csr.nnz * num_steps; // 2 flops per nnz
-    std::cout << "ShTime: " << t_end - t_start << "s\n";
-    std::cout << "ShThreads: " << omp_get_num_threads() << std::endl;
-    std::cout << "ShGFLOPS: " << ops / ((t_end - t_start) * 1e9) << "\n";
+    std::cout << "ti_sh " << t_end - t_start << "\n";
+    std::cout << "tr_sh " << omp_get_num_threads() << std::endl;
+    std::cout << "gf_sh " << ops / ((t_end - t_start) * 1e9) << "\n";
 }
