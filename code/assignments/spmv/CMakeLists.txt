@@ -26,6 +26,7 @@ find_package(METIS REQUIRED)
 
 # List of all executables
 set(all_executables
+    smart
     shared
     seq
     naive

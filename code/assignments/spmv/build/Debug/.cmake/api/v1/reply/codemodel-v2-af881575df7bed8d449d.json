@@ -17,7 +17,8 @@
 					[
 						0,
 						1,
-						2
+						2,
+						3
 					]
 				}
 			],
@@ -34,7 +35,8 @@
 					[
 						0,
 						1,
-						2
+						2,
+						3
 					]
 				}
 			],
@@ -43,22 +45,29 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "naive::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-naive-Debug-f7d90ea8b07cb710b101.json",
+					"jsonFile" : "target-naive-Debug-b70779b0b02206a839ab.json",
 					"name" : "naive",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "seq::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-seq-Debug-6d0d1cff56ca1b1055a6.json",
+					"jsonFile" : "target-seq-Debug-17b9a98b79616a66a0b4.json",
 					"name" : "seq",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-shared-Debug-09c61b5634374552ef17.json",
+					"jsonFile" : "target-shared-Debug-627e509f705f0b77646f.json",
 					"name" : "shared",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "smart::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-smart-Debug-89620c6fdee351bb6294.json",
+					"name" : "smart",
 					"projectIndex" : 0
 				}
 			]
