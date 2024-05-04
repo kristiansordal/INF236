@@ -10,12 +10,12 @@ struct MatrixType {
     bool is_matrix() { return object == 'm'; }
     bool is_coordinate() { return format == 'c'; }
     bool is_symmetric() { return symmetry == 's'; }
-    bool is_not_complex() { return field != 'c'; }
+    bool is_complex() { return field == 'c'; }
     void print() {
-        std::cout << "Object: " << object << std::endl;
-        std::cout << "Format: " << format << std::endl;
-        std::cout << "Field: " << field << std::endl;
-        std::cout << "Symmetry: " << symmetry << std::endl;
+        std::cout << "Object: " << object << "\n";
+        std::cout << "Format: " << format << "\n";
+        std::cout << "Field: " << field << "\n";
+        std::cout << "Symmetry: " << symmetry << "\n";
     }
 };
 
@@ -52,7 +52,7 @@ template <typename IT, typename VT> class MTX {
             std::cerr << "Only coordinate format matrices are supported!\n";
             return;
         }
-        if (!type.is_not_complex()) {
+        if (type.is_complex()) {
             std::cerr << "Complex valued matrices are not supported!\n";
             return;
         }

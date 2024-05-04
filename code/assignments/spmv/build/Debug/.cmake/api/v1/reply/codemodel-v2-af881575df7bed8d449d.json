@@ -44,30 +44,30 @@
 			[
 				{
 					"directoryIndex" : 0,
-					"id" : "io::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-io-Debug-9072ec9548b677d83e4f.json",
-					"name" : "io",
-					"projectIndex" : 0
-				},
-				{
-					"directoryIndex" : 0,
 					"id" : "naive::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-naive-Debug-6157008732b3db0293e3.json",
+					"jsonFile" : "target-naive-Debug-b70779b0b02206a839ab.json",
 					"name" : "naive",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "seq::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-seq-Debug-fbeddfdf10dc8869fa4d.json",
+					"jsonFile" : "target-seq-Debug-17b9a98b79616a66a0b4.json",
 					"name" : "seq",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "shared::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-shared-Debug-3d328deb08dcf0cb8830.json",
+					"jsonFile" : "target-shared-Debug-627e509f705f0b77646f.json",
 					"name" : "shared",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "smart::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-smart-Debug-89620c6fdee351bb6294.json",
+					"name" : "smart",
 					"projectIndex" : 0
 				}
 			]

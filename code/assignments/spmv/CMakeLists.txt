@@ -12,22 +12,24 @@ else()
     set(CMAKE_CXX_STANDARD 11)
 endif()
 
-
+# Add METIS include directory
 include_directories(${CMAKE_SOURCE_DIR}/include)
-
 
 # Set the module path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# Find MPI and METIS
-find_package(OpenMP REQUIRED) 
+# Find OpenMP
+find_package(OpenMP REQUIRED)
 
+# Find METIS
+find_package(METIS REQUIRED)
 
 # List of all executables
 set(all_executables
     shared
     seq
     naive
+    smart
 )
 
 # Adding executables
@@ -37,12 +39,9 @@ foreach(executable IN LISTS all_executables)
     src/spmv.cpp
     src/spmv.hpp
     )
+    target_include_directories(${executable} PRIVATE ${METIS_INCLUDE_DIRS})
+    target_link_libraries(${executable} PRIVATE ${METIS_LIBRARIES})
 endforeach()
-
-add_executable(io
-src/test.cpp
-)
-
 
 foreach(executable IN LISTS all_executables)
     if(OPENMP_FOUND)
@@ -52,10 +51,5 @@ foreach(executable IN LISTS all_executables)
         )
     endif()
 endforeach()
-
-set_target_properties(io PROPERTIES
-    COMPILE_FLAGS "${OpenMP_CXX_FLAGS} -fsanitize=address -O3"
-    LINK_FLAGS "${OpenMP_CXX_FLAGS} -fsanitize=address"
-)
 
 set(CMAKE_COLOR_DIAGNOSTICS On)
