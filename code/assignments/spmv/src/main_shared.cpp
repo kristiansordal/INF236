@@ -28,5 +28,8 @@ int main(int argc, char **argv) {
     std::cout << "Time: " << t_end - t_start << "s\n";
     // std::cout << "NNZ: " << csr.nnz << "\n";
     // std::cout << "OPS: " << ops << "\n";
+    //
+    //
+    std::cout << "Threads: " << omp_get_num_threads() << std::endl;
     std::cout << "GFLOPS: " << ops / ((t_end - t_start) * 1e9) << "\n";
 }
