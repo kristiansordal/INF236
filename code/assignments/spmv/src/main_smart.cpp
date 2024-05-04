@@ -33,11 +33,11 @@ int main(int argc, char **argv) {
         int end = std::get<1>(csr.partition[omp_get_thread_num()]);
         for (int i = 0; i < num_steps; i++) {
             spmv_partition_naive(csr, start, end, A, y);
+#pragma omp barrier
 #pragma omp master
             { std::swap(A, y); }
 #pragma omp barrier
         }
-#pragma omp barrier
     }
 
     t_end = omp_get_wtime();

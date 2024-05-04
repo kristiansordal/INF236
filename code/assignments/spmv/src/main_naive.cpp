@@ -36,7 +36,9 @@ int main(int argc, char **argv) {
             spmv_partition_naive(csr, start, end, A, y);
 
 #pragma omp barrier
-            std::copy(y.begin() + start, y.begin() + end, A.begin() + start);
+#pragma omp master
+            { std::swap(A, y); }
+#pragma omp barrier
         }
 #pragma omp barrier
     }

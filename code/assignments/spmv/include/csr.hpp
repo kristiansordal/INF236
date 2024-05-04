@@ -60,10 +60,10 @@ template <typename IT, typename VT> class CSR {
         int objval, ncon = 1;
 
         // represents the allowed unbalance in the partition: 1.01 = 1% unbalance allowed
-        real_t ubvec = 1.01;
+        real_t ubvec = 1.05;
 
-        int rc = METIS_PartGraphRecursive(&N, &ncon, row_ptr.data(), col_idx.data(), nullptr, nullptr, nullptr, &k,
-                                          nullptr, &ubvec, nullptr, &objval, partition_map.data());
+        int rc = METIS_PartGraphKway(&N, &ncon, row_ptr.data(), col_idx.data(), nullptr, nullptr, nullptr, &k, nullptr,
+                                     &ubvec, nullptr, &objval, partition_map.data());
 
         std::vector<IT> new_id(N, 0), old_id(N, 0);
         int id = 0;
