@@ -42,9 +42,9 @@ int main(int argc, char **argv) {
 
     t_end = omp_get_wtime();
     ops = 2 * csr.nnz * num_steps; // 2 flops per nnz
-    std::cout << "Time: " << t_end - t_start << "s\n";
+    std::cout << "SmTime: " << t_end - t_start << "s\n";
     // std::cout << "NNZ: " << csr.nnz << "\n";
     // std::cout << "OPS: " << ops << "\n";
-    std::cout << "Threads: " << k << std::endl;
-    std::cout << "GFLOPS: " << ops / ((t_end - t_start) * 1e9) << "\n";
+    std::cout << "SmThreads: " << k << std::endl;
+    std::cout << "SmGFLOPS: " << ops / ((t_end - t_start) * 1e9) << "\n";
 }
