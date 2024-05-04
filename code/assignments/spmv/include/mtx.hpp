@@ -77,11 +77,17 @@ template <typename IT, typename VT> class MTX {
 
     // Parses a symmetric coordinate matrix
     void parse_symmetric_coordinate_matrix(std::ifstream &file) {
+        int num_read = 0;
         std::string line;
         std::istringstream iss;
         IT v, u;
         int edges = 0;
         while (std::getline(file, line)) {
+            num_read++;
+
+            if (num_read % 100000 == 0) {
+                std::cout << num_read << " of " << nnz << std::endl;
+            }
             std::istringstream iss(line);
             iss >> v >> u;
             triplets[edges++] = std::make_tuple(--v, --u, 1.0);
@@ -93,11 +99,16 @@ template <typename IT, typename VT> class MTX {
 
     // Parses a general coordinate matrix
     void parse_general_coordinate_matrix(std::ifstream &file) {
+        int num_read = 0;
         std::string line;
         std::istringstream iss;
         IT v, u;
         int edges = 0;
         while (std::getline(file, line)) {
+            num_read++;
+            if (num_read % 100000 == 0) {
+                std::cout << num_read << " of " << nnz << std::endl;
+            }
             std::istringstream iss(line);
             iss >> v >> u;
             triplets[edges++] = std::make_tuple(--v, --u, 1.0);
@@ -108,10 +119,16 @@ template <typename IT, typename VT> class MTX {
     // Parses a symmetric matrix with nonzero entries
     void parse_symmetric_matrix(std::ifstream &file) {
         std::string line;
+        int num_read = 0;
         IT v, u;
         VT w;
         int edges = 0;
         while (std::getline(file, line)) {
+
+            num_read++;
+            if (num_read % 100000 == 0) {
+                std::cout << num_read << " of " << nnz << std::endl;
+            }
             std::istringstream iss(line);
             iss >> v >> u >> w;
             triplets[edges++] = std::make_tuple(--v, --u, w);
@@ -124,10 +141,16 @@ template <typename IT, typename VT> class MTX {
     // Parses a general matrix with nonzero entries
     void parse_general_matrix(std::ifstream &file) {
         std::string line;
+        int num_read = 0;
         IT v, u;
         VT w;
         int edges = 0;
         while (std::getline(file, line)) {
+
+            num_read++;
+            if (num_read % 100000 == 0) {
+                std::cout << num_read << " of " << nnz << std::endl;
+            }
             std::istringstream iss(line);
             iss >> v >> u >> w;
             triplets[edges++] = std::make_tuple(--v, --u, w);
