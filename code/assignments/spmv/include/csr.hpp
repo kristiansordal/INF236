@@ -2,9 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <metis.h>
-#include <numeric>
 #include <omp.h>
-#include <set>
 #include <tuple>
 #include <vector>
 

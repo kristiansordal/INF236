@@ -29,7 +29,6 @@ set(all_executables
     shared
     seq
     naive
-    smart
 )
 
 # Adding executables

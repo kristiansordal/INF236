@@ -1,3 +1,9 @@
 [submodule "code/assignments/spmv/submodules/fast_matrix_market"]
 	path = code/assignments/spmv/submodules/fast_matrix_market
 	url = https://github.com/alugowski/fast_matrix_market
+[submodule "code/assignments/spmv/include/METIS"]
+	path = code/assignments/spmv/include/METIS
+	url = https://github.com/KarypisLab/METIS
+[submodule "code/assignments/spmv/METIS"]
+	path = code/assignments/spmv/METIS
+	url = https://github.com/KarypisLab/METIS
