@@ -25,6 +25,7 @@ template <typename IT, typename VT> class MTX {
     std::vector<std::tuple<IT, IT, VT>> triplets;
     std::vector<IT> counts;
     void parse_banner(std::ifstream &file) {
+        std::cout << "Reading Banner\n";
         std::string line;
         std::string word;
         std::vector<std::string> tokens;
@@ -70,6 +71,8 @@ template <typename IT, typename VT> class MTX {
                 counts.resize(N);
                 break;
             }
+
+        std::cout << "Done reading banner\n";
     }
 
     // Parses a symmetric coordinate matrix
@@ -142,6 +145,7 @@ template <typename IT, typename VT> class MTX {
         parse_banner(file);
         type.print();
 
+        std::cout << "Starting reading triplet" << std::endl;
         if (type.field == 'p')
             if (type.symmetry == 's')
                 parse_symmetric_coordinate_matrix(file);
@@ -153,10 +157,12 @@ template <typename IT, typename VT> class MTX {
             else
                 parse_general_matrix(file);
         }
+        std::cout << "Done reading matrix" << std::endl;
         file.close();
     }
 
     void mtx_to_csr(CSR<IT, VT> &csr) {
+        std::cout << "Converting to mtx" << std::endl;
         csr.N = N;
         csr.M = M;
         csr.nnz = nnz;
@@ -186,5 +192,6 @@ template <typename IT, typename VT> class MTX {
                 csr.col_idx[csr.row_ptr[u] + offsets[u]++] = v;
             }
         }
+        std::cout << "Done converting to mtx" << std::endl;
     }
 };
