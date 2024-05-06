@@ -13,17 +13,17 @@ with open("shared_out.txt") as f:
             gf_sh = float(words[1])
 f.close()
 
-with open("seq_out.txt") as f:
-    for line in f:
-        words = line.split()
+# with open("seq_out.txt") as f:
+#     for line in f:
+#         words = line.split()
 
-        if words[0] == "ti_sq":
-            ti_sq = float(words[1])
-        elif words[0] == "tr_sq":
-            tr_sq = float(words[1])
-        elif words[0] == "gf_sq":
-            gf_sq = float(words[1])
-f.close()
+#         if words[0] == "ti_sq":
+#             ti_sq = float(words[1])
+#         elif words[0] == "tr_sq":
+#             tr_sq = float(words[1])
+#         elif words[0] == "gf_sq":
+#             gf_sq = float(words[1])
+# f.close()
 
 with open("smart_out.txt") as f:
     for line in f:
@@ -50,14 +50,14 @@ with open("naive_out.txt") as f:
 f.close()
 
 with open("shared_res.txt", "a") as f:
-    f.write(f"{tr_sh} {gf_sh} {ti_sh}")
+    f.write(f"{int(tr_sh)} {gf_sh} {ti_sh}\n")
 f.close()
-with open("seq_res.txt", "a") as f:
-    f.write(f"{tr_sq} {gf_sq} {ti_sq}")
-f.close()
+# with open("seq_res.txt", "a") as f:
+#     f.write(f"{tr_sq} {gf_sq} {ti_sq}")
+# f.close()
 with open("smart_res.txt", "a") as f:
-    f.write(f"{tr_sm} {gf_sm} {ti_sm}")
+    f.write(f"{int(tr_sm)} {gf_sm} {ti_sm}\n")
 f.close()
 with open("naive_res.txt", "a") as f:
-    f.write(f"{tr_na} {gf_na} {ti_na}")
+    f.write(f"{int(tr_na)} {gf_na} {ti_na}\n")
 f.close()

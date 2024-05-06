@@ -26,6 +26,14 @@ int main(int argc, char **argv) {
     std::vector<int> partition_start_indices(k + 1, 0);
     csr.partition_metis(k, partition_start_indices, A);
 
+    std::vector<double> pcs(csr.partition.size(), 0);
+    for (int i = 0; i < csr.partition.size(); i++) {
+        double pc = (double)(std::get<1>(csr.partition[i]) - std::get<0>(csr.partition[i])) / csr.N;
+        pcs[i] = pc;
+        std::cout << "Rank " << i << " " << pc * 100 << "%" << std::endl;
+    }
+    return 0;
+
     t_start = omp_get_wtime();
 #pragma omp parallel
     {

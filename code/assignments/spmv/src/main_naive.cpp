@@ -15,9 +15,22 @@ int main(int argc, char **argv) {
     mtx.parse(argv[1]);
     mtx.mtx_to_csr(csr);
     csr.partition_naive(k);
-    // for (int i = 0; i < csr.partition.size(); i++) {
-    //     std::cout << i << " " << std::get<0>(csr.partition[i]) << " " << std::get<1>(csr.partition[i]) << std::endl;
-    // }
+
+    int num_assigned = 0;
+    for (auto i : csr.partition) {
+        num_assigned += std::get<1>(i) - std::get<0>(i);
+    }
+
+    std::vector<double> pcs(csr.partition.size(), 0);
+    for (int i = 0; i < csr.partition.size(); i++) {
+        double pc = (double)(std::get<1>(csr.partition[i]) - std::get<0>(csr.partition[i])) / csr.N;
+        pcs[i] = pc;
+        std::cout << "Rank " << i << " " << pc * 100 << "%" << std::endl;
+    }
+    return 0;
+    if (num_assigned != csr.N) {
+        std::cout << "Error, not all nodes have been assigned" << std::endl;
+    }
     std::vector<double> A(csr.N, 0), y(csr.N, 0);
     int num_steps = 100;
     double t_start, t_end;

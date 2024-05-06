@@ -1,0 +1,2 @@
+sjekke hvor ubalansert de forskjellige programmene er med forskjellige balansering
+kjør på birgit og m1 mac
