@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
             mn, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
                  csr.nnz) *
                     100);
-        mx = std::min(
+        mx = std::max(
             mx, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
                  csr.nnz) *
                     100);
