@@ -40,14 +40,13 @@ int main(int argc, char **argv) {
     std::cout << "Min " << mn << "\n";
     std::cout << "Max " << mx << "\n";
     std::cout << "Diff " << mx - mn << "\n";
-    // std::vector<double> pcs(csr.partition.size(), 0);
-    // for (int i = 0; i < csr.partition.size(); i++) {
-    //     double pc =
-    //         (double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
-    //         csr.nnz;
-    //     pcs[i] = pc;
-    //     std::cout << "Rank " << i << " " << pc * 100 << "%" << std::endl;
-    // }
+    std::vector<double> pcs(csr.partition.size(), 0);
+    for (int i = 0; i < csr.partition.size(); i++) {
+        double pc =
+            (double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) / csr.nnz;
+        pcs[i] = pc;
+        std::cout << "Rank " << i << " " << pc * 100 << "%" << std::endl;
+    }
     return 0;
 
     t_start = omp_get_wtime();
