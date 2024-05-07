@@ -1,0 +1,9 @@
+\contentsline {section}{\numberline {1}Sparse Matrix Vector Multiplication (SpMV)}{3}{}%
+\contentsline {subsection}{\numberline {1.1}Representing a Sparse Matrix effectively}{3}{}%
+\contentsline {subsection}{\numberline {1.2}SpMV Kernel}{4}{}%
+\contentsline {section}{\numberline {2}STREAM Benchmark}{4}{}%
+\contentsline {section}{\numberline {3}Parallelizing SpMV}{5}{}%
+\contentsline {subsection}{\numberline {3.1}Method 1}{5}{}%
+\contentsline {subsection}{\numberline {3.2}Method 2}{5}{}%
+\contentsline {subsection}{\numberline {3.3}Method 3}{6}{}%
+\contentsline {subsection}{\numberline {3.4}Load Balance comparison}{8}{}%

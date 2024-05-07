@@ -25,14 +25,29 @@ int main(int argc, char **argv) {
 
     std::vector<int> partition_start_indices(k + 1, 0);
     csr.partition_metis(k, partition_start_indices, A);
-
-    std::vector<double> pcs(csr.partition.size(), 0);
-    for (int i = 0; i < csr.partition.size(); i++) {
-        double pc =
-            (double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) / csr.nnz;
-        pcs[i] = pc;
-        std::cout << "Rank " << i << " " << pc * 100 << "%" << std::endl;
+    double mn = 1000, mx = 0;
+    for (int i = 0; i < k; i++) {
+        mn = std::min(
+            mn, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
+                 csr.nnz) *
+                    100);
+        mx = std::min(
+            mx, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
+                 csr.nnz) *
+                    100);
     }
+
+    std::cout << "Min " << mn << "\n";
+    std::cout << "Max " << mx << "\n";
+    std::cout << "Diff " << mx - mn << "\n";
+    // std::vector<double> pcs(csr.partition.size(), 0);
+    // for (int i = 0; i < csr.partition.size(); i++) {
+    //     double pc =
+    //         (double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
+    //         csr.nnz;
+    //     pcs[i] = pc;
+    //     std::cout << "Rank " << i << " " << pc * 100 << "%" << std::endl;
+    // }
     return 0;
 
     t_start = omp_get_wtime();

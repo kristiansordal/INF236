@@ -1,6 +1,286 @@
 \documentclass{article}
 \input{preamble.tex}
 
+\title{Assignment 3 - Sparse Matrix Vector Multiplication}
+\author{Kristian Sørdal}
 \begin{document}
-    \section{Benchmark}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+    % \section{Benchmark}
+    \section{Sparse Matrix Vector Multiplication (SpMV)}
+    Sparse Matrix Vector Multiplication (SpMV) is a common operation used in scientific computing. It lends itself very well to parallelization, both in shared and distributed memory systems. The matrices used in SpMV are usually very big, typically on the order of at least \( 10^{8} \) rows, with at least \( 10^{9} \) non-zeros.
+    \medskip
+
+    Although there are many definitions as to what a sparse matrix is, they all generally describe matrices where its worth treating non-zeros differently to zeros. For the matrices used in this project, we will be working with matrices with \( \mathcal{O}\left(n\right) \) non-zeros, i.e. \( \mathcal{O}\left(1\right) \) non-zeros per row. Below is an example of a sparse matrix.
+
+    \begin{figure}[H]
+        \begin{center}
+\begin{align*}
+\begin{array}{cc}
+    \begin{bmatrix}
+         1&5&0&0&4&0&0&1  \\
+         0&7&0&9&0&12&0&0  \\
+         0&8&7&0&0&0&0&0  \\
+         0&0&0&0&0&3&3&17  \\
+         0&0&0&2&2&0&1&0  \\
+         0&0&0&0&0&6&0&0  \\
+    \end{bmatrix}
+    &
+    \begin{bmatrix}
+         1&5&&&4&&&1  \\
+         &7&&9&&12&&  \\
+         &8&7&&&&&  \\
+         &&&&&3&3&17  \\
+         &&&2&2&&1&  \\
+         &&&&&6&&  \\
+    \end{bmatrix} \\
+    \text{A} & \text{A}
+\end{array}
+\end{align*}
+        \end{center}
+        \caption{(Left) Dense representation of A , (Right) Sparse representation of A} %Matrix remains the same, left is represented as a dense matrix, right as a sparse matrix.}
+    \end{figure}
+
+    \subsection{Representing a Sparse Matrix effectively}
+    There are many different ways to represent a sparse matrix. The key takeway from all of them is that they don't store the zeros. For this project, the Compressed Sparse Row (CSR) format  has been utilized. Storing a matrix using this format, we need 3 vectors. The \texttt{row\_ptr} vector has size \( n + 1 \), where the \( i \)th entry represents the starting index in the \texttt{col\_idx} vector of the \texttt{i}th row. The \texttt{col\_idx} vector has size \( nnz \), where \( nnz \) is the number of non-zeros in the matrix. It represents the presence of a non-zero values in the matrix. If \texttt{col\_idx[4]} = 5, then the matrix has a non-zero value at index \( [4,5] \). Finally, the \texttt{vals} vector also has size \( nnz \), and it stores the numerical value of the non-zeros. Below is an example of a sparse matrix, and the CSR representation of the same matrix.
+
+    \begin{figure}[H]
+        \centering
+            \includegraphics[width=\textwidth]{matrixcsr}
+        \caption{Compressed Sparse Row Format}
+    \end{figure}
+
+    \newpage
+    \subsection{SpMV Kernel}
+
+    The kernel used for computing the result of an iteration of SpMV on a CSR matrix is outlined in the algorithm below. This is what will be parallelized in order to (hopefully) achieve better performance.
+    \medskip
+
+    \begin{algorithm}[H]
+        \caption{SpMV Kernel}
+        \SetAlgoVlined
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+        \Input{Row pointer: \textit{rowPtr}, Column indices: \textit{colIdx}, Values: \textit{vals}, Input vector \( x \), Result vector \( y \) }
+        \Output{Output Vector \( y \)\newline}
+
+        \For{\(row \leftarrow 0 \) \KwTo \( n \)}{
+            \For{\(idx \leftarrow rowPtr[row] \) \KwTo \( rowPtr[row + 1] \)}{
+                \( y[row] \leftarrow y[row] + vals[idx] \times x[colIdx[idx]] \)
+            }
+        }
+    \end{algorithm}
+
+    \section{STREAM Benchmark}
+    When performing SpMV with the CSR format, we have to be aware that the performance of our program will likely not scale with the number of threads we throw at the program, but rather the memory bandwidth of the system we are running on. Memory bandwidth is the rate at which data can be read or stored in memory. The reason for this becomes evident when we look at the kernel.
+    \medskip
+
+    When we execute the kernel, we are repeatedly accessing memory, and do very few operations (just 2 floating point operations) per memory access. In addition to this, we are accessing the input vector \texttt{x} in a manner that leads to a large amount of cache misses. This is because it is indexed by the value stored in \texttt{col\_idx}. Although this vector is sorted in increasing order when looking at a single row, the indices stored in this vector can, and usually will have a large difference in their numerical value. When we access any value at a given index in the \texttt{x} vector, the processor will prefetch successive elements in this vector and load them into the cache, allowing for very fast access. But since the numerical difference between the indices can be large, most likely the next element we need will not be prefetched, thus requiring the processor to read the value from memory, instead of reading from the cache. It is for this reason that SpMV is limited by the memory bandwidth of the system.
+    \medskip
+
+    The STREAM is an industry standard benchmark that is used for measuring sustained memory bandwidth of the CPU in a shared memory system. The benchmark computes four different kernels named \texttt{Copy}, \texttt{Scale}, \texttt{Sum} and \texttt{Triad}. The kernels are defined as the following:
+
+    \begin{itemize}
+        \item Copy: \( y[i] = x[i] \)
+        \item Scale: \( y[i] = \alpha \times x[i] \)
+        \item Sum: \( y[i] = x[i] + y[i] \)
+        \item Triad: \( y[i] = x[i] + \alpha \times z[i] \)
+    \end{itemize}
+        
+    We are interested in the results from the \texttt{Triad} kernel, as this is the only kernel which uses 2 FLOPS per iteration, which is the same as we do in SpMV.
+    \medskip
+
+    By running the STREAM benchmark on Brake and plotting the results, we can see the sustained memory bandwidth achieved for each thread. This will be important for comparing the results of the different implementations of parallel SpMV later on. Below we can see the results of the benchmark.
+
+    % \begin{figure}[H]
+    %     \begin{center}
+    %         \includegraphics[width=0.95\textwidth]{stream.png}
+    %     \end{center}
+    %     \caption{Results of STREAM Benchmark - Triad kernel.}
+    % \end{figure}
+    % \begin{figure}[H]
+    %     \begin{center}
+    %         \includegraphics[width=0.95\textwidth]{streamgf.png}
+    %     \end{center}
+    %     \caption{Results of STREAM Benchmark - Triad kernel, GFLOPS}
+    % \end{figure}
+
+    As we can see, we are able to achieve at most \( \approx 33 \) GB/s in sustained memory bandwidth, and a peak of \( \approx 2.5 \) GFLOPS, so we should not expect that the SpMV results will exceed this number.
+
+
+    \section{Parallelizing SpMV}
+
+    For this project, 3 different strategies were implemented for parallelizing SpMV. The following sections will discuss their implementation details. 
+
+    \subsection{Method 1}
+
+    This method is the simplest of all methods, as it simply parallelizes the outmost for-loop of the kernel, using OpenMP's \texttt{\#pragma omp parallel for} directive. From testing different scheduling methods, it was found that \texttt{dynamic} scheduling with a block size of 1024 was the best choice. The kernel now looks like the following:
+    \medskip
+
+
+    \begin{algorithm}[H]
+        \caption{SpMV Kernel}
+        \SetAlgoVlined
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+        \Input{Row pointer: \textit{rowPtr}, Column indices: \textit{colIdx}, Values: \textit{vals}, Input vector \( x \), Result vector \( y \) }
+        \Output{Output Vector \( y \)\newline}
+
+        \ForPar{\(row \leftarrow 0 \) \KwTo \( n \)}{
+            \For{\(idx \leftarrow rowPtr[row] \) \KwTo \( rowPtr[row + 1] \)}{
+                \( y[row] \leftarrow y[row] + vals[idx] \times x[colIdx[idx]] \)
+            }
+        }
+    \end{algorithm}
+
+    \subsection{Method 2}
+    The next method is slightly more involved, as it makes use of manually assigning rows to each thread, in an attempt at achieving a better load balance for each thread, trying to ensure that no thread does significantly more work than any of the other threads.
+    \medskip
+
+    The load balancing strategy used in this method involves computing the ideal number of non-zeros each thread should work on, by dividing the total number of non-zeros by the number of threads. Then for each thread, we greedily assign rows (without splitting them) until the sum of non-zeros in each row is at or just above the ideal number of non-zeros. The algorithm used for this is implemented in the following manner:
+    \medskip
+
+    \begin{algorithm}[H]
+        \caption{Naive Load Balancing}
+        \SetAlgoVlined
+        \SetKw{Break}{break}
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+        \Input{Row pointer: \textit{rowPtr}, Number of non-zeros: \textit{nnz}, Number of threads: \textit{numThreads}, Number of rows: \textit{N},}
+        \Output{Start and end indicies for each rank}
+
+        partitionSize \( \leftarrow \) list of size \( p \), assigned tuples \( \left( 0,0 \right) \)\\
+        avgNnz \( \leftarrow \frac{nnz}{p} \)\\
+        threadIdx \( \leftarrow 0 \)\\
+        prevIdx \( \leftarrow 0 \)\\
+
+        \For{i \( \leftarrow 0 \) \KwTo N}{
+            \If{threadIdx = numThreads \( -1 \)}{
+                partition[threadIdx] \( \leftarrow \) (prevIdx, N)
+                \Break
+            }
+            \If{rowPtr[i+1] - rowPtr[prevIdx] > avgNnz}{
+                partition[threadIdx] \( \leftarrow \) (prevIdx,i)
+                prevIdx \( \leftarrow \) i
+                threadIdx \( \leftarrow \) threadIdx + 1
+            }
+        }
+    \end{algorithm}
+
+    Then, for each thread, we compute the following kernel:
+    \medskip
+
+    \begin{algorithm}[H]
+        \caption{SpMV Kernel - Load Balanced}
+        \SetAlgoVlined
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+        \Input{Row pointer: \textit{rowPtr}, Column indices: \textit{colIdx}, Values: \textit{vals}, Input vector \( x \), Result vector \( y \), Start index: startIdx, End index: endIdx }
+        \Output{Output Vector \( y \)\newline}
+
+        \For{\(row \leftarrow \)startIdx \KwTo endIdx}{
+            \For{\(idx \leftarrow rowPtr[row] \) \KwTo \( rowPtr[row + 1] \)}{
+                \( y[row] \leftarrow y[row] + vals[idx] \times x[colIdx[idx]] \)
+            }
+        }
+    \end{algorithm}
+
+    \subsection{Method 3}
+    The final method implemented makes use of the METIS graph partitioning library, this exposes two methods for paritioning a graph into \( k \) parts. We have the choice of using either multilevel recursive bisection, or \( k \)-way partitioning. After some testing, \( k \)-way partitioning was found to be the most stable, as the multilevel recursive bisection sometimes resulted in segmentation faults. 
+    \medskip
+
+    By using the METIS library, the goal is to hopefully achieve an even better load balance than what the greedy approach described earlier can provide. The algorithm used for load balancing with METIS is outlined below.
+
+
+
+    \begin{algorithm}[H]
+        \caption{Metis Load Balancing}
+        \SetAlgoVlined
+        \SetKwComment{Comment}{//}{}
+        \SetKw{Break}{break}
+        \SetKwInOut{Input}{Input}
+        \SetKwInOut{Output}{Output}
+        \Input{Number of partitions: \textit{k}, Row pointer: \textit{rowPtr}, Column indices: \textit{colIdx}, Values: \textit{vals},Input vector: inputVec, Number of non-zeros: \textit{nnz}, Number of rows: \textit{N}}
+        \Output{Start and end indicies for each rank}
+
+        \phantom{a}\\
+        startIdx \( \leftarrow \) 0 initialized list of size \( p + 1 \)\\
+        partitionMap \( \leftarrow \) 0 initialized list of size \( N \)\\
+        objVal \( \leftarrow \) NULL\\
+        ncon \( \leftarrow \) 1\\
+        \phantom{a}\\
+        \Comment{ ubvec constrains the load imbalance, a value of 1.01 indicates that the load imbalance is at most 1\%. Note that there is no guarantee that this is achieved}
+        ubvec \( \leftarrow \) 1.01\\
+
+        \phantom{a}\\
+
+        \If{k = 1}{
+            startIdx[1]=N
+            \Return
+        }
+        \phantom{a}\\
+
+        \Comment{ METIS partitioning}
+        rc \( \leftarrow \) METISPartGraphKway(\&N, \&ncon, *rowPtr, *colIdx, nullptr, nullptr, nullptr, \&k, nullptr, \&ubvec, nullptr, \&objval, *partitionMap)\\
+        \phantom{a}\\
+        newId \( \leftarrow \) 0 initialized list of size \( N \)\\
+        oldId \( \leftarrow \) 0 initialized list of size \( N \)\\
+        id \( \leftarrow \)0\\
+
+        \Comment { Reenumerate the rows according to the partitionMap} 
+        \For{r \( \leftarrow 0 \) \KwTo k}{
+            \For{i \( \leftarrow 0 \) \KwTo N}{
+                \If{partitionMap[i] = r}{
+                    newId[id] \( \leftarrow \) i
+                    oldId[i] \( \leftarrow \) id
+                    id \( \leftarrow \) id + 1
+                }
+            }
+            startIdx[r+1] \( \leftarrow \) id
+        }
+        \phantom{a}\\
+        newRowPtr \( \leftarrow \) 0 initialized list of size \( N+1 \)\\
+        newInputVec \( \leftarrow \) 0 initialized list of size \( N+1 \)\\
+        newColIdx \( \leftarrow \) 0 initialized list of size \( nnz \)\\
+        newVals \( \leftarrow \) 0 initialized list of size \( nnz \)\\
+        \phantom{a}\\
+
+        \For{i \( \leftarrow 0 \) \KwTo N}{
+            degree \( \leftarrow \) rowPtr[i+1] - rowPtr[i]\\
+            newRowPtr[i+1] = newRowPtr[i] + degree\\
+            colIdxStart \( \leftarrow \) *colIdx + rowPtr[oldId[i]]\\
+            valsStart \( \leftarrow \) *vals + rowPtr[oldId[i]]\\
+        \phantom{a}\\
+
+            \Comment{ Copy the values and indices to the new arrays}
+            copy(colIdxStart, colIdxStart + degree, newColIdx + newRowPtr[i])\\
+            copy(valsStart, valsStart + degree, newVals + newRowPtr[i])
+
+        \phantom{a}\\
+
+            \For{r \( \leftarrow \) newRowPtr[i] \KwTo newRowPtr[i+1]}{
+                newColIdx[r] \( \leftarrow \) newId[newColIdx[r]]
+            }
+        }
+
+        \For{i \( \leftarrow 0 \) \KwTo N}{
+            newInputVec[i] = inputVec[oldId[i]]
+        }
+
+        \For{i \( \leftarrow 0 \) \KwTo k}{
+            partition[i] \( \leftarrow \) (startIndices[i],startIndices[i+1])
+        }
+
+        rowPtr \( \leftarrow \) newRowPtr\\
+        colIdx \( \leftarrow \) newColIdx\\
+        vals \( \leftarrow \) newVals\\
+        inputVec \( \leftarrow \) newInputVec
+    \end{algorithm}
+
+
+    % One of the problems that arises with these load balancing strategies occurs when we have a matrix which contains concentrated areas of dense rows, especially if the last few rows are dense, and the rest of the matrix is sparse. Because we cannot split the rows, it is likely that 
+    \subsection{Load Balance comparison}
+
 \end{document}

@@ -79,22 +79,22 @@ template <typename IT, typename VT> class CSR {
             start_indices[r + 1] = id;
         }
 
-        std::vector<IT> new_vertices(N + 1, 0);
+        std::vector<IT> new_row_ptr(N + 1, 0);
         std::vector<VT> new_A(N, 0);
-        std::vector<IT> new_edges(nnz, 0);
+        std::vector<IT> new_col_idx(nnz, 0);
         std::vector<VT> new_vals(nnz, 0);
 
         for (int i = 0; i < N; i++) {
             int degree = row_ptr[old_id[i] + 1] - row_ptr[old_id[i]];
-            new_vertices[i + 1] = new_vertices[i] + degree;
+            new_row_ptr[i + 1] = new_row_ptr[i] + degree;
 
             auto col_start = col_idx.begin() + row_ptr[old_id[i]];
             auto val_start = vals.begin() + row_ptr[old_id[i]];
-            std::copy(col_start, col_start + degree, new_edges.begin() + new_vertices[i]);
-            std::copy(val_start, val_start + degree, new_vals.begin() + new_vertices[i]);
+            std::copy(col_start, col_start + degree, new_col_idx.begin() + new_row_ptr[i]);
+            std::copy(val_start, val_start + degree, new_vals.begin() + new_row_ptr[i]);
 
-            for (IT j = new_vertices[i]; j < new_vertices[i + 1]; j++)
-                new_edges[j] = new_id[new_edges[j]];
+            for (IT j = new_row_ptr[i]; j < new_row_ptr[i + 1]; j++)
+                new_col_idx[j] = new_id[new_col_idx[j]];
         }
 
         for (int i = 0; i < N; i++)
@@ -104,8 +104,8 @@ template <typename IT, typename VT> class CSR {
         for (int i = 0; i < k; i++)
             partition[i] = std::make_tuple(start_indices[i], start_indices[i + 1]);
 
-        row_ptr = new_vertices;
-        col_idx = new_edges;
+        row_ptr = new_row_ptr;
+        col_idx = new_col_idx;
         vals = new_vals;
         A = new_A;
         // std::cout << "Graph partitioning done\n";
