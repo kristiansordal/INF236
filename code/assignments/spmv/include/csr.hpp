@@ -32,12 +32,11 @@ template <typename IT, typename VT> class CSR {
                 break;
             }
             if (row_ptr[i + 1] - row_ptr[prev_idx] > avg_nnz) {
-                partition[tid] = std::make_tuple(prev_idx, i);
-                prev_idx = i;
+                partition[tid] = std::make_tuple(prev_idx, i + 1); // Adjusted end index
+                prev_idx = i + 1;                                  // Move to the next row for the next partition
                 tid++;
             }
         }
-        // std::cout << "NNZ: " << nnz << " Avg NNZ: " << avg_nnz << std::endl;
     }
 
     /* Partitions a graph into k parts usint METIS_PartGraphRecursive
