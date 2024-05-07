@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
     std::cout << "Diff " << mx - mn << "\n";
     std::vector<double> pcs(csr.partition.size(), 0);
     for (int i = 0; i < csr.partition.size(); i++) {
+        std::cout << std::get<0>(csr.partition[i]) << " " << std::get<1>(csr.partition[i]) << std::endl;
         double pc =
             (double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) / csr.nnz;
         pcs[i] = pc;
