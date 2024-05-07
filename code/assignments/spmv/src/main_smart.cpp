@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     std::vector<int> partition_start_indices(k + 1, 0);
     csr.partition_metis(k, partition_start_indices, A);
     double mn = 1000, mx = 0;
-    for (int i = 0; i < k; i++) {
+    for (int i = 0; i < csr.partition.size(); i++) {
         mn = std::min(
             mn, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
                  csr.nnz) *

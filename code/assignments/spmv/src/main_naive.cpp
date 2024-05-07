@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     }
 
     double mn = 1000, mx = 0;
-    for (int i = 0; i < k; i++) {
+    for (int i = 0; i < csr.partition.size(); i++) {
         mn = std::min(
             mn, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
                  csr.nnz) *
