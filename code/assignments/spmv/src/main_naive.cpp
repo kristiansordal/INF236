@@ -16,27 +16,27 @@ int main(int argc, char **argv) {
     mtx.mtx_to_csr(csr);
     csr.partition_naive(k);
 
-    int num_assigned = 0;
+    // int num_assigned = 0;
 
-    double mn = 1000, mx = 0;
-    for (int i = 0; i < csr.partition.size(); i++) {
-        mn = std::min(
-            mn, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
-                 csr.nnz) *
-                    100);
-        mx = std::max(
-            mx, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
-                 csr.nnz) *
-                    100);
-    }
+    // double mn = 1000, mx = 0;
+    // for (int i = 0; i < csr.partition.size(); i++) {
+    //     mn = std::min(
+    //         mn, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
+    //              csr.nnz) *
+    //                 100);
+    //     mx = std::max(
+    //         mx, ((double)(csr.row_ptr[std::get<1>(csr.partition[i])] - csr.row_ptr[std::get<0>(csr.partition[i])]) /
+    //              csr.nnz) *
+    //                 100);
+    // }
 
-    std::cout << "Min " << mn << "\n";
-    std::cout << "Max " << mx << "\n";
-    std::cout << "Diff " << mx - mn << "\n";
-    return 0;
-    if (num_assigned != csr.N) {
-        std::cout << "Error, not all nodes have been assigned" << std::endl;
-    }
+    // std::cout << "Min " << mn << "\n";
+    // std::cout << "Max " << mx << "\n";
+    // std::cout << "Diff " << mx - mn << "\n";
+    // return 0;
+    // if (num_assigned != csr.N) {
+    //     std::cout << "Error, not all nodes have been assigned" << std::endl;
+    // }
     std::vector<double> A(csr.N, 0), y(csr.N, 0);
     int num_steps = 100;
     double t_start, t_end;

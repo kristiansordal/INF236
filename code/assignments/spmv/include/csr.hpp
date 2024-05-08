@@ -110,10 +110,5 @@ template <typename IT, typename VT> class CSR {
         std::swap(col_idx, new_col_idx);
         std::swap(vals, new_vals);
         std::swap(A, new_A);
-        // row_ptr = new_row_ptr;
-        // col_idx = new_col_idx;
-        // vals = new_vals;
-        // A = new_A;
-        // std::cout << "Graph partitioning done\n";
     }
 };
