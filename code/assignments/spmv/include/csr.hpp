@@ -59,7 +59,9 @@ template <typename IT, typename VT> class CSR {
         int objval, ncon = 1;
 
         // represents the allowed unbalance in the partition: 1.01 = 1% unbalance allowed
-        real_t ubvec = 1.05;
+        real_t ubvec = 1.001;
+        // std::vector<int> vwgt(N, 1);
+        // std::vector<int> adjw(2 * M, 1);
 
         int rc = METIS_PartGraphKway(&N, &ncon, row_ptr.data(), col_idx.data(), nullptr, nullptr, nullptr, &k, nullptr,
                                      &ubvec, nullptr, &objval, partition_map.data());
@@ -97,7 +99,7 @@ template <typename IT, typename VT> class CSR {
         }
 
         for (int i = 0; i < N; i++)
-            new_A[i] = A[old_id[i]];
+            new_A[i] = A[new_id[i]];
 
         partition.resize(k);
         for (int i = 0; i < k; i++)

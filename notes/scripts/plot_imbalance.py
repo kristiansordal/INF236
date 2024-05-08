@@ -1,47 +1,41 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from sys import argv
 
-# Read smart data
-smart = []
-with open("smart_lb_arrow.txt") as f:
-    for line in f:
-        x, y = line.split()
-        x = int(x) + 1
-        y = float(y)
-        smart.append((x, y))
+# Read data from file
+xs, sm, na = [], [], []
+with open("imb_res.txt") as file:
+    for line in file:
+        x, smart, naive = map(float, line.split())
+        xs.append(int(x))
+        sm.append(smart)
+        na.append(naive)
 
-# Read naive data
-naive = []
-with open("naive_lb_arrow.txt") as f:
-    for line in f:
-        x, y = line.split()
-        x = int(x) + 1
-        y = float(y)
-        naive.append((x, y))
-
+# Settings for using LaTeX and serif font
 plt.rc("text", usetex=True)
 plt.rc("font", family="serif")
 
-# Extract x and y values
-smart_x, smart_y = zip(*smart)
-naive_x, naive_y = zip(*naive)
+# Set the width of the bars
+bar_width = 0.35
 
-# Assuming both lists have the same x values
-bar_width = 0.35  # Width of each bar
-x_indices = np.arange(len(smart_x))  # Create an array for the bar positions
+# Set positions of the bars
+r1 = np.arange(len(sm))
+r2 = [x + bar_width for x in r1]
 
-# Plot the bars side by side
-fig, ax = plt.subplots()
-rects1 = ax.bar(x_indices - bar_width / 2, smart_y, bar_width, label="Smart", color="Red")
-rects2 = ax.bar(x_indices + bar_width / 2, naive_y, bar_width, label="Naive", color="Blue")
+fig, ax = plt.subplots(figsize=(10, 6))
 
-# Add labels, title, and legend
-ax.set_xlabel("Number of threads")
-ax.set_ylabel("Assigned non-zeros [\%]")
-ax.set_title("Comparison of Smart and Naive Load balancing strategies")
-ax.set_xticks(x_indices)
-ax.set_xticklabels(smart_x)
-ax.legend()
+# Create bars
+plt.bar(r1, sm, width=bar_width, color="b", label="METIS")
+plt.bar(r2, na, width=bar_width, color="r", label="Greedy")
 
-# Display the plot
+# Add xticks on the middle of the group bars
+plt.xlabel("Number of threads")
+plt.ylabel("Max \(\Delta\) imabalance [\%]")
+plt.xticks([r + bar_width / 2 for r in range(len(sm))], xs)
+
+
+# Create legend & Show graphic
+plt.legend()
+
+plt.savefig(argv[1], dpi=1200)
 plt.show()

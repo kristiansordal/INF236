@@ -48,9 +48,9 @@ def main():
         # "circuit5M [Smart]": read_data_file("smart_res_5m.txt"),
         # "circuit5M [Naive]": read_data_file("naive_res_5m.txt"),
         # "circuit5M [Shared]": read_data_file("shared_res_5m.txt"),
-        # "arrow [Smart]": read_data_file("smart_res_arrow.txt"),
-        # "arrow [Naive]": read_data_file("naive_res_arrow.txt"),
-        # "arrow [Shared]": read_data_file("shared_res_arrow.txt"),
+        "arrow [Smart]": read_data_file("smart_res_arrow.txt"),
+        "arrow [Naive]": read_data_file("naive_res_arrow.txt"),
+        "arrow [Shared]": read_data_file("shared_res_arrow.txt"),
     }
 
     # Prepare the plot

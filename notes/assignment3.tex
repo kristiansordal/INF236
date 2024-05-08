@@ -94,18 +94,18 @@
 
     By running the STREAM benchmark on Brake and plotting the results, we can see the sustained memory bandwidth achieved for each thread. This will be important for comparing the results of the different implementations of parallel SpMV later on. Below we can see the results of the benchmark.
 
-    % \begin{figure}[H]
-    %     \begin{center}
-    %         \includegraphics[width=0.95\textwidth]{stream.png}
-    %     \end{center}
-    %     \caption{Results of STREAM Benchmark - Triad kernel.}
-    % \end{figure}
-    % \begin{figure}[H]
-    %     \begin{center}
-    %         \includegraphics[width=0.95\textwidth]{streamgf.png}
-    %     \end{center}
-    %     \caption{Results of STREAM Benchmark - Triad kernel, GFLOPS}
-    % \end{figure}
+    \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=0.95\textwidth]{stream.png}
+        \end{center}
+        \caption{Results of STREAM Benchmark - Triad kernel.}
+    \end{figure}
+    \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=0.95\textwidth]{streamgf.png}
+        \end{center}
+        \caption{Results of STREAM Benchmark - Triad kernel, GFLOPS}
+    \end{figure}
 
     As we can see, we are able to achieve at most \( \approx 33 \) GB/s in sustained memory bandwidth, and a peak of \( \approx 2.5 \) GFLOPS, so we should not expect that the SpMV results will exceed this number.
 
@@ -191,6 +191,9 @@
     The final method implemented makes use of the METIS graph partitioning library, this exposes two methods for paritioning a graph into \( k \) parts. We have the choice of using either multilevel recursive bisection, or \( k \)-way partitioning. After some testing, \( k \)-way partitioning was found to be the most stable, as the multilevel recursive bisection sometimes resulted in segmentation faults. 
     \medskip
 
+    It should be noted that METIS is primarily used to reduce the total communication volume in distributed memory systems, it does this by minimizing the amount of edges that cross from one partition into another. This means that it doesn't necessarily distribute the number of non-zeros each thread has to work on evenly. 
+    \medskip
+
     By using the METIS library, the goal is to hopefully achieve an even better load balance than what the greedy approach described earlier can provide. The algorithm used for load balancing with METIS is outlined below.
 
 
@@ -208,21 +211,15 @@
         \phantom{a}\\
         startIdx \( \leftarrow \) 0 initialized list of size \( p + 1 \)\\
         partitionMap \( \leftarrow \) 0 initialized list of size \( N \)\\
-        objVal \( \leftarrow \) NULL\\
+        objval \( \leftarrow \) NULL\\
         ncon \( \leftarrow \) 1\\
-        \phantom{a}\\
-        \Comment{ ubvec constrains the load imbalance, a value of 1.01 indicates that the load imbalance is at most 1\%. Note that there is no guarantee that this is achieved}
         ubvec \( \leftarrow \) 1.01\\
-
         \phantom{a}\\
 
         \If{k = 1}{
             startIdx[1]=N
             \Return
         }
-        \phantom{a}\\
-
-        \Comment{ METIS partitioning}
         rc \( \leftarrow \) METISPartGraphKway(\&N, \&ncon, *rowPtr, *colIdx, nullptr, nullptr, nullptr, \&k, nullptr, \&ubvec, nullptr, \&objval, *partitionMap)\\
         \phantom{a}\\
         newId \( \leftarrow \) 0 initialized list of size \( N \)\\
@@ -281,6 +278,44 @@
 
 
     % One of the problems that arises with these load balancing strategies occurs when we have a matrix which contains concentrated areas of dense rows, especially if the last few rows are dense, and the rest of the matrix is sparse. Because we cannot split the rows, it is likely that 
+    \section{Results}
+    When gathering results and performing tests, three different matrices were chosen. These matrices were chosen as they all have concentrated dense rows in some area of the matrix, and thus should show differences in the load balancing.
+
+\begin{figure}[htp]
+    \centering
+    \subfloat[]{\includegraphics[width=0.3\textwidth]{myciel.png}} \quad
+    \subfloat[]{\includegraphics[width=0.3\textwidth]{hardesty.png}}\quad
+    \subfloat[]{\includegraphics[width=0.3\textwidth]{memchip.png}}
+    \caption{Matrices used for testing: (a) Mycielskian15, (b) Hardesty1, (c) Memchip}
+\end{figure}
     \subsection{Load Balance comparison}
+    If we compute the load imbalance as the difference between the maximum and minimum number of assigned non-zeros for each thread, we can compare the two load balancing strategies and see which gives us the best load balance.
+    \medskip
+
+    
+
+    The following charts illustrate the load imbalance of these three matrices. 
+
+    \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=0.95\textwidth]{mycimg.png}
+        \end{center}
+        \caption{Load imbalance of Mycielskain15}
+    \end{figure}
+
+    \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=0.95\textwidth]{memimb.png}
+        \end{center}
+        \caption{Load imbalance of memchip}
+    \end{figure}
+
+    \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=0.95\textwidth]{hardimb.png}
+        \end{center}
+        \caption{Load imbalance of Hardesty1}
+    \end{figure}
+
 
 \end{document}
