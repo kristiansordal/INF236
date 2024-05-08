@@ -94,21 +94,26 @@ template <typename IT, typename VT> class CSR {
             std::copy(col_start, col_start + degree, new_col_idx.begin() + new_row_ptr[i]);
             std::copy(val_start, val_start + degree, new_vals.begin() + new_row_ptr[i]);
 
-            for (IT j = new_row_ptr[i]; j < new_row_ptr[i + 1]; j++)
+            for (IT j = new_row_ptr[i]; j < new_row_ptr[i + 1]; j++) {
                 new_col_idx[j] = new_id[new_col_idx[j]];
+            }
         }
 
         for (int i = 0; i < N; i++)
-            new_A[i] = A[new_id[i]];
+            new_A[i] = A[old_id[i]];
 
         partition.resize(k);
         for (int i = 0; i < k; i++)
             partition[i] = std::make_tuple(start_indices[i], start_indices[i + 1]);
 
-        row_ptr = new_row_ptr;
-        col_idx = new_col_idx;
-        vals = new_vals;
-        A = new_A;
+        std::swap(row_ptr, new_row_ptr);
+        std::swap(col_idx, new_col_idx);
+        std::swap(vals, new_vals);
+        std::swap(A, new_A);
+        // row_ptr = new_row_ptr;
+        // col_idx = new_col_idx;
+        // vals = new_vals;
+        // A = new_A;
         // std::cout << "Graph partitioning done\n";
     }
 };
